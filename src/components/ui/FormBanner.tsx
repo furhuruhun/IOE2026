@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Icon } from "@iconify/react/offline";
 
 type FormBannerVariant = "error" | "success" | "warning" | "info";
 

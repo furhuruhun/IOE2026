@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Icon } from "@iconify/react";
+import { Icon } from "@iconify/react/offline";
 
 export type ToastStatus = "success" | "error" | "warning" | "info";
 

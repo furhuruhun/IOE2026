@@ -117,8 +117,8 @@ Setiap kali form baru dibuat, tambahkan baris di sini untuk mapping field BE →
 
 | Form | Field BE | Field FE (nama input) |
 |---|---|---|
-| Register | `email`, `password`, `name` | *(isi saat form dibuat)* |
-| Login | `email`, `password` | *(isi saat form dibuat)* |
+| Register | `email`, `password`, `name` | `email`, `password`, `name` (nama field FE identik dengan BE). `confirmPassword` dan `consentPdp` ada di form tapi TIDAK dikirim ke BE (validasi client-side only) — kalau BE mengembalikan `VALIDATION_ERROR` field lain di luar 3 ini, tidak ada field FE yang match → fallback ke form-level banner (lihat `src/features/auth/RegisterForm.tsx`) |
+| Login | `email`, `password` | `email`, `password` (identik) — lihat `src/features/auth/LoginForm.tsx` |
 | Create Team | `teamName` | *(isi saat form dibuat)* |
 | Event Registration | `institution`, `phone`, `domicile`, `lineId`, `cvFile`, dst | *(isi saat form dibuat)* |
 

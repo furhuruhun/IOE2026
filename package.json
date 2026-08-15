@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "icons:bundle": "node scripts/generate-icon-bundle.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.8.0",
@@ -22,6 +23,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

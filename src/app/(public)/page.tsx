@@ -1,12 +1,16 @@
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { HeroCarousel } from "@/features/landing/HeroCarousel";
+import { AboutSection } from "@/features/landing/AboutSection";
+import { TimelineSection } from "@/features/landing/TimelineSection";
+import { MemoriesSection } from "@/features/landing/MemoriesSection";
 
-// Route: / — Landing Page. Public. ROUTES.md.
+// Route: / — Landing Page. Public. F-07–F-11 (ROUTES.md, PRD_IOE_2027_v4.md).
 export default function LandingPage() {
   return (
-    <PlaceholderPage
-      title="IOE 2027"
-      fId="F-07–F-11"
-      note="HeroCarousel, AboutSection, TimelineSection, MemoriesSection — belum dibangun."
-    />
+    <main className="flex flex-1 flex-col">
+      <HeroCarousel />
+      <AboutSection />
+      <TimelineSection />
+      <MemoriesSection />
+    </main>
   );
 }

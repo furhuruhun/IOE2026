@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { QueryProvider } from "@/store/QueryProvider";
 import { SessionBootstrap } from "@/store/SessionBootstrap";
+import { IconRegistry } from "@/components/ui/iconRegistry";
 import "./globals.css";
 
 // Coolvetica (Headline/H1-H6) TIDAK ada di Google Fonts — harus di-self-host dari file
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
+          <IconRegistry />
           <SessionBootstrap />
           {children}
         </QueryProvider>

@@ -899,9 +899,192 @@ Per item: label nama kompetisi (Plus Jakarta Sans Bold, truncate) di atas, icon 
 
 ---
 
+### HeroCarousel
+
+⚠️ **Riwayat revisi** (bukan bagian spec asli dokumen ini): section ini melewati 3 iterasi sebelum versi final di bawah. Iterasi 1 cuma nama komponen tanpa detail visual. Iterasi 2 salah menyimpulkan mekanisme `position: absolute` + `translateX` persentase itu sendiri masalahnya, padahal mekanisme itu valid. Iterasi 3 mengekstrak nilai literal dari referensi pertama user (versi dengan `translateX(±82%)`), TAPI setelah itu user memberi template referensi kedua yang lebih matang secara UX (mekanisme wrap infinite loop bawaan, lebih clean) dan meminta pakai itu sebagai dasar, dengan warna disesuaikan ke token project. **Versi di bawah ini menggantikan seluruhnya** — jangan campur dengan nilai dari iterasi manapun sebelumnya (terutama jangan pakai lagi `translateX(±82%)`/`rotateY`/`scale(0.88)` dari iterasi 3, itu sudah digantikan oleh mekanisme offset baru di bawah).
+
+**Konsep:** carousel coverflow — slide aktif di tengah (besar, `scale(1)`, `opacity: 1`), maksimal SATU slide tetangga terlihat di tiap sisi (bukan makin banyak semakin transparan seperti iterasi sebelumnya), slide di luar itu disembunyikan penuh (`opacity: 0`, `pointer-events: none`). Wrap dari slide terakhir ke pertama otomatis mulus karena posisi dihitung dari **jarak terpendek (shortest path)**, bukan urutan linear array — detail di bawah.
+
+**HTML/CSS/JS lengkap sudah disetujui user dan siap dipakai sebagai basis implementasi** (adaptasi ke React/Next.js sesuai `TECHNICAL_CONSTRAINTS_FE.md`, tapi logika dan nilai CSS di bawah ini WAJIB diikuti persis):
+
+**Struktur container:**
+```css
+.carousel-section{
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+.carousel-viewport{
+  position: relative;
+  width: 100vw;              /* full-bleed — breaks out of parent's max-width */
+  left: 50%;
+  margin-left: -50vw;
+  height: clamp(300px, 40vw, 460px);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+```
+
+**Slide (card):**
+```css
+.slide{
+  position: absolute;
+  top: 50%; left: 50%;
+  width: clamp(300px, 58vw, 640px);
+  aspect-ratio: 3 / 2;
+  transform-origin: center;
+  transition: transform 500ms cubic-bezier(.2,.8,.2,1), opacity 500ms cubic-bezier(.2,.8,.2,1);
+  border-radius: clamp(14px, 2vw, 20px);
+  padding: 1px;                                   /* border via padding */
+  background: linear-gradient(155deg,
+    var(--color-tertiary-600) 0%,
+    var(--color-secondary-1000) 45%,
+    var(--color-primary-600) 130%
+  );
+  cursor: pointer;
+}
+.slide[data-active="true"]{ cursor: default; }
+
+.slide-inner{
+  position: relative;
+  width: 100%; height: 100%;
+  border-radius: calc(clamp(14px, 2vw, 20px) - 1px);
+  background: linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%);
+  padding: clamp(18px, 4vw, 36px) clamp(18px, 5vw, 40px);
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  text-align: center;
+  gap: clamp(8px, 1.6vw, 14px);
+  overflow: hidden;
+}
+```
+
+**Motif "sonar rings" dekoratif di background tiap card (dipertahankan dari referensi — netral, tidak brand-specific):**
+```css
+.slide-inner::before{
+  content:"";
+  position: absolute; inset: -40%;
+  background: repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 42px, var(--line) 43px, transparent 44px);
+  /* --line: rgb(from var(--color-neutral-500) r g b / 0.16) */
+  opacity: 0.35;
+  pointer-events: none;
+}
+```
+
+**Tipografi konten per slide:**
+```css
+.slide-eyebrow{
+  font-family: 'Montserrat';
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--color-primary-600);
+}
+.slide-title{
+  font-family: 'Coolvetica';
+  font-weight: 600;
+  font-size: clamp(22px, 3vw, 30px);
+  color: var(--color-neutral-100);
+}
+.slide-desc{
+  font-family: 'Plus Jakarta Sans';
+  font-size: 14px; line-height: 1.6;
+  color: var(--color-neutral-500);
+  max-width: 380px;
+}
+```
+
+**Countdown gauge (HANYA dipakai di dalam slide HeroCarousel yang butuh countdown — BUKAN pengganti komponen Countdown Timer utama yang dipakai di 5+ tempat lain, lihat section Countdown Timer di bawah untuk itu):**
+```css
+.gauge-row{
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: clamp(6px, 1.6vw, 10px);
+  margin-top: 4px;
+}
+.gauge{
+  width: clamp(46px, 11vw, 60px);
+  padding: clamp(5px, 1vw, 8px) 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgb(from var(--color-tertiary-600) r g b / 0.05);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.gauge .val{
+  font-family: 'Montserrat'; font-weight: 700;
+  font-size: clamp(14px, 2.4vw, 18px);
+  color: var(--color-tertiary-600);
+}
+.gauge .lbl{
+  font-family: 'Montserrat';
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--color-neutral-900);
+}
+```
+Label unit dalam Bahasa Indonesia: "Hari" / "Jam" / "Menit" / "Detik" (bukan "Days"/"Hrs"/"Min"/"Sec").
+
+**Tombol CTA (pakai gradient Button Primary resmi project, BUKAN warna orange dari template asli):**
+```css
+.slide-cta{
+  font-family: 'Plus Jakarta Sans'; font-weight: 600; font-size: 13px;
+  color: var(--color-tertiary-1000);
+  background: linear-gradient(90deg, var(--color-primary-600), var(--color-tertiary-400));
+  border: none; border-radius: 999px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.slide-cta:hover{ transform: translateY(-2px); box-shadow: 0 8px 20px rgb(from var(--color-primary-600) r g b / 0.25); }
+.slide-cta:focus-visible{ outline: 2px solid var(--color-tertiary-600); outline-offset: 3px; }
+```
+
+**⚠️ Mekanisme positioning & offset — WAJIB ikuti logika ini persis, ini yang membedakan dari iterasi sebelumnya:**
+
+Untuk tiap slide index `i`, dengan `active` = index slide yang sedang aktif dan `n` = jumlah total slide:
+
+```js
+let offset = i - active;
+// Shortest-path wrap: supaya slide pertama dan terakhir dianggap "bersebelahan"
+// alih-alih memaksa slide bergeser jauh melintasi seluruh array saat wrap.
+if (offset > n / 2) offset -= n;
+if (offset < -n / 2) offset += n;
+const abs = Math.abs(offset);
+const isActive = (offset === 0);
+
+// Slide dengan |offset| > 1 disembunyikan PENUH (bukan makin transparan) —
+// carousel ini cuma pernah menampilkan aktif + 1 tetangga tiap sisi, maksimal 3 slide terlihat sekaligus.
+if (abs > 1) {
+  // opacity: 0, pointer-events: none — slide ini tidak dirender secara visual
+} else {
+  const x = offset * 58;              // dalam PERSEN — jarak tetangga dari tengah
+  const scale = (abs === 0) ? 1 : 0.86;
+  const zIndex = 20 - abs;
+  const opacity = (abs === 0) ? 1 : 0.5;
+  // transform: translate(-50%, -50%) translateX(${x}%) scale(${scale})
+}
+```
+
+Ini yang membuat **wrap dari slide terakhir ke pertama otomatis mulus** tanpa perlu cloning slide atau penanganan arah khusus (berbeda dari pendekatan iterasi sebelumnya) — karena `offset` selalu dihitung sebagai jarak terpendek, bukan selisih index array mentah.
+
+**Catatan implementasi React/Next.js:** logika `layout()` di atas (yang ditulis dalam vanilla JS di referensi) perlu diadaptasi jadi computed value per-render (misal `useMemo` berdasarkan `active` state) mengikuti pola yang sudah ada di project untuk komponen lain, bukan manipulasi DOM langsung seperti referensi aslinya.
+
+**Navigasi:**
+- **Keyboard**: `ArrowLeft`/`ArrowRight` untuk navigasi (referensi punya ini, pertahankan — bagus untuk aksesibilitas, sebelumnya tidak pernah disebutkan di iterasi manapun).
+- **Swipe/touch**: threshold pergerakan `40px` untuk trigger ganti slide (dari referensi).
+- **Klik langsung ke slide non-aktif** yang terlihat (aktif + 1 tetangga) untuk langsung menjadikannya aktif.
+- **Dots indicator**: non-aktif `8px` (`width/height: 8px`, `background: var(--color-neutral-900)`), aktif melebar jadi `26px` dengan `background: var(--color-tertiary-600)`, transisi `width 260ms ease, background 260ms ease`.
+- **Counter teks** di bawah dots: format "`{aktif+1} dari {total}`" (referensi punya `counter` element terpisah — opsional tapi disarankan dipertahankan untuk aksesibilitas/kejelasan).
+- Chevron prev/next EKSPLISIT TIDAK ADA di referensi ini (beda dari iterasi sebelumnya yang punya chevron kiri-kanan) — navigasi murni via klik-slide, swipe, keyboard, dan dots. Kalau ingin tetap menambahkan chevron untuk kemudahan desktop, itu penambahan di luar spec referensi, evaluasi dan tanyakan dulu sebelum menambahkan.
+
+**Reduced motion:** `@media (prefers-reduced-motion: reduce)` → transition dipangkas jadi `opacity 300ms ease` saja (tanpa transform animasi), sesuai referensi.
+
+**Auto-rotate & pause-on-interaction** (F-08, dipertahankan dari keputusan sebelumnya — TIDAK ada di referensi HTML baru ini secara eksplisit, tapi tetap wajib sesuai requirement PRD): tambahkan auto-advance dengan interval wajar (referensi Countdown Timer pakai update tiap 1 detik untuk angka — auto-rotate slide sebaiknya interval lebih lama, sekitar 5-8 detik, karena beda tujuan), pause saat hover (desktop) atau sedang di-drag/swipe (mobile).
+
+**Konten per slide (Landing Hero, F-07):** 3 slide — (1) "Indonesia Ocean Expo 2027" dengan countdown gauge ke tanggal target (5 Feb 2027 07:00 WIB, lihat keputusan sebelumnya) dan CTA "Lihat Jadwal", (2) "Kompetisi Nasional" tanpa countdown, CTA "Lihat Kompetisi", (3) rangkaian event (Talkshow/Workshop/dst) tanpa countdown, CTA "Lihat Event". Teks deskripsi disesuaikan dengan konten final yang sudah ada di implementasi sebelumnya kalau masih relevan, atau dari PRD F-07–F-11.
+
+---
+
 ### Countdown Timer
 
 Dipakai di 5+ tempat: Landing Hero, Competition Details, Competition Overview, Event Details, Event Overview. **1 komponen tunggal** dipakai konsisten di semua tempat.
+
+✅ **Nilai final** (sebelumnya open item dengan placeholder `[token terang]`/`[token gelap]`/`drop-shadow-light` — sudah di-resolve dari referensi kode literal yang diberikan user untuk konteks Landing Hero; nilai yang sama berlaku untuk 5+ lokasi lain karena komponennya reusable):
 
 **Struktur circle per unit waktu (Hours/Minutes/Seconds):**
 ```css
@@ -910,17 +1093,25 @@ size: 72px;    /* mobile */
 size: 112px;   /* md+ */
 border-radius: 50%;
 padding: 2px;
-box-shadow: drop-shadow-light (soft glow)
+box-shadow: var(--shadow-md);   /* ✅ final: shadow-md, BUKAN drop-shadow-light */
+background: linear-gradient(135deg,
+  color-mix(in oklch, var(--color-primary-300) 55%, white) 0%,
+  var(--color-secondary-600) 55%,
+  var(--color-tertiary-600) 100%
+);   /* sama seperti gradient border HeroCarousel card, untuk konsistensi visual */
 
 /* Inner circle */
 size: 68px;    /* mobile */
 size: 108px;   /* md+ */
-background: linear-gradient(to bottom, [token terang] → [token gelap]);
+background: linear-gradient(to bottom, var(--color-primary-500), var(--color-primary-1000));   /* ✅ final: token terang = primary-500, token gelap = primary-1000 */
 border-radius: 50%;
+gap: 2px;   /* gap-0.5 antar label/garis/angka di dalam circle */
 ```
-Isi tiap circle (stack vertikal, center): label unit (Montserrat), garis horizontal tipis `1px`, angka besar (Coolvetica, h4/h3).
+Isi tiap circle (stack vertikal, center): label unit (`font-ui text-b4`, Montserrat), garis horizontal tipis `1px` lebar `16px` (`w-4`) warna `rgb(from var(--color-neutral-100) r g b / 0.4)`, angka besar (`font-heading text-h6 md:text-h3`, Coolvetica).
 
-**Separator antar circle:** 2 dot bulat `size: 8px`, disusun vertikal — bukan tanda titik dua (:).
+**Icon label tanggal target (di atas circle, contoh: "5 Feb 2027, 07:00 WIB"):** `mdi:timer` via `@iconify/react/offline` (BUKAN `mdi:timer-outline` seperti versi draft sebelumnya, dan BUKAN icon SVG manual/lucide) — size `16px` mobile (`size-4`), `20px` desktop (`size-5`). Text style: `font-ui text-b4 font-bold` mobile, `md:text-b3` desktop, warna `var(--color-neutral-100)`.
+
+**Separator antar circle:** 2 dot bulat `size: 8px` (`size-2`), disusun vertikal dengan `gap: 4px` (`gap-1`), warna `rgb(from var(--color-neutral-100) r g b / 0.7)`, margin horizontal `8px` mobile (`mx-2`) / `12px` desktop (`mx-3`) — bukan tanda titik dua (:).
 
 **Label tanggal target** (di atas circle-circle): `mdi:timer-outline` + teks tanggal lengkap ("17 Jun 2026, 07:00 WIB"), Montserrat Bold.
 
