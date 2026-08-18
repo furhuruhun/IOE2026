@@ -12,6 +12,70 @@
 
 ## Unreleased
 
+### [2026-08-18 01:48] HeroCarousel — section full-viewport (100dvh), kartu height jadi vh-based (bukan aspect-ratio lagi), jarak dots dibesarkan
+
+- **Tipe:** Fix (eksperimental, atas instruksi CSS eksplisit dari user, "coba kamu terapkan begini coba")
+- **Scope:** `src/features/landing/HeroCarousel.tsx`
+- **Ringkasan:** 3 perubahan CSS diminta user, diadaptasi ke pola inline-style komponen ini (bukan file CSS terpisah, karena komponen ini murni pakai `style={{}}` inline + Tailwind utility, tidak ada CSS module/global class khusus untuk hero):
+  1. **Section full-viewport:** `<section>` (`.carousel-section` di spec) sekarang `minHeight: "100dvh"` + `flex flex-col items-center justify-center` (sebelumnya cuma `relative mx-auto max-w-[1100px] py-3xl`, height mengikuti konten). Dikonfirmasi via `getBoundingClientRect()`: section height match persis viewport height (100dvh).
+  2. **Kartu height jadi vh-based, aspect-ratio dilepas:** kartu (dan viewport pembungkusnya) sebelumnya height-nya turunan dari `aspect-ratio:3/2` terhadap width. Sekarang width & height independen: `width: min(880px, 85vw)` (gabungan dari 2 style properti sebelumnya, `width:880px`+`maxWidth:88vw`, jadi satu shorthand `min()` sesuai request), `height: clamp(560px, 62vh, 700px)`, `aspectRatio: "auto"`. Viewport pembungkus (`.carousel-viewport`) height-nya disamakan jadi `clamp(560px, 62vh, 700px)` juga (sebelumnya `clamp(300px, 44vw, 600px)` dari entry sebelumnya) supaya tidak meng-crop kartu yang sekarang independen dari width.
+  3. **Jarak dots:** `mt-md` (16px) → `mt-2xl` (48px, token resmi dari `globals.css --spacing-2xl`) antara viewport carousel dan baris dots+counter.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — lihat 3 poin di atas.
+- **Terkait requirement:** F-07 (Landing Hero), `design_system_final.md` §HeroCarousel
+- **⚠️ Deviasi lanjutan dari `design_system_final.md` §HeroCarousel (akumulasi dari 3 entry hari ini — rotateY, width fixed 880px, sekarang height vh-based tanpa aspect-ratio):** dokumen itu mendokumentasikan height kartu murni dari `aspect-ratio:3/2` (bukan `clamp(vh)` independen), dan section tidak didokumentasikan sebagai full-viewport (`.carousel-section` cuma `max-width:1100px; margin:0 auto; position:relative`, tanpa `min-height:100dvh`). Belum di-update manual oleh manusia — lihat catatan kumulatif di entry-entry sebelumnya.
+- **Breaking change:** Tidak (visual only), TAPI section sekarang selalu setinggi 1 layar penuh (100dvh) — kalau ada section lain tepat di bawah Hero yang sebelumnya kelihatan sebagian di viewport awal (above the fold), sekarang users harus scroll penuh dulu buat lihatnya. Belum dicek dampaknya ke section "Tentang IOE 2027" di bawahnya.
+- **Verifikasi:** `tsc --noEmit` bersih. Dicek via `getBoundingClientRect()` + `getComputedStyle()` di browser (viewport 1524×1149): `sectionHeight` 1148.75px ≈ match `window.innerHeight` 1149 (100dvh benar), kartu aktif `880×700` (width dari `min(880,85vw=1295.4)=880`, height dari `clamp(560,62vh=712.4,700)=700`, dua-duanya sesuai formula), `dotsMarginTop` computed `48px` (match `mt-2xl`).
+- **Belum selesai / follow-up:**
+  1. `design_system_final.md` §HeroCarousel makin tidak sinkron (sekarang 3 deviasi terakumulasi: rotateY, width fixed+min(), height vh-based+full-viewport section) — perlu direview & diputuskan manusia apakah mau dijadikan spec resmi baru atau di-revert.
+  2. **Belum dicek dampak visual ke section-section lain di bawah Hero** akibat section sekarang selalu 100dvh (minimal 1 layar penuh) — berpotensi mengubah "rasa" scroll pertama kali halaman dibuka (section "Tentang IOE 2027" dst jadi lebih jauh ke bawah). User perlu scroll-check sendiri atau saya perlu diminta eksplisit untuk cek ini di sesi berikutnya.
+  3. Dua clamp (`min(880px,85vw)` untuk width kartu, `clamp(560px,62vh,700px)` untuk height kartu+viewport) belum ditest kombinasinya di viewport SANGAT pendek (misal browser landscape mobile, height <560/0.62≈903px) — di situ `62vh` bisa turun di bawah minimum 560px clamp, tapi minimum clamp tetap menjamin ≥560px, jadi secara teori aman, cuma belum divisualkan langsung.
+
+### [2026-08-18 01:45] HeroCarousel — tambah `max-width: 88vw` supaya kartu ikut menyusut di viewport sempit, sama seperti referensi standalone
+
+- **Tipe:** Fix
+- **Scope:** `src/features/landing/HeroCarousel.tsx`
+- **Ringkasan:** Follow-up dari entry `[2026-08-18 01:06]` (width fixed 880px). Waktu user coba ukur kartu di referensi HTML standalone lewat DevTools Computed panel, hasilnya nyusut jadi ~856px lebar (bukan tetap 880px) di viewport yang lebih sempit — ternyata kode referensi punya `max-width:88vw` yang aku belum ikutin. Ditambahkan `maxWidth: "88vw"` ke style kartu supaya perilakunya sama: di viewport lebar (88vw > 880px, kira-kira viewport >1000px) kartu tetap 880px seperti biasa: dikonfirmasi di 1470px viewport width kartu aktif tetap `880×586.664` persis. Di viewport sempit kartu akan ikut menyusut proporsional (`88vw`) alih-alih tetap kaku 880px dan overflow/ke-crop seperti sebelumnya — ini juga sekaligus mengurangi risiko yang dicatat di follow-up entry sebelumnya soal potensi crop parah di mobile.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — tambah `maxWidth: "88vw"` di style kartu (setelah `width: "880px"`)
+- **Terkait requirement:** F-07 (Landing Hero), `design_system_final.md` §HeroCarousel (masih belum sinkron dari entry-entry sebelumnya, `max-width:88vw` menambah satu deviasi lagi dari clamp resmi yang terdokumentasi)
+- **Breaking change:** Tidak
+- **Verifikasi:** `tsc --noEmit` bersih. Dicek via `getBoundingClientRect()` di browser: pada viewport 1470px (88vw=1293.6px, tidak mengikat), kartu aktif tetap persis `880×586.664` — konfirmasi `max-width` baru ini tidak mengubah perilaku di viewport lebar. **Belum sempat diverifikasi visual di viewport sempit** (resize_window lewat automation tool gagal benar-benar mengecilkan `window.innerWidth` di sesi ini — tetap terbaca 1470 meski sudah diminta resize ke 973×700), jadi perilaku shrink di layar sempit baru diverifikasi lewat pembacaan CSS/matematika, bukan screenshot langsung.
+- **Belum selesai / follow-up:**
+  1. Belum ada verifikasi visual langsung (screenshot) untuk perilaku `max-width:88vw` di viewport sempit/mobile — perlu dicoba manual oleh user atau di sesi lain dengan browser yang resize-nya berhasil.
+  2. `design_system_final.md` §HeroCarousel masih perlu direview manual oleh manusia untuk mencerminkan seluruh rangkaian perubahan hari ini (rotateY, width 880px fixed, max-width 88vw) — lihat entry-entry sebelumnya di atas.
+
+### [2026-08-18 01:06] HeroCarousel — width kartu jadi fixed 880px (bukan clamp responsif lagi), percobaan atas instruksi user ("coba dulu")
+
+- **Tipe:** Fix (eksperimental, eksplisit diminta user pakai kata "coba dulu")
+- **Scope:** `src/features/landing/HeroCarousel.tsx`
+- **Ringkasan:** Width dasar semua kartu (aktif maupun tetangga) diubah dari `clamp(300px, 58vw, 640px)` jadi fixed `880px`, meniru width kartu di referensi HTML standalone. `aspect-ratio: 3/2` yang sudah ada dipertahankan (tidak diubah), jadi height ikut otomatis jadi fixed `586.67px` (dikonfirmasi via `getBoundingClientRect()`: kartu aktif `880×586.66`, kartu tetangga `627.18×548.45` setelah `scale(0.82)`). Mekanisme size-differentiation TIDAK diubah — tetap pakai `transform: scale()` untuk mengecilkan kartu tetangga, bukan width terpisah per kartu (sesuai konfirmasi user).
+- **Perubahan pendamping (diperlukan, bukan pilihan bebas):** `.carousel-viewport` height dinaikkan dari `clamp(300px, 40vw, 460px)` jadi `clamp(300px, 44vw, 600px)` — height lama (max 460px) lebih kecil dari height kartu baru (586.67px fixed), jadi kartu aktif akan ke-crop vertikal oleh `overflow:hidden` viewport kalau tidak dinaikkan. Nilai `600px` dipilih untuk kasih sedikit margin di atas 586.67px.
+- **⚠️ Deviasi lanjutan dari `design_system_final.md` §HeroCarousel:** dokumen itu mendokumentasikan width kartu sebagai `clamp(300px, 58vw, 640px)` (responsif) — BUKAN kasus "mekanisme lama yang sudah digantikan" seperti rotateY di entry sebelumnya, ini memang spec final yang berlaku sampai sekarang. User sudah dikonfirmasi lewat pertanyaan eksplisit sebelum implementasi (target 880×586.67px via aspect-ratio yang ada, bukan angka 535.961px yang sempat disebut user tapi tidak match aspect-ratio manapun — dikonfirmasi user pakai opsi 586.67px) dan memilih tetap fixed 880px (bukan clamp) meski berisiko overflow horizontal di layar sempit karena viewport full-bleed pakai `overflow:hidden` (card lebih lebar dari layar akan ke-crop di kiri-kanan, bukan menyusut).
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — `width` kartu: `clamp(300px, 58vw, 640px)` → `880px`. Height viewport: `clamp(300px, 40vw, 460px)` → `clamp(300px, 44vw, 600px)`.
+- **Terkait requirement:** F-07 (Landing Hero), `design_system_final.md` §HeroCarousel (makin tidak sinkron, lihat catatan di atas dan di entry `[2026-08-18 00:55]`)
+- **Breaking change:** Tidak (visual only), tapi berpotensi overflow/crop horizontal di viewport sempit (<880px) — belum ditest khusus di breakpoint mobile.
+- **Verifikasi:** `tsc --noEmit` bersih. Dicek via browser + `getBoundingClientRect()` langsung di DOM (bukan cuma baca kode): dimensi kartu aktif & tetangga sesuai perhitungan di atas, tidak ada clipping vertikal di viewport desktop (~1446px lebar) yang dites.
+- **Belum selesai / follow-up:**
+  1. Sama seperti entry sebelumnya — `design_system_final.md` §HeroCarousel butuh direview manual oleh manusia, sekarang makin tidak sinkron (width juga ikut berubah, bukan cuma rotateY).
+  2. **Belum ditest di layar sempit/mobile.** Karena width kartu sekarang fixed 880px tanpa clamp, kemungkinan besar bakal ke-crop kiri-kanan parah di layar <880px lebar (viewport full-bleed `overflow:hidden`). User bilang ini "coba dulu" — kemungkinan bukan keputusan final, perlu ditest lebih lanjut atau ditambahkan breakpoint responsif kalau mau dipakai permanen.
+
+### [2026-08-18 00:55] HeroCarousel — rotateY 3D-tilt dibalikin lagi ke neighbor slide (kontradiksi sadar dengan design_system_final.md)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/landing/HeroCarousel.tsx`
+- **Ringkasan:** Atas instruksi eksplisit user, neighbor slide (kartu kiri/kanan non-aktif) HeroCarousel dikasih balik efek 3D `rotateY` + `perspective`, ditune dari referensi HTML standalone (`amunisi/IOE 2027 Landing (Standalone) (1).html`, mekanisme `rawSlides.map`/`CARD_W`/`peek`) yang dipakai user sebagai referensi gaya visual. Mekanisme lama diadaptasi ke unit responsif proyek ini (persen, bukan px fixed dari `CARD_W=880`): `NEIGHBOR_OFFSET_PERCENT` 58→60, `NEIGHBOR_SCALE` 0.86→0.82, tambah `NEIGHBOR_ROTATE_DEG=22` (baru), `transformOrigin` dibuat dinamis (`0% 50%`/`100% 50%` di sisi kiri/kanan biar rotasi "hinge" dari tepi dekat kartu tengah, bukan dari titik tengah kartu sendiri) — sama seperti pola `origin`/`diff===-1`/`diff===1` di referensi standalone. `perspective: 2200px` ditambah di `.carousel-viewport` supaya `rotateY` kelihatan efeknya (tanpa `perspective`, `rotateY` cuma keliatan squash 2D, bukan tilt 3D). `NEIGHBOR_OPACITY` (0.5) dan mekanisme `zIndex`/shortest-path wrap TIDAK diubah — user cuma minta ubah transform (offset/scale/rotate).
+- **⚠️ KONTRADIKSI SADAR dengan dokumen sumber:** `design_system_final.md:904` eksplisit bilang mekanisme `rotateY`/`scale(0.88)`/`translateX(±82%)` dari "iterasi 3" **sudah digantikan** oleh mekanisme `translateX`-percent tanpa rotateY (iterasi 4, entry `[2026-08-16 09:20]` di bawah) dan secara eksplisit melarang "jangan campur lagi" nilai-nilai itu. Saya sudah flag kontradiksi ini ke user sebelum mengerjakan (lihat percakapan) dan user memilih tetap lanjut implementasi + catat unsync di sini, bukan update dokumen dulu. **`design_system_final.md` §HeroCarousel sekarang TIDAK SINKRON dengan kode** — dokumen masih bilang "jangan pakai rotateY lagi", tapi kode sekarang pakai rotateY. Perlu direview manual oleh manusia: apakah dokumen mau diupdate jadi "iterasi 5" resmi (rotateY balik jadi keputusan final), atau ini cuma perubahan sementara yang nanti di-revert.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — tambah `NEIGHBOR_ROTATE_DEG`, field `rotateY`+`transformOrigin` di `SlideGeometry`/`getSlideGeometry()`, `perspective:2200px` di viewport style, `transform` slide sekarang include `rotateY(${geo.rotateY}deg)`. Tune `NEIGHBOR_OFFSET_PERCENT` (58→60) dan `NEIGHBOR_SCALE` (0.86→0.82).
+- **Terkait requirement:** F-07 (Landing Hero), `design_system_final.md` §HeroCarousel (sekarang tidak sinkron, lihat catatan di atas)
+- **Breaking change:** Tidak
+- **Verifikasi:** `tsc --noEmit` bersih. Dicek visual via dev server (`localhost:3000`) pakai browser — kartu tengah tetap `scale(1)`/z-index teratas/tanpa rotasi, kartu tetangga kiri-kanan sekarang tampil miring 3D (`rotateY`) dengan peek lebih kecil, tidak lagi menabrak/menempel rata di tepi kartu tengah.
+- **Belum selesai / follow-up:**
+  1. `design_system_final.md:904` (§HeroCarousel, catatan riwayat revisi) perlu diupdate manual oleh manusia untuk mencerminkan keputusan ini — lihat detail kontradiksi di atas.
+  2. Saat proses verifikasi, sempat `pkill -f "next dev"` yang secara tidak sengaja mematikan proses dev server lain milik user yang sudah berjalan sebelumnya di port 3000 (PID 48583) — sudah di-restart ulang dev server di port 3000, tapi state proses lama (kalau ada yang belum di-save/berjalan di background di proses itu) tidak bisa dipulihkan begitu saja. User perlu cek sendiri apakah ada dampak dari ini.
+
 ### [2026-08-16 10:05] HeroCarousel slide 1 — kembali ke CountdownTimer circle-gradient, buang gauge kotak
 
 - **Tipe:** Fix (perubahan cepat, revert sebagian dari entry sebelumnya)

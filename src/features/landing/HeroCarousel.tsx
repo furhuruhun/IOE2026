@@ -8,17 +8,24 @@ import { heroSlides } from "./landingContent";
 
 const AUTO_ROTATE_MS = 6000;
 const DRAG_THRESHOLD_PX = 40;
-const NEIGHBOR_OFFSET_PERCENT = 58;
-const NEIGHBOR_SCALE = 0.86;
+const NEIGHBOR_OFFSET_PERCENT = 60;
+const NEIGHBOR_SCALE = 0.82;
+const NEIGHBOR_ROTATE_DEG = 22;
 const NEIGHBOR_OPACITY = 0.5;
 
 // ── Positioning — spec §HeroCarousel "⚠️ Mekanisme positioning & offset" ────────────────
+// NOTE: design_system_final.md:904 melarang rotateY/scale(0.88)-style "iterasi 3" dan
+// bilang sudah digantikan mekanisme translateX-percent tanpa rotateY di bawah ini.
+// rotateY/NEIGHBOR_ROTATE_DEG diminta balik oleh user (2026-08-18), diadaptasi dari
+// referensi HTML standalone — dokumen sumber BELUM diupdate, lihat CHANGELOG.md.
 
 interface SlideGeometry {
   hidden: boolean;
   isActive: boolean;
   x: number;
   scale: number;
+  rotateY: number;
+  transformOrigin: string;
   zIndex: number;
   opacity: number;
 }
@@ -36,7 +43,16 @@ function getSlideGeometry(i: number, active: number, n: number): SlideGeometry {
   const isActive = offset === 0;
 
   if (abs > 1) {
-    return { hidden: true, isActive: false, x: 0, scale: NEIGHBOR_SCALE, zIndex: 0, opacity: 0 };
+    return {
+      hidden: true,
+      isActive: false,
+      x: 0,
+      scale: NEIGHBOR_SCALE,
+      rotateY: 0,
+      transformOrigin: "center",
+      zIndex: 0,
+      opacity: 0,
+    };
   }
 
   return {
@@ -44,6 +60,8 @@ function getSlideGeometry(i: number, active: number, n: number): SlideGeometry {
     isActive,
     x: offset * NEIGHBOR_OFFSET_PERCENT,
     scale: isActive ? 1 : NEIGHBOR_SCALE,
+    rotateY: isActive ? 0 : offset < 0 ? -NEIGHBOR_ROTATE_DEG : NEIGHBOR_ROTATE_DEG,
+    transformOrigin: isActive ? "center" : offset < 0 ? "0% 50%" : "100% 50%",
     zIndex: 20 - abs,
     opacity: isActive ? 1 : NEIGHBOR_OPACITY,
   };
@@ -107,7 +125,14 @@ export function HeroCarousel() {
 
   return (
     // .carousel-section — max-width:1100px, margin:0 auto, position:relative
-    <section className="relative mx-auto max-w-[1100px] py-3xl" aria-roledescription="carousel" aria-label="Hero Indonesia Ocean Expo 2027">
+    // + full-viewport height (user request 2026-08-18): section mengisi min-height:100dvh,
+    // konten (viewport+dots) di-center vertikal lewat flex.
+    <section
+      className="relative mx-auto flex max-w-[1100px] flex-col items-center justify-center py-3xl"
+      style={{ minHeight: "100dvh" }}
+      aria-roledescription="carousel"
+      aria-label="Hero Indonesia Ocean Expo 2027"
+    >
       {/* .carousel-viewport — full-bleed breakout: 100vw + left:50% + margin-left:-50vw */}
       <div
         tabIndex={0}
@@ -121,7 +146,7 @@ export function HeroCarousel() {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         className="relative w-screen touch-pan-y overflow-hidden outline-none select-none"
-        style={{ left: "50%", marginLeft: "-50vw", height: "clamp(300px, 40vw, 460px)" }}
+        style={{ left: "50%", marginLeft: "-50vw", height: "clamp(560px, 62vh, 700px)", perspective: "2200px" }}
       >
         {heroSlides.map((slide, i) => {
           const geo = getSlideGeometry(i, active, heroSlides.length);
@@ -134,13 +159,14 @@ export function HeroCarousel() {
               onClick={() => !geo.isActive && !geo.hidden && !dragging && goTo(i)}
               className="hero-slide absolute top-1/2 left-1/2"
               style={{
-                width: "clamp(300px, 58vw, 640px)",
-                aspectRatio: "3 / 2",
-                transformOrigin: "center",
+                width: "min(880px, 85vw)",
+                height: "clamp(560px, 62vh, 700px)",
+                aspectRatio: "auto",
+                transformOrigin: geo.transformOrigin,
                 borderRadius: radius,
                 padding: "1px",
                 background: "linear-gradient(155deg, var(--color-tertiary-600) 0%, var(--color-secondary-1000) 45%, var(--color-primary-600) 130%)",
-                transform: `translate(-50%, -50%) translateX(${geo.x}%) scale(${geo.scale})`,
+                transform: `translate(-50%, -50%) translateX(${geo.x}%) rotateY(${geo.rotateY}deg) scale(${geo.scale})`,
                 opacity: geo.opacity,
                 zIndex: geo.zIndex,
                 cursor: geo.isActive ? "default" : "pointer",
@@ -201,8 +227,9 @@ export function HeroCarousel() {
       </div>
 
       {/* Dots + counter — TIDAK ADA chevron prev/next, sesuai spec referensi (navigasi murni
-          klik-slide/swipe/keyboard/dots) */}
-      <div className="mt-md flex flex-col items-center gap-2">
+          klik-slide/swipe/keyboard/dots). mt-2xl (bukan mt-md) — jarak dibesarkan atas
+          request user (2026-08-18) supaya nggak menempel rapat ke kartu/section berikutnya. */}
+      <div className="mt-2xl flex flex-col items-center gap-2">
         <div className="flex gap-2">
           {heroSlides.map((slide, i) => (
             <button
