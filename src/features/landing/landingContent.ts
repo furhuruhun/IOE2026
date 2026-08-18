@@ -53,6 +53,22 @@ export const aboutDescription =
 // (PRD §8 Assumptions & Dependencies).
 export const sponsors: string[] = ["Sponsor A", "Sponsor B", "Sponsor C", "Sponsor D", "Sponsor E", "Sponsor F"];
 
+export interface AboutStat {
+  value: string;
+  label: string;
+}
+
+// F-09 — sumber: PRD_IOE_2027_v4.md §2.2 Business Metrics (target pendaftar per kegiatan,
+// dikutip langsung, bukan dikarang — event belum berlangsung jadi ini target, bukan capaian).
+export const aboutStats: AboutStat[] = [
+  { value: "20+", label: "Tim Business Case Competition" },
+  { value: "15+", label: "Tim Paper & Poster Competition" },
+  { value: "10+", label: "Tim Design Competition" },
+  { value: "100+", label: "Peserta Talkshow & Seminar" },
+  { value: "200+", label: "Peserta Exhibition" },
+  { value: "20+", label: "Peserta Short Course" },
+];
+
 export interface TimelineItem {
   date: string;
   label: string;

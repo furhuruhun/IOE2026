@@ -196,6 +196,31 @@ h6 {
   }
 }
 
+/* AboutSection §stat infinite scroll — list statistik diduplikasi 2x lalu digeser -50%,
+   list yang sama persis balik ke awal di ujung siklus sehingga loop mulus tanpa clone JS. */
+@keyframes aboutStatsScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.about-stats-track {
+  animation: aboutStatsScroll 28s linear infinite;
+}
+
+.about-stats-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-stats-track {
+    animation: none;
+  }
+}
+
 /*
  * HeroCarousel §"Motif sonar rings" — ::before pseudo-element tidak bisa diekspresikan
  * lewat inline style React, jadi dipakai class global di sini (pola yang sama dengan

@@ -12,6 +12,68 @@
 
 ## Unreleased
 
+### [2026-08-18 09:58] AboutSection — hapus `max-w-5xl`/`mx-auto` di row wrapper, isi full-width penuh sesuai padding section
+
+- **Tipe:** Fix
+- **Scope:** `src/features/landing/AboutSection.tsx`
+- **Ringkasan:** Follow-up dari entry `[2026-08-18 09:52]`. Fix sebelumnya (`mx-auto`) menghilangkan gap kosong di kanan, TAPI efek sampingnya row jadi dibatasi `max-w-5xl` (1024px) lalu di-center — di viewport lebar muncul margin kiri-kanan otomatis (~170px di viewport yang dites user). User eksplisit minta margin itu dihapus, bukan dipertahankan sebagai "center dengan sisa ruang" — jadi `max-w-5xl` dan `mx-auto` dibuang sepenuhnya, row sekarang murni `w-full`, mengisi penuh lebar section (dibatasi cuma oleh `px-8`/`md:px-20` section, bukan max-width tambahan di dalamnya).
+- **File diubah:**
+  - `src/features/landing/AboutSection.tsx` — `className="mx-auto flex w-full max-w-5xl"` → `className="flex w-full"` (1 baris).
+- **Terkait requirement:** F-09, lanjutan entry `[2026-08-18 09:30]`/`[2026-08-18 09:45]`/`[2026-08-18 09:52]`
+- **Breaking change:** Tidak (visual only) — di viewport sangat lebar (>1440px-an), card sekarang meregang penuh mengikuti lebar section (bisa terasa lebih "lega"/panjang secara horizontal dibanding versi capped 1024px sebelumnya). Belum dicek dampaknya di viewport ultra-wide (>1920px).
+- **Verifikasi:** `tsc --noEmit` bersih, `eslint` bersih.
+- **Belum selesai / follow-up:** Belum dicek visual langsung di viewport ultra-wide — kalau card jadi terasa terlalu panjang/renggang di layar sangat lebar, mungkin perlu max-width lagi tapi TANPA margin-auto yang bikin sisi kanan terasa kosong (misal max-width dipasang di section, bukan di row ini) — perlu instruksi/feedback visual lebih lanjut dari user kalau itu terjadi.
+
+### [2026-08-18 09:52] AboutSection — fix: row wrapper 2-kolom tidak center, bikin sisi kanan kosong di viewport lebar
+
+- **Tipe:** Fix
+- **Scope:** `src/features/landing/AboutSection.tsx`
+- **Ringkasan:** User laporkan sisi kanan section kosong/tidak ada padding di viewport lebar. Root cause: `<div className="flex w-full max-w-5xl">` (row pembungkus kolom maskot + kolom card) sudah dibatasi `max-w-5xl` tapi TIDAK punya `mx-auto` — jadi div ini nempel rata kiri di dalam `<section>` (yang `w-full`), bukan center. Di viewport lebih lebar dari `max-w-5xl` (1024px) + padding section, sisa ruang di kanan jadi kosong terlihat seperti "kurang padding". Bug ini muncul waktu redesign total di entry `[2026-08-18 09:30]` — versi `AboutSection.tsx` sebelumnya sudah benar pakai `mx-auto` (`<div className="mx-auto flex max-w-5xl ...">`), tapi ke-drop tanpa sengaja saat rewrite. Fix: tambah `mx-auto` kembali.
+- **File diubah:**
+  - `src/features/landing/AboutSection.tsx` — `className="flex w-full max-w-5xl"` → `className="mx-auto flex w-full max-w-5xl"` (1 baris).
+- **Terkait requirement:** F-09, lanjutan entry `[2026-08-18 09:30]`/`[2026-08-18 09:45]`
+- **Breaking change:** Tidak.
+- **Verifikasi:** `tsc --noEmit` bersih, `eslint` bersih. Dicek via SSR HTML (`curl localhost:3000`) — class `mx-auto` sudah muncul di elemen yang dimaksud.
+- **Belum selesai / follow-up:** Tidak ada — item lain (gap internal, ukuran font stat) dari entry sebelumnya masih menunggu instruksi eksplisit terpisah kalau mau disamakan juga.
+
+### [2026-08-18 09:45] AboutSection — padding disamakan persis (literal px) ke angka di prompt referensi
+
+- **Tipe:** Fix
+- **Scope:** `src/features/landing/AboutSection.tsx`
+- **Ringkasan:** Follow-up dari entry `[2026-08-18 09:30]`. Waktu redesign awal, padding section/card dipetakan ke token spacing project (`px-6`, `md:px-12`, dst) yang ternyata lebih kecil dari angka literal di prompt referensi user. User diminta perbandingan eksplisit, lalu minta padding disamakan **persis** ke angka prompt (bukan didekatkan lewat token) — dieksekusi sebagai perubahan class Tailwind literal (`px-8`/`px-16`/`px-20`/`py-5`/`py-10`/`py-16`), TIDAK memakai token custom project (`px-lg` dst) karena angka yang diminta (32/64/80/20/40px) tidak semuanya match ke tangga token yang ada. Card 2 padding sekarang FIXED `px-16 py-10` di semua breakpoint (tidak ada varian mobile lagi), sesuai instruksi eksplisit di prompt referensi ("Card 2 padding ... fixed, tidak ada versi mobile").
+  - Section: `px-6 py-3xl md:px-12` → `px-8 py-16 md:px-20` (32px→80px X, 64px Y tetap)
+  - Card 1: `px-6 py-5 md:px-12 md:py-8` → `px-8 py-5 md:px-16 md:py-10` (32px→64px X, 20px→40px Y)
+  - Card 2: `px-6 py-6 md:px-12 md:py-8` → `px-16 py-10` (64px X, 40px Y, fixed semua breakpoint)
+  - **Sengaja TIDAK ikut diubah** (di luar scope permintaan user, cuma padding): gap internal card (`gap-2.5`/`gap-3`/`gap-8` di spec vs `gap-sm`/`gap-xl` di kode — masih beda), ukuran font judul/angka/label statistik (`text-h4`/`text-h3` di spec vs token h5/b1/b3 yang dipakai sekarang — masih beda dari perbandingan sebelumnya).
+- **File diubah:**
+  - `src/features/landing/AboutSection.tsx` — 3 baris className diubah (section wrapper, Card 1 inner, Card 2 inner), lihat detail di atas.
+- **Terkait requirement:** F-09, lanjutan entry `[2026-08-18 09:30]`
+- **Breaking change:** Tidak — visual only, card jadi sedikit lebih lega.
+- **Verifikasi:** `tsc --noEmit` bersih, `eslint` bersih.
+- **Belum selesai / follow-up:**
+  1. Gap internal (antar elemen dalam card, antar item stat, gap angka-label) dan ukuran font judul/angka/label statistik MASIH belum disamakan ke angka literal prompt — user cuma minta padding di iterasi ini. Kalau mau disamakan juga, perlu instruksi eksplisit lagi (mengacu ke tabel perbandingan yang sudah dikasih sebelumnya).
+  2. Padding sekarang pakai class Tailwind numerik langsung (bukan token custom project `--spacing-*`), konsisten dengan presedan `AboutSection.tsx` versi sebelumnya yang juga sudah campur keduanya (`px-6 ... py-3xl`).
+
+### [2026-08-18 09:30] AboutSection — redesign jadi layout 2-kolom + card statistik infinite horizontal scroll
+
+- **Tipe:** Refactor
+- **Scope:** `src/features/landing/AboutSection.tsx`, `src/features/landing/landingContent.ts`, `src/app/globals.css`
+- **Ringkasan:** User memberi prompt referensi berbentuk HTML/Tailwind literal dari section "What Is [Event]" COMPFEST (project lain) sebagai basis desain. Sebelum implementasi, saya cek referensi itu terhadap `design_system_final.md` dan `ROUTES.md` — ditemukan 2 masalah: (1) referensi memakai token yang tidak ada di project ini sama sekali (`bg-theme-gradient`, `bg-component-card`, `font-londontwo`, `text-sunlit-950/100`, penuh dark-mode `dark:` variant padahal `globals.css:94` eksplisit bilang project ini light-only, belum ada spec dark mode); (2) section ini secara fungsi duplikat dari `AboutSection.tsx` yang sudah ada (F-09, terdaftar di `ROUTES.md:7`). Kontradiksi ini dilaporkan ke user sebelum ngoding (bukan ditebak/dipilih sendiri) — user memutuskan: **redesign `AboutSection.tsx` yang sudah ada** (bukan bikin section baru terpisah), pakai struktur layout dari referensi (header+logo, 2-kolom maskot+card, card statistik infinite-scroll) TAPI seluruh token dipetakan ulang ke token asli project ini, dark mode dibuang total, dan angka statistik diganti konten asli IOE 2027 (bukan angka COMPFEST).
+  - Layout: header (logo badge `mdi:waves` ala Navbar + judul `text-h4 md:text-h2`) → 2 kolom (maskot placeholder kiri, disembunyikan `<lg`, mengikuti pola `mdi:fish` yang sudah ada sebelumnya) → Card 1 (deskripsi F-09, sekarang JUGA membawahi list sponsor F-09 yang sebelumnya berdiri sendiri — supaya requirement sponsor tidak hilang dari layout baru) → Card 2 (statistik, infinite horizontal auto-scroll CSS pure, list diduplikasi 2× lalu `translateX(-50%)` linear infinite, `animation-play-state:paused` on hover, `prefers-reduced-motion` di-nonaktifkan animasinya).
+  - Gradient border card & gradient text angka statistik pakai teknik "gradient border via padding" yang SUDAH ada presedennya di FannedCard/SpeakerCard (`design_system_final.md`), 3 stop warna semantic primary→secondary→tertiary — bukan token baru, reuse pola yang sudah didokumentasikan.
+  - Radius kartu (`rounded-3xl` outer / `rounded-[22px]` inner) mengikuti presedan SpeakerCard/Accordion yang juga pakai radius di luar scale dasar (`none/sm/md/lg/full`) untuk card besar — bukan nilai baru yang dikarang.
+- **File diubah:**
+  - `src/features/landing/AboutSection.tsx` — rewrite total dari layout single-card (maskot+deskripsi+sponsor sejajar) jadi header+2-kolom+2-card (deskripsi+sponsor, statistik infinite-scroll)
+  - `src/features/landing/landingContent.ts` — tambah `AboutStat` interface + `aboutStats` (6 item, **sumber: PRD §2.2 Business Metrics** — target jumlah tim/peserta per kegiatan, dikutip langsung, bukan dikarang; dilabeli sebagai target karena event belum berlangsung, bukan angka pencapaian seperti di referensi COMPFEST)
+  - `src/app/globals.css` — tambah `@keyframes aboutStatsScroll` + `.about-stats-track` (pola yang sama dengan `@keyframes waterFlow` yang sudah ada — animasi yang tidak bisa direpresentasikan inline style React)
+- **Terkait requirement:** F-09 (PRD), `ROUTES.md:7` (AboutSection landing page)
+- **Breaking change:** Tidak — konten (maskot, deskripsi F-09, sponsor F-09) tetap seluruhnya ada, cuma layout & tambahan card statistik baru.
+- **Verifikasi:** `tsc --noEmit` bersih, `eslint` bersih. Dicek via SSR HTML (`curl localhost:3000`): heading & label statistik baru muncul, `class="about-stats-track"` terpasang, **0 kemunculan** `dark:`, `font-londontwo`, `bg-theme-gradient`, `bg-component-card`, `sunlit` di output — konfirmasi tidak ada token asing dari referensi COMPFEST yang lolos ke kode.
+- **Belum selesai / follow-up:**
+  1. **`design_system_final.md` tidak menyebut section statistik/infinite-scroll ini sama sekali** — saya reuse pola gradient-border yang sudah terdokumentasi (FannedCard/SpeakerCard) untuk card & teks gradient, tapi mekanisme "infinite horizontal auto-scroll" itu sendiri (keyframes translateX -50%, duplikasi list 2×) BELUM ada spec resminya di dokumen manapun — kalau mau dipakai lagi di komponen lain, sebaiknya didokumentasikan dulu di `design_system_final.md` (mis. jadi utility `<InfiniteScrollRow>`) supaya tidak reinvent tiap kali.
+  2. Highlight judul Card 1 ("Cerdas dan Berkelanjutan") adalah parafrase saya dari tema resmi PRD §1 Overview ("Smart and Sustainable Maritime Ecosystem"), diterjemahkan ke Bahasa Indonesia supaya konsisten dengan bahasa `aboutDescription` di sekitarnya — bukan kutipan literal, perlu direview kalau klien punya preferensi istilah resmi.
+  3. Belum dicek visual langsung via browser screenshot (cuma SSR HTML + `getBoundingClientRect` tidak dilakukan sesi ini) — user disarankan cek langsung di `localhost:3000` untuk animasi infinite-scroll dan proporsi 2-kolom di berbagai breakpoint.
+
 ### [2026-08-18 01:48] HeroCarousel — section full-viewport (100dvh), kartu height jadi vh-based (bukan aspect-ratio lagi), jarak dots dibesarkan
 
 - **Tipe:** Fix (eksperimental, atas instruksi CSS eksplisit dari user, "coba kamu terapkan begini coba")
