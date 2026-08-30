@@ -79,7 +79,9 @@ export function RegisterForm() {
   const isPending = registerMutation.isPending || googleLogin.isPending;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full max-w-sm flex-col gap-4">
+    // max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom (design_system_final.md §Spacing)
+    // membayangi container scale bawaan Tailwind untuk key "sm", lihat CHANGELOG.
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full max-w-[24rem] flex-col gap-4">
       {formBanner && <FormBanner message={formBanner} variant="error" />}
 
       <Input
@@ -113,6 +115,7 @@ export function RegisterForm() {
           label="Password"
           type="password"
           icon="mdi:lock-outline"
+          revealable
           autoComplete="new-password"
           error={errors.password?.message}
           {...register("password")}
@@ -131,6 +134,7 @@ export function RegisterForm() {
         label="Konfirmasi Password"
         type="password"
         icon="mdi:lock-check-outline"
+        revealable
         autoComplete="new-password"
         error={errors.confirmPassword?.message}
         {...register("confirmPassword")}

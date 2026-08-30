@@ -95,7 +95,18 @@
   --color-background: var(--color-neutral-100);
   --color-foreground: var(--color-neutral-1000);
 
-  /* spacing scale */
+  /* spacing scale
+   * ⚠️ GOTCHA: kunci xs/sm/md/lg/xl/2xl/3xl/4xl di sini SAMA PERSIS dengan nama key
+   * default Tailwind v4 untuk scale max-width/min-width (--container-sm, dst di
+   * node_modules/tailwindcss/theme.css). Tailwind mengutamakan --spacing-<key> custom
+   * di atas --container-<key> bawaan untuk utility max-w- / min-w-, jadi max-w-sm
+   * SILENTLY resolve ke 8px (nilai --spacing-sm), BUKAN 24rem seperti default Tailwind.
+   * Sudah kena 4x (LoginForm/RegisterForm/PlaceholderPage/login page.tsx) — diperbaiki
+   * dengan arbitrary value (mis. max-w-[24rem]), BUKAN rename token ini (blast radius
+   * ~25 file lain yang pakai gap-md/py-3xl/dst dengan benar). Lihat CHANGELOG
+   * [2026-08-30] "Redesign layout /login". JANGAN pakai max-w-xs/sm/md/lg/xl/2xl/3xl/4xl
+   * atau min-w- versi sejenis di kode baru — pakai arbitrary value rem/px langsung.
+   */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 16px;
@@ -167,6 +178,29 @@
   --font-micro: var(--font-inter);
 }
 
+/*
+ * TiltedCard §tokens — design_system_final.md menandai keempat token ini
+ * "⚠️ placeholder — wajib diganti" (referensi asli Framer marketplace tidak nyambung ke
+ * palette akuatik proyek ini). Dipakai APA ADANYA sesuai instruksi CLAUDE.md §6 (jangan
+ * menciptakan nilai baru sendiri) — bukan token utility Tailwind (@theme), murni custom
+ * property yang direferensikan lewat var() di style inline TiltedCard.tsx.
+ */
+:root {
+  --tiltedcard-bg: #16302b;
+  --tiltedcard-border: oklch(1 0 0 / 0.1);
+  --tiltedcard-caption-bg: color-mix(in oklch, #42c0a3 30%, black 55%);
+  --tiltedcard-caption-text: oklch(0.98 0.01 210);
+  --tiltedcard-caption-border: color-mix(in oklch, #078ea4 45%, transparent);
+
+  /* CalendarWidget — design_system_final.md §CalendarWidget baris 812-816, sudah
+     di-resolve ke hex final oleh spec (bukan placeholder). */
+  --calendar-bg: #132321;
+  --calendar-border: oklch(1 0 0 / 0.08);
+  --calendar-grid-border: #0f1c1a;
+  --calendar-day-bg-hover: color-mix(in oklch, #42c0a3 22%, transparent);
+  --calendar-accent: #078ea4;
+}
+
 body {
   background: var(--color-background);
   color: var(--color-foreground);
@@ -181,6 +215,20 @@ h5,
 h6 {
   font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
+}
+
+/* Modal Create/Join Team §entrance animation — design_system_final.md §Modal Create/Join
+   Team. Animasi "teamPop" (ikon checkmark di state sukses) SENGAJA belum diimplementasikan
+   — follow-up saat pass animasi (emil-design-eng), lihat CHANGELOG. */
+@keyframes teamModalIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(18px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+  }
 }
 
 /* Button §Efek Akuatik — "water flow" ambient gradient, design_system_final.md */
@@ -253,4 +301,132 @@ h6 {
   .hero-slide {
     transition: opacity 300ms ease;
   }
+}
+
+/* ThemeToggle §layer positioning — top/left datang dari lookup table inline style per
+ * state (lihat ThemeToggle.tsx), bukan Tailwind utility, jadi transisi-nya dipusatkan
+ * di sini supaya bisa di-override reduced-motion, sama seperti .hero-slide di atas. */
+.theme-toggle-layer {
+  transition:
+    top 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    left 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-layer {
+    transition: none;
+  }
+}
+
+/* MobileNavDrawer §Dialog overlay/content — slide-in dari kanan + fade overlay, 300ms
+ * ease-out (sesuai spec). Radix Dialog set atribut data-state="open"/"closed" otomatis dan
+ * nunggu `animationend` sebelum unmount (Presence), jadi HARUS pakai `animation` (bukan cuma
+ * `transition`) di kedua state supaya exit animation kepakai. Di reduced-motion, durasi
+ * dipendekin drastis (bukan animation:none) supaya animationend tetap fire & Presence nggak
+ * nyangkut mounted. */
+.nav-drawer-overlay[data-state="open"] {
+  animation: nav-drawer-overlay-in 300ms ease-out;
+}
+.nav-drawer-overlay[data-state="closed"] {
+  animation: nav-drawer-overlay-out 300ms ease-out;
+}
+
+@keyframes nav-drawer-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes nav-drawer-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.nav-drawer-content[data-state="open"] {
+  animation: nav-drawer-slide-in 300ms ease-out;
+}
+.nav-drawer-content[data-state="closed"] {
+  animation: nav-drawer-slide-out 300ms ease-out;
+}
+
+@keyframes nav-drawer-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes nav-drawer-slide-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-drawer-overlay[data-state="open"],
+  .nav-drawer-overlay[data-state="closed"],
+  .nav-drawer-content[data-state="open"],
+  .nav-drawer-content[data-state="closed"] {
+    animation-duration: 1ms;
+  }
+}
+
+/* Accordion §expand/collapse — infrastruktur shared, BUKAN spesifik MobileNavDrawer. Ini
+ * pattern resmi Radix UI Accordion (custom property --radix-accordion-content-height) yang
+ * sudah didokumentasikan di design_system_final.md §Accordion (dipakai juga untuk Registration
+ * Requirements accordion nanti) — 200ms ease-out sesuai spec dokumen. First use di codebase
+ * ini lewat MobileNavDrawer, tapi nama class/keyframe sengaja generic biar accordion lain ke
+ * depan reuse, bukan bikin animasi accordion baru lagi. */
+.accordion-content {
+  overflow: hidden;
+}
+.accordion-content[data-state="open"] {
+  animation: accordion-down 200ms ease-out;
+}
+.accordion-content[data-state="closed"] {
+  animation: accordion-up 200ms ease-out;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .accordion-content[data-state="open"],
+  .accordion-content[data-state="closed"] {
+    animation-duration: 1ms;
+  }
+}
+
+/* MyJourneyCard §scrollbar: hidden (design_system_final.md baris 893) — dipakai juga di
+   Dashboard sidebar mobile dropdown kalau perlu overflow. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

@@ -57,7 +57,9 @@ export function LoginForm() {
   const isPending = login.isPending || googleLogin.isPending;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full max-w-sm flex-col gap-4">
+    // max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom (design_system_final.md §Spacing)
+    // membayangi container scale bawaan Tailwind untuk key "sm", lihat CHANGELOG.
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full max-w-[24rem] flex-col gap-4">
       {formBanner && <FormBanner message={formBanner} variant="error" />}
 
       <Input
@@ -72,6 +74,7 @@ export function LoginForm() {
         label="Password"
         type="password"
         icon="mdi:lock-outline"
+        revealable
         autoComplete="current-password"
         error={errors.password?.message}
         {...register("password")}
@@ -80,6 +83,12 @@ export function LoginForm() {
       <Button type="submit" variant="primary" size="md" loading={login.isPending} disabled={isPending} className="w-full">
         {login.isPending ? "Masuk..." : "Login"}
       </Button>
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-neutral-300" />
+        <span className="text-b4 text-neutral-600">Atau</span>
+        <div className="h-px flex-1 bg-neutral-300" />
+      </div>
 
       <GoogleAuthButton onIdToken={handleGoogleIdToken} disabled={isPending} />
 
