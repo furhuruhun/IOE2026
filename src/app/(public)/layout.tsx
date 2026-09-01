@@ -9,7 +9,10 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <Navbar />
-      {children}
+      {/* pt kompensasi: Navbar sekarang `fixed` (bukan `sticky`), jadi keluar dari document
+          flow — tanpa ini {children} akan ketutup navbar. Value samain sama tinggi Navbar
+          (h-14 mobile / md:h-20 desktop), lihat CHANGELOG [Navbar — spec Compfest]. */}
+      <div className="pt-14 md:pt-20">{children}</div>
       <Footer />
     </>
   );

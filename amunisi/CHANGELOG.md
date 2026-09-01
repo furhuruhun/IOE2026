@@ -12,6 +12,118 @@
 
 ## Unreleased
 
+### [2026-09-02 02:15] `competitionsContent.ts` — tambah 2 item timeline utk QA overflow-x horizontal scroll
+
+- **Tipe:** Config
+- **Scope:** `src/features/competitions/competitionsContent.ts`
+- **Ringkasan:** User minta 2 node tambahan di `overallTimelineItems` (jadi 6 total) supaya bisa dites langsung apakah `overflow-x-auto`/scroll-x Horizontal Zig-Zag Timeline (`CompetitionTimelineSection.tsx`) benar-benar berfungsi saat konten melebihi lebar box. Item baru: "Jun 2027 — Workshop Persiapan Grand Final" dan "Jul 2027 — Closing Ceremony & Awarding", keduanya `status: "future"`.
+- **File diubah:**
+  - `src/features/competitions/competitionsContent.ts` — tambah 2 entry di `overallTimelineItems`, dengan komentar eksplisit bahwa ini data QA (bukan item resmi PRD/panitia).
+- **Terkait requirement:** F-25 (`PRD_IOE_2027_v4.md`) — QA task, bukan requirement baru.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** **2 item ini murni utk QA scroll**, BUKAN konten resmi dari panitia — perlu dihapus lagi (kembali ke 4 item) kalau tidak dipakai sbg konten permanen, atau diganti jadi jadwal asli kalau memang mau ditambah permanen. Sudah ditandai dgn komentar di kode.
+
+### [2026-09-02 02:00] "Timeline Kompetisi" (/competitions) — fix presisi layout Horizontal Zig-Zag Timeline
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionTimelineSection.tsx`
+- **Ringkasan:** Lanjutan revisi entry `[2026-09-02 01:10]` di bawah. User laporkan 2 masalah presisi visual dan kasih formula CSS literal utk fix-nya: (1) jarak samping wrapper ke kartu/node pertama jauh lebih lebar dibanding jarak atas-bawah ("double offset"), (2) garis progress (`bg-secondary-500`) tidak menempel presisi di tepi luar lingkaran node target (meleset masuk/berhenti sebelum node).
+- **Root cause & fix:**
+  1. **Double offset** — inner content wrapper (`relative w-fit`) sebelumnya juga punya `mx-auto`, berada di dalam outer scroll box yang `flex`. Kombinasi flex + `mx-auto` bikin browser nambah auto-margin centering DI ATAS padding `p-5 md:p-10` outer box setiap kali konten (4 kartu) lebih sempit dari lebar box — kasus umum di desktop sebelum overflow-x kepakai. `mx-auto` dihapus, jarak tepi sekarang murni dari padding wrapper (sesuai instruksi eksplisit user).
+  2. **Progress line tidak presisi ke edge node** — versi sebelumnya cuma pakai inset flat `2.5rem`/`5rem` (sama dengan base line) tanpa memperhitungkan radius node (`0.5rem` mobile / `0.9375rem` desktop), jadi selalu meleset sejauh radius node dari tepi luar sebenarnya. Diganti formula dari user: `left` = titik-tengah-kolom-pertama dikurangi radius node (`2.5rem - 0.5rem = 2rem` mobile, `5rem - 0.9375rem = 4.0625rem` desktop), `width` = fraksi progress dikali span base line PLUS radius node target (`((var(--tl-progress)/100) * (100% - Nrem)) + radius`) — supaya ujung kiri & kanan garis selalu presisi di tepi luar lingkaran node, bukan titik tengahnya.
+  - **Breaking detail teknis:** formula baru butuh `--tl-progress` sebagai bare number (0-100), BUKAN string dengan suffix `%` seperti versi sebelumnya — karena formula membagi nilai itu dgn 100 dulu (`var(--tl-progress) / 100`) untuk dapat fraksi unitless sebelum dikalikan ke `(100% - Nrem)` (mengalikan dua nilai berdimensi %/panjang langsung invalid di CSS `calc()`). Kalau ada kode lain nanti yang ikut membaca custom property ini, harus tahu formatnya bare number, bukan percentage string.
+- **File diubah:**
+  - `src/features/competitions/CompetitionTimelineSection.tsx` — hapus `mx-auto` dari inner wrapper; ganti class+formula progress line (`left-[2rem] md:left-[4.0625rem]`, `w-[calc(((var(--tl-progress)_/_100)_*_(100%_-_Nrem))_+_radius)]`); `progressStyle` set `--tl-progress` sbg bare number (bukan `%X`). Base line (`w-[calc(100%-5rem)] md:w-[calc(100%-10rem)]`) TIDAK berubah — sudah sesuai spec dari awal.
+- **Terkait requirement:** F-25 (`PRD_IOE_2027_v4.md`), lanjutan entry `[2026-09-02 01:10]`.
+- **Breaking change:** Tidak untuk user-facing behavior (fix visual murni), tapi format nilai `--tl-progress` berubah (lihat detail teknis di atas) — kalau ada kode lain yang mulai membaca custom property ini di masa depan, harus disesuaikan.
+- **Belum selesai / follow-up:** Tidak ada baru — semua follow-up item dari entry `[2026-09-02 01:10]` (token mapping, dark mode skip, data status placeholder) masih berlaku, tidak berubah oleh fix ini.
+
+### [2026-09-02 01:25] `layout.tsx` — suppressHydrationWarning di `<html>` (fix false-positive hydration mismatch)
+
+- **Tipe:** Fix
+- **Scope:** `src/app/layout.tsx`
+- **Ringkasan:** User lapor React hydration mismatch error di `/competitions` saat verifikasi task Timeline (lihat entry di bawah) — attribute `data-qb-installed="true"` muncul di `<html>` pada client render tapi tidak ada di server render. Root cause BUKAN dari kode app: attribute itu disuntik oleh browser extension pihak ketiga (pola nama "qb", kemungkinan QuillBot) ke tag `<html>` sebelum React sempat hydrate, di luar kendali app. `RootLayout` sebelumnya tidak punya `suppressHydrationWarning` di `<html>`, jadi mismatch attribute apapun dari extension manapun akan selalu memicu warning/error ini di environment siapapun yang extension-nya menyentuh `<html>`.
+- **File diubah:**
+  - `src/app/layout.tsx` — tambah `suppressHydrationWarning` (boolean prop React, bukan style/token) ke elemen `<html>`. Ini pola resmi Next.js untuk kasus ini — HANYA menekan warning attribute-mismatch pada elemen `<html>` itu sendiri (non-recursive, tidak menyembunyikan hydration bug lain di subtree manapun).
+- **Terkait requirement:** Tidak ada F-ID spesifik — bug infrastruktur root layout, bukan fitur.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Tidak ada — fix selesai, tidak menyentuh styling/token jadi tidak perlu cross-check ke `design_system_final.md`.
+
+### [2026-09-02 01:10] "Timeline Kompetisi" (/competitions) — Horizontal Zig-Zag Timeline (scroll-x)
+
+- **Tipe:** Feature
+- **Scope:** `src/features/competitions/CompetitionTimelineSection.tsx`, `src/features/competitions/competitionsContent.ts`, `src/app/globals.css`
+- **Ringkasan:** User kasih spec Tailwind literal sangat detail untuk pola "Horizontal Zig-Zag Timeline" (kartu berselang-seling atas/bawah + node + garis progress, scrollable horizontal). Section `Timeline Kompetisi` di `/competitions` (F-25, `CompetitionTimelineSection.tsx`) di-rewrite total dari pola dot+garis vertikal lama ke pola baru ini. `CompetitionDetailTimelineSection.tsx` (sibling, dipakai di `/competitions/[slug]`) **tidak disentuh** — user hanya minta section "timeline competition" di endpoint `/competitions`, jadi scope dibatasi ke overview page saja.
+- **Gap ditemukan & cara resolve (dilaporkan ke user dulu via `AskUserQuestion`, bukan ditebak — CLAUDE.md §Aturan Kerja #1/#6):** spec pakai banyak token yang tidak ada di `design_system_final.md`/`globals.css` sama sekali (warna `lagoon-900`/`lagoon-500`/`sunlit-100`/`ocean-depth-500`, `bg-theme-gradient`, `font-londontwo`/`font-montserrat`/`font-jakarta` literal, `text-s3`), plus `dark:` variants padahal project belum punya dark palette. 2 pertanyaan diajukan:
+  1. **Dark mode** — project eksplisit "light-only untuk sekarang" (`globals.css` §base surface) dan `ThemeToggle` sudah 3× dikonfirmasi UI-only. User pilih: **skip semua `dark:` variant**, dicatat sbg follow-up (lihat di bawah), bukan diimplementasikan inert.
+  2. **Warna baru (`lagoon-*`, `sunlit-100`, `ocean-depth-500`)** — user pilih **map ke token existing** (opsi rekomendasi): `lagoon-900`→`secondary-900`, `lagoon-500`→`secondary-500` (Cyan family, preseden sama seperti `text-lagoon-100`→`secondary-1000` di entry Navbar), `sunlit-100` (glow)→`primary-200` (palette aquatic project tidak punya warna hangat/gold sama sekali, jadi dipetakan ke warna sejuk terdekat), `ocean-depth-500` tidak dipakai sama sekali (konsekuensi dari keputusan #1 di atas).
+  - Token lain yang di-resolve via judgment call (bukan ditanya, mengikuti preseden sudah ada di codebase — CLAUDE.md §6 tetap dipatuhi, tidak ada nilai baru dikarang): `bg-theme-gradient`→reuse `CTA_GRADIENT` (sudah diekspor `Navbar.tsx`); `font-londontwo`→tidak perlu class eksplisit (`<h2>` otomatis `font-heading`/Coolvetica dari global CSS); `font-montserrat`→`font-ui`; `font-jakarta`→`font-body`; `bg-text-1000` (divider)→`bg-neutral-1000`; scrollbar-hidden literal (`[&::-webkit-scrollbar]:hidden` dkk)→reuse class `.no-scrollbar` yang sudah ada (DRY, functionally identical); `<h1>`/`<h2>` literal di dalam kartu→diganti `<p>` (preseden `CompetitionDetailTimelineSection.tsx` juga tidak memakai heading tag di item timeline, dan section ini sudah punya `<h2>` sendiri — multiple `<h1>` per halaman melanggar document outline); `text-s3`→token BARU ditambahkan ke `globals.css` (value reuse dari `b1`/20px, lanjutan pola `s6`=`b4`/`s5`=`b3` yang sudah ada, preseden sama seperti penambahan `s5`/`s6` sebelumnya).
+  - **Status node (`done`/`current`/`future`)**: `OverallTimelineItem` (lokal, bukan dari API) belum punya field status — ditambahkan sebagai field baru `status`, diisi data **demonstrasi murni** (bukan derivasi dari `deadline` asli, karena semua tanggal placeholder di file ini masih di masa depan dari `currentDate` 2026-09-02) supaya ketiga varian visual node (spec §4B) bisa ditunjukkan sekaligus.
+- **File diubah:**
+  - `src/features/competitions/CompetitionTimelineSection.tsx` — rewrite total: outer scrollable box (`overflow-x-auto`, `.no-scrollbar`, cursor grab/grabbing), inner `relative w-fit mx-auto` menampung garis base (`bg-neutral-500`) + garis progress dinamis (`bg-secondary-500`, lebar dihitung dari index node `current`/`done` terakhir via CSS custom property `--tl-progress` + 2 arbitrary width class per breakpoint — murni CSS, tanpa resize listener), item zig-zag (`grid-rows-[1fr_auto_1fr]`, alternating top/bottom via `order-*` sesuai spec §3), kartu (`TimelineCard`, gradient border 2 layer via inline style `background: CTA_GRADIENT` + gradient vertikal isi) dan node (`TimelineNode`, 3 varian visual: done/current pakai `CTA_GRADIENT` + glow `primary-200`, future pakai `neutral-500` + glow `hidden`).
+  - `src/features/competitions/competitionsContent.ts` — tambah field `status: "done" | "current" | "future"` ke `OverallTimelineItem`, diisi placeholder demonstrasi (`done, current, future, future`) untuk keempat item existing.
+  - `src/app/globals.css` — tambah token `--text-s3: 20px` (+ line-height) ke `@theme`, value reuse dari `b1`, mengikuti pola `s5`/`s6` yang sudah ada.
+- **Terkait requirement:** F-25 (`PRD_IOE_2027_v4.md`), route `/competitions` (`ROUTES.md`).
+- **Breaking change:** Tidak — visual/struktur section ini saja, tidak ada perubahan kontrak data API (field `status` murni lokal, bukan dari `CompetitionSummary`).
+- **Belum selesai / follow-up:**
+  1. **`design_system_final.md` §Type Scale TIDAK SINKRON** — token `text-s3` (20px, reuse `b1`) belum tercatat di dokumen, sama seperti `s5`/`s6` sebelumnya. Perlu ditambahkan manual oleh manusia.
+  2. **`dark:` variant di spec asli SENGAJA di-skip total** (keputusan eksplisit user) — kalau project mengaktifkan dark mode di masa depan, section ini TIDAK akan otomatis punya tampilan dark yang benar (tetap terang di dark mode) sampai direvisit manual. Warna glow node (`sunlit-100`/`ocean-depth-500` di spec asli) juga belum ada padanan resmi di `design_system_final.md` — perlu direview desainer manusia kalau nanti dark mode benar-benar di-scope.
+  3. **Mapping `lagoon-900`/`lagoon-500`→`secondary-900`/`secondary-500` dan `sunlit-100`→`primary-200` adalah keputusan user via pilihan rekomendasi, bukan hex 1:1 yang dikonfirmasi desainer** — perlu direview & didokumentasikan resmi di `design_system_final.md` §Komponen sebelum dianggap final.
+  4. **Field `status` di `OverallTimelineItem` berisi data demonstrasi, BUKAN logika real** (tidak diturunkan dari tanggal/`deadline` asli) — wajib diganti dengan field asli dari BE atau logika derivasi tanggal sebelum go-live.
+
+### [2026-09-02 00:00] "Our Competition" (/competitions) — pisah container mobile carousel vs desktop grid
+
+- **Tipe:** Refactor
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`, `src/features/competitions/competitionsContent.ts`
+- **Ringkasan:** User minta section "Our Competition" (F-24) tidak lagi pakai satu `<article>` yang di-reflow lewat Tailwind responsive prefix (`md:grid-cols-3`), tapi dipecah jadi 2 parent container terpisah dengan struktur internal kartu yang beda total: `.mobile-wrapper` (carousel snap horizontal, `<768px`) dan `.desktop-wrapper` (grid 2 kolom, `≥768px`), masing-masing dengan markup `<article>` sendiri (vertical stack mobile vs horizontal split desktop). Spec class Tailwind diikuti literal sesuai instruksi user.
+- **Gap ditemukan & cara resolve (dilaporkan ke user dulu via `AskUserQuestion`, bukan ditebak — CLAUDE.md §Aturan Kerja #1/#6):**
+  1. **`bg-component-card`** (diminta di outer card) TIDAK ADA sebagai Tailwind utility resmi di `design_system_final.md`/`globals.css`. Satu-satunya jejaknya: komentar di §SpeakerCard (`--speakercard-bg: #132321; /* bg-component-card */`) & §TiltedCard (`#16302B`, "senada bg-component-card") — dan bahkan Navbar entry sebelumnya (lihat entry di atas) sudah pernah memetakan token yang sama persis ke `bg-neutral-100` (light), jadi resolusinya memang context-dependent, tidak bisa ditebak. User ditanya, jawabannya: **pakai gradient untuk border DAN isi (fill) kartu, yang penting dua gradient itu beda satu sama lain** (bukan solid apapun). Diimplementasikan pakai kombinasi yang SUDAH ADA & terdokumentasi di codebase (tidak mengarang value baru): border = default gradient `GradientBorderBox` (`primary-300→secondary-600→tertiary-600`, komponen reusable yang sudah diekstrak persis utk pola "gradient border via padding" — dipakai FannedCard/SpeakerCard/MyJourneyCard/CountdownTimer, `design_system_final.md` baris 898), isi = `CTA_GRADIENT` (gradient resmi Button primary/Login CTA, di-export dari `Navbar.tsx`). Kombinasi spesifik ini untuk kartu "Our Competition" **belum masuk sebagai entry resmi di `design_system_final.md` §Komponen** — perlu direview desainer manusia sebelum dianggap final.
+  2. **Field gambar kompetisi** (`<img>` di Middle Block mobile / Left Block desktop) tidak ada sama sekali di `CompetitionSummary` (`API_CONTRACT.md`) maupun di `/public`. User pilih: tambah field `imageUrl` placeholder per-slug di `competitionsContent.ts` (pola sama dgn `description` yang sudah ada — copy lokal, bukan dari API).
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — rewrite total: `mobile-wrapper` (`flex snap-x snap-mandatory overflow-x-auto md:hidden`, reuse `.no-scrollbar` yang sudah ada di `globals.css`) berisi `CompetitionCardMobile` (kartu vertikal `w-70`, gambar di tengah lewat `GradientBorderBox`), `desktop-wrapper` (`hidden md:grid grid-cols-1 lg:grid-cols-2`) berisi `CompetitionCardDesktop` (kartu horizontal, gambar kiri fixed `160×141px`, CTA nempel bawah via `justify-between`). Skeleton loading dipecah jadi 2 versi juga (mobile/desktop) supaya tidak ada layout shift & tidak ada 2 versi kelihatan bersamaan di breakpoint manapun.
+  - `src/features/competitions/competitionsContent.ts` — tambah field `imageUrl: string` ke `CompetitionBlurb`, diisi placeholder `/competitions/<slug>.png` utk ketiga kompetisi.
+- **Terkait requirement:** F-24 (PRD_IOE_2027_v4.md), route `/competitions` (ROUTES.md).
+- **Breaking change:** Tidak — visual/struktur internal saja, tidak ada perubahan kontrak data selain `imageUrl` yang murni lokal (bukan dari API).
+- **Belum selesai / follow-up:**
+  - File asset gambar (`/public/competitions/business-case-competition.png`, `paper-poster-competition.png`, `design-competition.png`) **BELUM ADA** — `<img>` akan tampil broken sampai file asli di-drop manual. `API_CONTRACT.md` §CompetitionSummary tidak sinkron (tidak ada field gambar) — perlu direview manusia apakah field ini seharusnya datang dari BE atau tetap copy lokal permanen.
+  - Kombinasi border-gradient + `CTA_GRADIENT`-fill untuk card "Our Competition" belum ada sebagai entry resmi `design_system_final.md` §Komponen — perlu direview & didokumentasikan oleh desainer manusia.
+
+### [2026-09-01 00:00] Navbar — revisi total ke spec Compfest (dimensi presisi, token mapping, fixed layout fix)
+
+- **Tipe:** Refactor
+- **Scope:** `src/components/ui/Navbar.tsx`, `src/components/ui/ThemeToggle.tsx`, `src/app/globals.css`, `src/app/(public)/layout.tsx`
+- **Ringkasan:** User kasih spec Compfest baru yang sangat detail (class Tailwind literal untuk container/logo/menu pill/theme switcher/Login CTA/mobile group) dan minta diikuti "plek ketiplek". Spec ini punya beberapa nama token yang tidak ada di `design_system_final.md`/`globals.css`, 1 constraint yang bentrok, dan 1 bug CSS — ketiganya dilaporkan ke user dulu sebelum ngoding (via `AskUserQuestion`, bukan ditebak), plus 1 bug tambahan (`max-w-[480px]`) ketemu setelah implementasi awal di-screenshot ke user:
+  1. **Token warna baru** (`bg-component-card`, `border-component-border`, `bg-component-card-hover`, `bg-theme-gradient`, `text-lagoon-100`, `after:bg-overlay-hover/pressed`) — user pilih **map ke token semantic yang sudah ada** (lihat tabel mapping di bawah), bukan bikin hex baru.
+  2. **Token non-warna baru** (`text-s6`/`text-s5`, semua sizing arbitrary `w-12.5`/`h-6.5`/`size-4.5`/dst) — user pilih **implementasikan literal apa adanya**. `text-s5`/`text-s6` ditambahkan sebagai token baru di `globals.css` `@theme`, tapi VALUE-nya di-reuse dari `b3`/`b4` yang sudah disetujui (14px/12px), bukan angka baru dikarang.
+  3. **ThemeToggle** — spec baru pakai pola `data-[state=checked]` yang mengimplikasikan toggle sungguhan (dark mode fungsional), tapi project ini sudah 3x konfirmasi sebelumnya bahwa ThemeToggle UI-only (belum ada dark palette). User pilih: **tetap UI-only, cuma resize container-nya**, warna/asset/logic sun-moon TIDAK disentuh sama sekali.
+  4. **`lucide-text-align-justify`** (icon hamburger di spec) bentrok sama constraint keras `TECHNICAL_CONSTRAINTS_FE.md`: "Jangan install lucide-react" — diganti `mdi:menu` (Iconify, sudah dipakai di kode existing), tidak perlu tanya user karena constraint-nya eksplisit/tidak ambigu.
+  5. **`fixed inset-0`** di spec asli over-constrained (bentrok sama height eksplisit `h-14 md:h-20` + `max-w-480 mx-auto`) — user konfirmasi diperbaiki jadi `fixed top-0 inset-x-0 w-full`.
+  6. **`max-w-[480px] mx-auto`** SEMPAT diimplementasikan literal (sesuai instruksi awal user untuk item #5), lalu di-screenshot ke user di viewport 1440px — hasilnya navbar jadi pill kecil ~480px mengambang di tengah layar, bukan bar penuh. User konfirmasi ini bug, dihapus (navbar sekarang full-width). Follow-up dari fix #5+#6: Navbar berubah dari `sticky top-0` → `fixed top-0 inset-x-0`, jadi `(public)/layout.tsx` sekarang butuh padding-top kompensasi (`pt-14 md:pt-20`) supaya `{children}` tidak ketutup navbar (konsekuensi teknis, bukan pilihan user, tapi wajib supaya tidak regresi).
+  7. **Deviasi dari literal spec (judgment call, bukan hasil tanya user):** spec §4/§5 menaruh `ThemeToggle` di 2 wrapper terpisah (desktop `max-xl:hidden` + mobile `xl:hidden`) yang kalau diikuti literal jadi 2 instance React independen (state `isDark`/`isHover` lokal per instance) — berisiko desync tampilan mobile vs desktop. Dipertahankan **1 instance shared, selalu visible** (pola yang sudah ada & benar di kode existing sebelum task ini).
+  8. **Menu group di-center pakai CSS grid** (`grid-cols-[1fr_auto_1fr]`, bukan `flex justify-between`) — supaya "posisikan grup menu ini tepat di tengah-tengah navbar" (instruksi literal spec) betulan akurat; `justify-between` tidak center menu secara visual kalau lebar grup kiri (logo) beda dari grup kanan (theme+CTA), yang memang terjadi di sini.
+- **Mapping token warna baru → semantic existing:**
+  | Token spec | Dipetakan ke |
+  |---|---|
+  | `bg-component-card` (nav bg) | `bg-neutral-100` |
+  | `border-component-border` | `border-neutral-300` |
+  | `bg-component-card-hover` | `hover:bg-neutral-200` |
+  | `bg-theme-gradient` (Login CTA) | reuse `CTA_GRADIENT` (sudah ada) |
+  | `text-lagoon-100` | `text-secondary-1000` |
+  | `after:bg-overlay-hover` / `after:bg-overlay-pressed` | `after:bg-black/10` / `after:bg-black/20` (= `rgba(0,0,0,.1)`/`.2` dari spec Button States) |
+  | `font-montserrat` (literal) | `font-ui` (alias semantic project untuk Montserrat) |
+- **File diubah:**
+  - `src/components/ui/Navbar.tsx` — rewrite total: container `sticky`→`fixed top-0 inset-x-0 w-full`, layout `flex`→`grid grid-cols-[1fr_auto_1fr]` untuk true-center menu, semua ukuran (`h-14 md:h-20`, `px-6 md:px-20`, dst) & style pill/CTA diganti sesuai spec Compfest (dengan token mapping di atas), `MENU_ITEMS` label "Competition"→"Competitions", hamburger icon `size-[22px]`→`size-5` + tetap `mdi:menu`, style Login CTA diterapkan juga ke Profile CTA (judgment call — spec cuma detail state Login, tidak ada spec terpisah utk Profile, disamakan biar konsisten).
+  - `src/components/ui/ThemeToggle.tsx` — HANYA resize container (`h-6 w-11 xl:h-7 xl:w-[52px]` → `h-6 w-12 md:h-7 md:w-14`), tidak ada perubahan warna/asset/logic.
+  - `src/app/globals.css` — tambah `--text-s5: 14px` / `--text-s6: 12px` (+ line-height) ke `@theme`, value reuse dari `b3`/`b4`.
+  - `src/app/(public)/layout.tsx` — bungkus `{children}` dengan `pt-14 md:pt-20` untuk kompensasi Navbar `fixed`.
+- **Terkait requirement:** F-01–F-03 (PRD_IOE_2027_v4.md); `design_system_final.md` §Navbar (SEKARANG TIDAK SINKRON — dimensi/breakpoint/style lama sudah tidak dipakai, tokens baru `s5`/`s6`/`component-card`/`component-border`/`component-card-hover` juga belum ada di dokumen).
+- **Breaking change:** Tidak untuk user-facing behavior, tapi **layout containing Navbar berubah dari `sticky` ke `fixed`** — kalau ada halaman publik lain di luar `(public)/layout.tsx` yang render `<Navbar />` secara manual tanpa padding-top kompensasi, kontennya akan ketutup navbar.
+- **Belum selesai / follow-up:**
+  1. `design_system_final.md` §Navbar §Type Scale perlu diupdate manual oleh manusia: dimensi baru (h-14/h-20, breakpoint `md:`/`xl:`/`2xl:` campuran), token `text-s5`/`text-s6` (value reuse b3/b4), token alias `component-card`/`component-border`/`component-card-hover` → neutral-100/300/200.
+  2. Mapping token warna di atas adalah **judgment call**, bukan nilai yang dikonfirmasi 1:1 oleh user per token — kalau ada yang meleset dari maksud desain aslinya (terutama `bg-component-card`→`neutral-100`, dipilih karena itu satu-satunya surface token semantic yang ada, padahal beberapa card lain di codebase — TiltedCard/Calendar/SpeakerCard — pakai dark surface non-semantic), perlu direview ulang.
+  3. **Belum diverifikasi visual di viewport mobile sungguhan** — browser automation tool di sesi ini tidak berhasil meng-emulasikan viewport sempit (resize_window tidak ke-reflect ke render), jadi breakpoint `max-xl:hidden`/`xl:hidden`/`md:` cuma diverifikasi lewat pola Tailwind yang sudah terbukti benar di file lain (`MobileNavDrawer.tsx`), BUKAN screenshot langsung. Perlu dicek manual oleh user di device/browser sungguhan.
+  4. Style Login CTA diterapkan juga ke state Profile (avatar+nama, poin #dari Ringkasan di atas) — asumsi/judgment call, bukan eksplisit di spec.
+
 ### [2026-08-31 09:05] `Footer.tsx` — hapus kontak panitia, ubah font size CTA & copyright
 
 - **Tipe:** Refactor

@@ -18,6 +18,12 @@ export const totalPrizePool = "Rp 50.000.000";
 export interface CompetitionBlurb {
   slug: string;
   description: string;
+  // PLACEHOLDER — CompetitionSummary (API_CONTRACT.md) tidak punya field gambar sama
+  // sekali, dan file asset-nya SENGAJA belum ada di /public/competitions/ (menunggu drop
+  // dari klien/panitia). <img> akan tampil broken sampai file asli diisi. Dicatat sbg gap
+  // API_CONTRACT.md di CHANGELOG — perlu direview manusia apakah field ini harusnya
+  // datang dari BE.
+  imageUrl: string;
 }
 
 // Deskripsi singkat per kompetisi utk CompetitionGrid — bukan dari API (list endpoint tidak
@@ -27,31 +33,47 @@ export const competitionBlurbs: CompetitionBlurb[] = [
     slug: "business-case-competition",
     description:
       "Uji kemampuan analisis bisnis dan strategi digitalmu dengan menyelesaikan studi kasus nyata seputar ekonomi dan industri maritim.",
+    imageUrl: "/competitions/business-case-competition.png",
   },
   {
     slug: "paper-poster-competition",
     description:
       "Tuangkan gagasan ilmiahmu dalam bentuk karya tulis atau poster inovatif seputar keberlanjutan ekosistem maritim Indonesia.",
+    imageUrl: "/competitions/paper-poster-competition.png",
   },
   {
     slug: "design-competition",
     description:
       "Rancang solusi visual/desain kreatif yang menjawab tantangan energi, ekonomi, dan inovasi digital di sektor kelautan.",
+    imageUrl: "/competitions/design-competition.png",
   },
 ];
 
 export interface OverallTimelineItem {
   date: string;
   label: string;
+  // "done" | "current" | "future" — dipakai node/progress-bar Horizontal Zig-Zag Timeline
+  // (CompetitionTimelineSection.tsx). PLACEHOLDER demonstrasi 3 varian visual node, TIDAK
+  // dihitung dari deadline asli (semua tanggal di bawah masih di masa depan dari currentDate,
+  // jadi status "done"/"current" di sini murni contoh, bukan derivasi tanggal real). Wajib
+  // diganti jadi field asli (atau logika derivasi dari deadline) sebelum go-live — lihat
+  // CHANGELOG.
+  status: "done" | "current" | "future";
 }
 
 // F-25 — timeline keseluruhan kompetisi (beda dari landingContent.timelineItems yang scope-nya
 // seluruh event IOE 2027, ini spesifik ke rangkaian kompetisi saja). Tanggal PLACEHOLDER.
 export const overallTimelineItems: OverallTimelineItem[] = [
-  { date: "Jan 2027", label: "Pendaftaran Dibuka" },
-  { date: "10–20 Mar 2027", label: "Batas Akhir Pendaftaran per Kompetisi" },
-  { date: "Apr 2027", label: "Penjurian & Pengumuman Finalis" },
-  { date: "Mei 2027", label: "Grand Final & Awarding Night" },
+  { date: "Jan 2027", label: "Pendaftaran Dibuka", status: "done" },
+  { date: "10–20 Mar 2027", label: "Batas Akhir Pendaftaran per Kompetisi", status: "current" },
+  { date: "Apr 2027", label: "Penjurian & Pengumuman Finalis", status: "future" },
+  { date: "Mei 2027", label: "Grand Final & Awarding Night", status: "future" },
+  // 2 item tambahan — QA overflow-x horizontal scroll Horizontal Zig-Zag Timeline
+  // (CompetitionTimelineSection.tsx), diminta user langsung utk verifikasi scroll,
+  // BUKAN item resmi dari PRD/panitia. Hapus lagi (kembalikan ke 4 item) kalau QA sudah
+  // selesai dan tidak dipakai sbg konten permanen.
+  { date: "Jun 2027", label: "Workshop Persiapan Grand Final", status: "future" },
+  { date: "Jul 2027", label: "Closing Ceremony & Awarding", status: "future" },
 ];
 
 export interface Testimonial {

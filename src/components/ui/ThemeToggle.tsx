@@ -12,13 +12,19 @@ import Image from "next/image";
 // public/theme-toggle/. Semua posisi & ukuran layer di bawah adalah PERSENTASE dari
 // ukuran container asli Figma (369x145px) — CSS me-resolve top/left persen terhadap
 // tinggi/lebar containing block, dan width/height persen terhadap lebar/tinggi
-// containing block, jadi angka yang sama tetap valid persis di kedua breakpoint
-// (mobile h-6 w-11, desktop xl:h-7 xl:w-[52px]) tanpa perlu dihitung ulang per
-// breakpoint. Container TIDAK di-scale ke ukuran asli Figma — sesuai instruksi user,
-// tetap pakai ukuran toggle yang sudah ada. Konsekuensinya sebagian layer (clouds,
-// stars, moon spots) kemungkinan besar nggak kebaca di ukuran sekecil ini — trade-off
-// yang sudah dikonfirmasi ke user (pilih "full-detail, scaled down" ketimbang
-// disederhanakan), bukan bug yang perlu diperbaiki.
+// containing block, jadi angka yang sama tetap valid persis di breakpoint manapun
+// tanpa perlu dihitung ulang. Container TIDAK di-scale ke ukuran asli Figma — sesuai
+// instruksi user, tetap pakai ukuran toggle yang sudah ada. Konsekuensinya sebagian
+// layer (clouds, stars, moon spots) kemungkinan besar nggak kebaca di ukuran sekecil
+// ini — trade-off yang sudah dikonfirmasi ke user (pilih "full-detail, scaled down"
+// ketimbang disederhanakan), bukan bug yang perlu diperbaiki.
+//
+// Resize [Navbar — spec Compfest]: container `h-6 w-11 xl:h-7 xl:w-[52px]` →
+// `h-6 w-12 md:h-7 md:w-14` (breakpoint xl→md, ukuran mendekati "Switch Button" di
+// spec Compfest baru). HANYA resize — warna (BG_COLOR sun/moon), semua asset/layer,
+// dan logic isDark/isHover TIDAK diubah sama sekali (instruksi eksplisit user: "theme
+// nya diemin saja, hanya sesuaikan ukurannya saja"). Sistem persentase di atas memang
+// didesain breakpoint-agnostic, jadi resize ini aman tanpa hitung ulang posisi layer.
 
 type ToggleMode = "sun" | "sunHover" | "moon" | "moonHover";
 type ThemeGroup = "sun" | "moon";
@@ -101,7 +107,7 @@ export function ThemeToggle() {
 
   return (
     <div
-      className="relative h-6 w-11 shrink-0 overflow-clip rounded-full transition-colors duration-200 xl:h-7 xl:w-[52px]"
+      className="relative h-6 w-12 shrink-0 overflow-clip rounded-full transition-colors duration-200 md:h-7 md:w-14"
       style={{ backgroundColor: BG_COLOR[group], boxShadow: CONTAINER_SHADOW }}
     >
       <div className="theme-toggle-layer pointer-events-none absolute" aria-hidden style={{ ...RAY_SIZE, ...RAY_POS[mode] }}>

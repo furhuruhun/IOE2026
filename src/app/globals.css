@@ -160,6 +160,27 @@
   --text-b3--line-height: 17px;
   --text-b4: 12px; /* Paragraph Super Small */
   --text-b4--line-height: 16px;
+
+  /* s5/s6 — nama token literal dari spec Compfest Navbar revision (bukan ada
+   * di type scale h1-h6/b1-b4 design_system_final.md). Value di-REUSE dari
+   * b3/b4 yang sudah disetujui (bukan angka baru dikarang) per keputusan
+   * user: token non-warna baru dari spec boleh diimplementasikan literal.
+   * design_system_final.md §Type Scale TIDAK SINKRON — perlu ditambahkan
+   * manual oleh manusia. Lihat CHANGELOG [Navbar — spec Compfest]. */
+  --text-s5: 14px; /* = b3 */
+  --text-s5--line-height: 17px;
+  --text-s6: 12px; /* = b4 */
+  --text-s6--line-height: 16px;
+
+  /* s3 — nama token literal dari spec Horizontal Zig-Zag Timeline (CompetitionTimelineSection),
+   * bukan ada di type scale h1-h6/b1-b4 design_system_final.md. Sama pola dengan s5/s6 di atas:
+   * value di-REUSE dari b1 (bukan angka baru dikarang), lanjutan deret s6=b4/s5=b3 → s4=b2/s3=b1
+   * yang belum dipakai di manapun kecuali s3 di spec ini. design_system_final.md §Type Scale
+   * TIDAK SINKRON — perlu ditambahkan manual oleh manusia. Lihat CHANGELOG
+   * [CompetitionTimelineSection — Horizontal Zig-Zag Timeline].
+   */
+  --text-s3: 20px; /* = b1 */
+  --text-s3--line-height: 24px;
 }
 
 /*
