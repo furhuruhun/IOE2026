@@ -12,6 +12,245 @@
 
 ## Unreleased
 
+### [2026-09-03 11:30] `CompetitionTimelineSection` — progress bar (base line & fill) dihapus inset tambahannya, sekarang full-width dari tepi box
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionTimelineSection.tsx`
+- **Ringkasan:** User komplain progress bar di dalam box timeline belum sampai ke ujung ("belum sampe ujung"). Investigasi: gray base line ternyata punya inset TAMBAHAN 2.5rem (mobile)/5rem (desktop) DI ATAS padding box (`p-5`/`md:p-10`) yang sudah ada — jadi ada gap kosong ganda dari tepi box sampai garis mulai. Ditanya balik (AskUserQuestion, karena formula ini sebelumnya "literal dari user" & sensitif) apakah maksudnya inset tambahan ini yang mau dihapus total — dikonfirmasi user, pilih opsi "Recommended".
+- **File diubah:**
+  - `src/features/competitions/CompetitionTimelineSection.tsx` — base line: `left-1/2 -translate-x-1/2 w-[calc(100%-5rem)] md:w-[calc(100%-10rem)]` → `left-0 w-full` (satu formula, tidak beda per breakpoint lagi). Progress fill: `left-[2rem] w-[calc(((var(--tl-progress)/100)*(100%-5rem))+0.5rem)] md:left-[4.0625rem] md:w-[calc(((var(--tl-progress)/100)*(100%-10rem))+0.9375rem)]` → `left-0 w-[calc((var(--tl-progress)/100)*100%)]` (drop kompensasi radius node, drop breakpoint override — sekarang 1 formula flat, height tetap beda `h-1`/`md:h-2`).
+  - Header comment file diupdate mencatat REVISI baru + trade-off teknis (lihat di bawah).
+- **Terkait requirement:** Lanjutan REVISI `[2026-09-02]` poin 2 & entry `[11:20]` di bawah, F-25.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** **Trade-off teknis yang belum eksplisit dikonfirmasi user** (di luar cakupan pertanyaan yang diajukan): secara matematis, center node pertama/terakhir TIDAK persis di tepi container — node di-`mx-auto` di dalam grid column selebar `TimelineCard` (`w-40`/`w-80` → setengahnya 5rem/10rem dari tepi). Jadi dengan formula baru ini, garis (base & fill) sekarang mulai/berakhir SEDIKIT melewati posisi center node pertama/terakhir secara visual, bukan berhenti pas di situ. **Catatan penting:** formula LAMA (REVISI 02) SEBENARNYA JUGA tidak match posisi node yang sebenarnya (inset `2.5rem`/`5rem`-nya adalah angka approx literal dari user, bukan hasil hitungan dari lebar card asli) — jadi perubahan ini bukan regresi presisi baru, cuma trade-off berbeda dari sesuatu yang sebelumnya juga belum akurat. `getProgressPercent()` (formula `activeIndex/(length-1)*100`) tetap valid dipakai karena node spacing uniform (semua card width & gap sama) — asumsi "posisi linear rata" tetap benar, cuma referensi 0%/100%-nya sekarang tepi container, bukan center node pertama/terakhir. Perlu direview visual oleh user/desainer apakah trade-off ini acceptable atau perlu presisi ulang ke posisi node sebenarnya (4.5rem mobile/9.0625rem desktop, dihitung dari card-width/2 dikurangi radius node, BUKAN 2rem/4.0625rem seperti formula lama). Verifikasi visual browser masih belum dilakukan (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 11:20] `CompetitionTimelineSection` — outer `<section>` di-cap `max-w-[1637.5px]` biar node-wrapper box sama lebar render dengan header FAQ
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionTimelineSection.tsx`
+- **Ringkasan:** User minta "wrapper kotak untuk menampung node-node" di section Timeline Kompetisi punya "besar" (ukuran render) yang sama dengan elemen header di `CompetitionFAQSection.tsx` (`<div class="... w-full ... px-4 md:px-8">`, dibungkus `<section>` yang di-cap `max-w-[1637.5px] mx-auto px-6 md:px-20`). Sempat ditanya balik (AskUserQuestion) yang mana yang dimaksud "sama besar" — pertanyaan ditolak user, lalu user klarifikasi dgn paste ulang HTML box node-wrapper (`rounded-3xl border ... p-5 md:p-10`) buat konfirmasi target elemen. Karena box node-wrapper (bordered card) & div FAQ yang dirujuk (plain layout wrapper) beda role/class, classes-nya TIDAK bisa disamakan literal — yang disamakan adalah CAP width section pembungkusnya, supaya lebar render akhir kedua box (yang sama-sama `w-full` relatif ke section masing-masing) jadi identik.
+- **File diubah:**
+  - `src/features/competitions/CompetitionTimelineSection.tsx` — outer `<section id="timeline">`: `px-4 md:px-8 xl:px-[92px]` (tanpa max-w) → `max-w-[1637.5px] px-6 md:px-20` (persis classes width-relevant `<section>` `CompetitionFAQSection.tsx`). `mx-auto` yang sudah ada sebelumnya (sebelumnya no-op karena belum ada max-w) sekarang aktif. Box node-wrapper (`rounded-3xl border ... p-5 md:p-10`) & isinya TIDAK diubah sama sekali.
+  - Header comment file diupdate.
+- **Terkait requirement:** F-25, lanjutan redesign Horizontal Zig-Zag Timeline (lihat header comment file utk riwayat lengkap).
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Sama seperti margin FAQ & CompetitionGrid — `max-w-[1637.5px]` ini presisi match FAQ di semua ukuran layar (angka literal disalin identik, bukan dihitung ulang independen), TAPI kalau `CompetitionFAQSection.tsx` direvisi lagi angkanya nanti, section ini perlu disesuaikan manual juga (3 tempat kode terpisah sekarang pakai angka literal yang sama — FAQ, CompetitionGrid desktop-wrapper, dan section ini — belum di-extract jadi 1 shared constant/token, di luar scope task-task restyle ini). Verifikasi visual browser masih belum dilakukan (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 11:10] `CompetitionCardDesktop` — h3/p/CTA diratakan jadi flat siblings biar heading & deskripsi ikut "bernapas" (justify-between)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User tanya (tanpa minta perubahan dulu) kenapa markup asli COMPFEST punya "free space" terlihat di antara heading/deskripsi/tombol, sedangkan versi kita nggak. Dijelaskan: markup COMPFEST punya `h3`, `p`, `a` sebagai 3 direct children FLAT dari 1 container `flex flex-col justify-between` — `justify-between` membagi ruang kosong (leftover height) ke SEMUA gap di antara sibling (2 gap: h3↔p dan p↔a). Versi kita sebelumnya bungkus h3+p dalam 1 div terpisah (dgn gap-1 sendiri) yang jadi HANYA 1 dari 2 direct children container `justify-between` — akibatnya leftover space cuma kebagi ke 1 gap (sebelum tombol), heading & paragraf tetap nempel rapat gap-1 berapa pun tinggi kartu. Setelah dijelaskan, user minta diterapkan supaya sama seperti COMPFEST.
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `CompetitionCardDesktop`: div wrapper `flex w-full flex-col gap-1` yang membungkus `h3`+`p` DIHAPUS; `h3`, `p`, `Link` sekarang direct children flat dari div `flex h-full flex-1 flex-col items-start justify-between gap-5` (persis pola COMPFEST). `h3` & `p` masing-masing ditambah `w-full` eksplisit (sebelumnya diwarisi dari wrapper div yang sekarang hilang) supaya tetap align kiri penuh lebar, bukan shrink-to-content.
+  - Header comment file diupdate.
+- **Terkait requirement:** Lanjutan entry `[11:00]` di bawah, F-24.
+- **Breaking change:** Tidak (perubahan struktur DOM internal, bukan API/data).
+- **Belum selesai / follow-up:** Kalau `blurb` undefined, `<p>` tidak render sama sekali (kondisional `{blurb && <p>...}` tetap ada) — di kondisi itu `justify-between` cuma kebagi 2 direct children lagi (`h3`+`Link`), sama seperti masalah asal. Ini SUDAH ada sebelum perubahan ini (pola conditional render `<img>`/`<p>` sudah lama ada di file ini), bukan regresi baru, tapi dicatat untuk awareness. Verifikasi visual browser masih belum dilakukan (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 11:00] `CompetitionCardDesktop` — padding article direvert ke 32px (batalkan naik ke 40px di entry `[10:50]`)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User minta padding antara isi kartu & border article dikembalikan ke 32px, bukan 40px hasil upscale entry `[10:50]`. Item upscale lain (gap image-content, ukuran image, heading, paragraph) TIDAK disebut user & TETAP di nilai upscale-nya — cuma padding article yang direvert.
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `p-10` → `p-8` pada wrapper flex dalam `CompetitionCardDesktop` (`gap-10` tidak berubah, tetap gap antara image & kolom konten).
+  - Header comment file diupdate mencatat pengecualian ini.
+- **Terkait requirement:** Lanjutan entry `[10:50]` di bawah, F-24.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Verifikasi visual browser masih belum dilakukan (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 10:50] `CompetitionGrid` desktop-wrapper — margin 100px (teknik sama dgn CompetitionFAQSection) + kartu di-upscale ~1.2x
+
+- **Tipe:** Feature
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User minta margin section "Our Competition" dibuat 100px "sama seperti bagian Accordion FAQ", dan karena itu bikin ruang per-kartu lebih lega, kartu diminta di-upscale juga. Sebelum ngoding, dijelaskan dulu ke user (bukan diam-diam pakai) bahwa 100px di FAQ section BUKAN nilai flat di semua ukuran layar — itu hasil `max-w-[1637.5px] mx-auto` + `md:px-20` yang cuma presisi 100px di satu lebar viewport spesifik (~1837.5px), sesuai catatan di CHANGELOG entry FAQ `[2026-09-03 09:20]`. User dikonfirmasi (AskUserQuestion) tetap mau teknik yang SAMA PERSIS (demi konsistensi dgn FAQ), bukan versi flat `px-[100px]`. Skala upscale kartu juga dikonfirmasi via AskUserQuestion (preset "Modest ~20%", bukan angka dikarang sendiri).
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `desktop-wrapper` (dipakai di skeleton loading & konten asli, 2 tempat): `max-w-[1440px]` → `max-w-[1637.5px]`, `md:px-8` → `md:px-20`, `xl:px-[92px]` dihapus (disamakan persis pola FAQ, tidak ada override `xl` di FAQ). `mobile-wrapper` (carousel) TIDAK disentuh — beda pola UX (scroll-snap), bukan bagian dari "margin section" yang dimaksud.
+  - `CompetitionCardDesktop`: article `p-8`→`p-10`, `gap-8`→`gap-10`; image `h-[141px] w-[160px]`→`h-[169px] w-[192px]` (tablet `h-[120px] w-[136px]`→`h-[144px] w-[163px]`, rasio scale 1.2x dipertahankan sama seperti base); heading `text-h4 md:max-lg:text-h5`→`text-h3 md:max-lg:text-h4`; paragraph `text-b2`→`text-b1`. CTA button & drop-shadow image TIDAK diskalakan — di luar item yang dikonfirmasi user, dibiarkan apa adanya.
+  - Header comment file diupdate mencatat riwayat oscillasi ukuran heading & keputusan upscale ini.
+- **Terkait requirement:** Lanjutan entry `[10:45]`/`[10:30]`/`[10:15]` di bawah, F-24.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:**
+  - Sama seperti margin FAQ: nilai `max-w-[1637.5px]` di sini JUGA cuma presisi 100px di viewport ~1837.5px — di ukuran layar lain margin akan otomatis beda (konsekuensi matematis `mx-auto`, bukan bug, sudah dikonfirmasi sadar oleh user). Kalau nanti FAQ section direvisi lagi angkanya, section ini kemungkinan perlu disesuaikan juga biar tetap konsisten (2 tempat kode terpisah pakai angka literal yang sama, bukan 1 shared constant — belum di-extract jadi reusable karena scope task ini cuma restyle, bukan refactor arsitektur).
+  - Grid gap antar kartu (`gap-x-9 gap-y-6`) TIDAK ikut diskalakan — di luar daftar item yang dikonfirmasi user utk upscale.
+  - **Verifikasi visual browser masih belum dilakukan** — sama seperti 3 entry sebelumnya (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 10:45] `CompetitionCardDesktop` — heading turun ukuran: text-h3 (40px) → text-h4 (32px) di lg+, text-h5 (24px) di tablet
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User tanya dasar angka 40px (`text-h3`) — dijelaskan itu literal dari nama class `text-h3` di spec awal user sendiri, dipetakan ke token asli `--text-h3: 40px` yang sudah ada (bukan angka dikarang). User lalu minta desktop diturunkan ke 32px. Ditanya balik (AskUserQuestion) apakah 32px berlaku flat di semua breakpoint atau cuma lg+ dengan ukuran tablet terpisah — user pilih opsi kedua, lalu pilih `text-h5` (24px) buat ukuran tablet.
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `<h3>` desktop: `text-h3 md:max-lg:text-h4` → `text-h4 md:max-lg:text-h5`. Warna (`text-secondary-1000`) tidak berubah.
+  - Header comment file diupdate mencatat riwayat perubahan ukuran ini.
+- **Terkait requirement:** Lanjutan entry `[10:30]`/`[10:15]` di bawah, F-24.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Verifikasi visual browser masih belum dilakukan, sama seperti 2 entry sebelumnya (`claude-in-chrome` tidak terkoneksi, backend lokal tidak jalan). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error).
+
+### [2026-09-03 10:30] `CompetitionCardDesktop` — swap balik: card fill gradient, heading solid (revert keputusan #1 & #4 entry `[10:15]`)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User minta ditukar dari entry `[10:15]` di bawah: background `<article>` balik pakai `GradientBorderBox`+`CTA_GRADIENT` (bukan solid `#132321`), warna heading balik jadi solid (bukan gradient-clip text). Ini kombinasi yang sebelumnya SUDAH direkomendasikan sebagai opsi default sebelum user memilih arah sebaliknya di entry `[10:15]` — kontras heading-vs-background yang jadi alasan swap ke solid-bg+gradient-text sekarang terselesaikan lewat arah sebaliknya: gradient-bg+solid-heading (kombinasi original sebelum redesign, sama kaya `CompetitionCardMobile`).
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `CompetitionCardDesktop`: `<article>` bungkus `GradientBorderBox` lagi (`innerBackground={CTA_GRADIENT}`, `outerRadius="24px"`, `innerRadius="22px"`, `h-full w-full` dipertahankan biar kartu tetap stretch rata di grid row); `<h3>` balik ke `text-secondary-1000` solid (ukuran tetap `text-h3 md:max-lg:text-h4`, TIDAK balik ke `text-h5` lama — cuma warnanya yang direvert, ukuran dari spec literal tetap dipakai); `bg-[#132321]`, `bg-clip-text`, `text-transparent` dihapus.
+  - Header comment file ini diupdate supaya tidak lagi menyebut solid-bg/gradient-text sebagai keputusan final.
+- **Terkait requirement:** Lanjutan entry `[10:15]` di bawah, F-24.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Sama seperti entry `[10:15]` — **verifikasi visual browser masih belum dilakukan** (`claude-in-chrome` tidak terkoneksi, `useCompetitions()` masih nyangkut di skeleton loading state karena backend `localhost:8000` tidak jalan di sesi ini). Hanya diverifikasi via `tsc --noEmit` + `npm run lint` (bersih, 0 error). Poin follow-up `design_system_final.md` TIDAK SINKRON dari entry `[10:15]` soal `#132321`/drop-shadow/gradient-text-ban SEKARANG TIDAK RELEVAN LAGI untuk kartu ini (sudah direvert), kecuali drop-shadow image (`drop-shadow-[0_2.544px_2.544px_#2e0002]`) yang TETAP dipakai — masih perlu ditambahkan manual ke `design_system_final.md`.
+
+### [2026-09-03 10:15] `CompetitionCardDesktop` — restyle image-left/content-right card mengikuti spec literal "COMPFEST design system" dari user
+
+- **Tipe:** Refactor
+- **Scope:** `src/features/competitions/CompetitionGrid.tsx`
+- **Ringkasan:** User minta implementasi 1:1 dari spec Tailwind literal (article flex-row, image + heading/paragraph/CTA) untuk section "Our Competition" (`/competitions`). Spec-nya pakai banyak nama class yang TIDAK ADA di `design_system_final.md`/`globals.css` — pola yang sama persis sudah kejadian berkali-kali sebelumnya (Navbar.tsx `CTA_PILL`, `CompetitionTimelineSection.tsx`, `Accordion.tsx`). Sebelum ngoding, semua kontradiksi dilaporkan ke user dulu (plan mode, sesuai instruksi eksplisit user di prompt task ini) dan tiap token dipetakan ke yang sudah ada — bukan bikin token baru diam-diam.
+- **Keputusan yang dikonfirmasi user (AskUserQuestion, bukan ditebak):**
+  1. Card fill: solid `#132321` (SAMA persis `--calendar-bg` CalendarWidget di `globals.css`), `GradientBorderBox` DILEPAS dari kartu desktop (sebelumnya gradient border + `CTA_GRADIENT` fill). Alasan: heading gradient-text (keputusan #4) butuh bg non-gradient biar kontras kebaca.
+  2. Scope dibatasi ke `CompetitionCardDesktop` SAJA — `CompetitionCardMobile` (vertical stack) tidak disentuh, sesuai keputusan eksplisit sebelumnya (lihat header comment file ini) yang memisahkan mobile/desktop jadi 2 komponen karena struktur internal beda total, bukan cuma ukuran.
+  3. Warna paragraf: `text-neutral-700` (tidak berubah dari sebelumnya) — tidak ada family warna `text-*` di project ini, `text-text-1000` dari spec dipetakan ke token yang sudah dipakai kartu ini.
+  4. Heading pakai gradient-clip text (`bg-clip-text text-transparent` + `CTA_GRADIENT` via inline style) — item ini masuk **"Absolute bans" skill `impeccable`** (CLAUDE.md §Orkestrasi Skill Desain), TAPI dikonfirmasi eksplisit oleh user sebagai override sadar setelah dijelaskan kontradiksinya, bukan diputuskan sendiri oleh agent.
+- **Pemetaan token lain (tidak ambigu, presedan sudah ada di kode):** `bg-theme-gradient` → `CTA_GRADIENT` (style inline, `Navbar.tsx`), `text-lagoon-100` → `text-secondary-1000`, `after:bg-overlay-hover`/`pressed` → `after:bg-black/10`/`after:bg-black/20` (identik `CTA_PILL`), `font-londontwo` → no-op (h3 auto `font-heading`), `font-jakarta` → `font-body`, `font-montserrat` → `font-ui`, `focus-visible:ring-ring/50` DIHAPUS (tidak ada token `--color-ring` sama sekali di project, `CTA_PILL` juga tidak punya focus ring), Lucide arrow-right SVG → `mdi:arrow-right` via `<Icon>` (`@iconify/react/offline`) karena `lucide-react` eksplisit dilarang (`TECHNICAL_CONSTRAINTS_FE.md` baris 15). CTA diubah dari `<Button onClick>` ke `<Link href>` (navigasi asli, bukan `router.push` di `onClick`) — lebih sesuai spec `<a>` & presedan `Link`+`CTA_PILL` di Navbar.
+- **File diubah:**
+  - `src/features/competitions/CompetitionGrid.tsx` — `CompetitionCardDesktop` ditulis ulang total (lihat header comment file untuk detail pemetaan token); prop `onSelect` dihapus dari komponen ini (navigasi sekarang lewat `Link href` langsung, bukan callback); import `Link`, `Icon` ditambah.
+  - `src/components/ui/mdiIconBundle.generated.json` — regenerate via `npm run icons:bundle` supaya `mdi:arrow-right` ikut ter-bundle offline (sebelumnya belum ada di bundle, akan fallback fetch API Iconify kalau tidak di-regenerate).
+- **Terkait requirement:** F-24 (`PRD_IOE_2027_v4.md`), section "Our Competition" `/competitions`.
+- **Breaking change:** Tidak (visual restyle + perubahan CTA dari button-callback ke anchor-navigation, tidak ada perubahan data/API).
+- **Belum selesai / follow-up:**
+  - `design_system_final.md` TIDAK SINKRON — perlu ditambahkan manual oleh manusia: (a) resolusi `bg-component-card` → solid `#132321` sekarang dipakai 2 tempat berbeda (CalendarWidget + kartu ini), (b) nilai `drop-shadow-[0_2.544px_2.544px_#2e0002]` pada image (arbitrary literal dari user, tidak ada presedan drop-shadow image manapun di dokumen), (c) override gradient-text heading vs "Absolute bans" `impeccable` — perlu direview desainer manusia apakah exception ini permanen atau cuma untuk kartu ini.
+  - **Verifikasi visual browser BELUM dilakukan** — `claude-in-chrome` tidak terkoneksi sepanjang task ini (extension tidak merespons). Hanya diverifikasi lewat: `tsc --noEmit` bersih, `npm run lint` bersih (cuma warning pre-existing `<img>`/React Compiler, tidak ada error baru), dan `npm run icons:bundle` konfirmasi `mdi:arrow-right` masuk bundle. Data kartu sendiri juga belum bisa dicek end-to-end di browser karena `useCompetitions()` fetch ke `WORKERS_API_URL=http://localhost:8000/api` yang tidak jalan di sesi dev ini (section masih nyangkut di skeleton loading state di SSR HTML). **User WAJIB cek visual manual** (breakpoint `lg+`, tablet `md`-`lg`, dan hover/active state CTA) sebelum menganggap task ini benar-benar selesai.
+
+### [2026-09-03 09:20] `CompetitionFAQSection` — koreksi terminologi margin vs padding; padding dikembalikan 80px, `max-w` dihitung ulang jadi 1637.5px
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** Koreksi dari user atas entry `[09:00]` di bawah — salah paham istilah "margin" vs "padding". Yang user maksud "margin 198.75px" itu bukan padding (`md:px-20`), tapi margin auto dari `mx-auto` (sisa ruang setelah `max-w-[1440px]` dikurangkan dari lebar viewport aktual user). User minta: (1) padding dikembalikan ke 80px (`md:px-20`, batalkan entry `[09:00]`), (2) margin auto itu jadi 100px, bukan 198.75px.
+- **Penjelasan yang disampaikan ke user sebelum ngoding:** Margin dari `mx-auto` **bukan nilai tetap** seperti padding — rumusnya `(lebar viewport - max-width) / 2`, jadi otomatis berubah tiap ukuran layar berbeda. Dari margin 198.75px yang dilaporkan dgn `max-w-[1440px]`, dihitung mundur lebar viewport user saat itu = 1440 + (2×198.75) = **1837.5px**. User diberi 2 opsi: (a) hitung `max-w` baru supaya PAS 100px margin tapi HANYA berlaku di viewport 1837.5px itu (di ukuran layar lain, margin akan beda lagi), atau (b) buang `max-w`/`mx-auto`, ganti padding tetap supaya 100px benar-benar konstan di semua ukuran layar (tapi section balik melebar penuh di layar sangat lebar, spt masalah awal). **User pilih opsi (a).**
+- **Perhitungan:** `max-w` baru = viewport (1837.5) - (2×100) = **1637.5px**.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — `md:px-[100px]` (dari entry `[09:00]`) dikembalikan ke `md:px-20`; `max-w-[1440px]` diganti `max-w-[1637.5px]`.
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]` s.d. `[09:00]`.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Nilai `max-w-[1637.5px]` ini **hanya presisi 100px margin di viewport 1837.5px** — di ukuran layar lain (laptop lebih kecil, monitor lebih besar, atau resize window), margin akan otomatis berbeda lagi (bukan bug, konsekuensi matematis `mx-auto`, sudah dikonfirmasi & dipilih sadar oleh user). Kalau user pindah device/monitor testing, kemungkinan besar akan lapor "margin salah lagi" — root cause-nya sudah diketahui & didokumentasikan di sini, bukan regresi baru. Visual check via browser masih belum pernah dilakukan sesi ini (`claude-in-chrome` tidak terkoneksi sepanjang task) — hanya diverifikasi via SSR HTML (`max-w-[1637.5px]` muncul, `md:px-20` kembali) + `tsc`/`eslint` bersih.
+
+### [2026-09-03 09:00] `CompetitionFAQSection` — padding horizontal `<section>` desktop diubah dari 80px ke 100px
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** User minta margin kanan-kiri section persis 100px per sisi. `md:px-20` (80px) diganti `md:px-[100px]`. Mobile (`px-6`, 24px) tidak disentuh, tidak diminta.
+- **Catatan penting yang disampaikan ke user (bukan diam-diam):** `max-w-[1440px] mx-auto` masih aktif di section ini (dari entry `[04:25]` di bawah). Konsekuensinya: padding 100px ini presisi selama lebar viewport ≤ ~1640px (1440 + 2×100). Di atas itu, `mx-auto` ikut menyumbang margin tambahan buat men-center box 1440px, jadi jarak asli dari tepi browser ke konten JADI LEBIH DARI 100px di layar sangat lebar — bukan angka fix 100px mutlak di semua ukuran layar. User belum konfirmasi apakah ini yang dimaksud atau mau `max-w` dilepas total supaya 100px benar-benar konstan di semua lebar layar.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — `md:px-20` → `md:px-[100px]` pada outer `<section>`.
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]` s.d. `[04:25]`.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Sama seperti rekomendasi di entry `[04:25]` — angka target COMPFEST & interaksi `max-w`/padding masih belum diverifikasi visual langsung (`claude-in-chrome` belum pernah terkoneksi sepanjang task ini). Kalau user benar-benar mau 100px konstan tanpa syarat lebar layar, `max-w-[1440px] mx-auto` perlu dilepas — belum dilakukan krn tidak diminta eksplisit di pesan ini.
+
+### [2026-09-02 04:25] `CompetitionFAQSection` — cap width dipindah balik ke outer `<section>` (identik entry `[04:00]`)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** ⚠️ **Konfigurasi ini identik 1:1 dengan entry `[2026-09-02 04:00]`**, yang di-revert user sendiri di entry `[04:10]` dgn alasan margin "terdorong terlalu jauh ke dalam". Sekarang user minta balik lagi ke konfigurasi yang sama, kali ini dgn alasan sebaliknya — versi inner-wrapper (`[04:10]`) yang disebut "menghasilkan margin horizontal liar". Diterapkan apa adanya sesuai instruksi eksplisit + kode target literal yang diberikan (tidak ambigu), TAPI dicatat di sini supaya kalau nanti ada revert lagi, jelas riwayatnya bukan konfigurasi baru — sudah oscillate 2x antara 2 pendekatan yang sama (outer-cap vs inner-cap) tanpa verifikasi visual browser (sesi ini `claude-in-chrome` tidak pernah terkoneksi dari awal task, semua perubahan cuma diverifikasi lewat SSR HTML/`tsc`/`eslint`, tidak pernah dicek visual computed width beneran match target atau tidak).
+- **Catatan angka (berulang dari entry `[04:00]`, belum berubah):** `max-w-[1440px]` dikurangi padding `md:px-20` (80px kanan-kiri) = 1280px, BUKAN ~1308px seperti yang diklaim user sebagai hasil akhir. Selisih 28px ini sudah dicatat 2x (entry `[04:00]` & di sini) dan belum pernah diklarifikasi/dikoreksi oleh user.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — outer `<section>`: tambah `mx-auto max-w-[1440px]` lagi. Inner wrapper: hapus `max-w-[1240px]` (kembali 100% fluid, `w-full` tanpa `mx-auto`/`max-w`).
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]` s.d. `[04:10]`.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** **Rekomendasi kuat ke user**: sebelum revisi lebar lagi, verifikasi angka target COMPFEST yang benar (sudah 4 angka disebut di sesi ini: 1240, 1244, 1308, dan implikasi ~1280 dari 1440-160) langsung dari DevTools situs aslinya di viewport yang sama, supaya tidak oscillate lagi antara outer-cap/inner-cap tanpa hasil. Visual check via browser session ini masih belum pernah dilakukan sama sekali (`claude-in-chrome` tidak terkoneksi sejak awal task ini) — semua 6 revisi width sejauh ini (`[03:05]` s.d. sini) hanya diverifikasi via SSR HTML + `tsc`/`eslint`, TIDAK PERNAH dicek computed width aktual di browser nyata.
+
+### [2026-09-02 04:10] `CompetitionFAQSection` — cap width dipindah balik ke inner wrapper (`max-w-[1240px]`), outer `<section>` dilepas lagi
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** Lanjutan entry `[2026-09-02 04:00]` di bawah. Pola double-cap/pemindahan constraint ke outer section ternyata bikin margin "terdorong terlalu jauh ke dalam" (kombinasi `max-w-[1440px]` di section + padding `px-6 md:px-20` di dalamnya). User minta arsitektur dibalik lagi: outer `<section>` dilepas dari `max-w`/`mx-auto` (balik jadi `w-full` polos), constraint width dipindah ke inner wrapper dgn nilai `max-w-[1240px]` (sebelumnya `1244px` di entry `[03:20]`/`[03:45]` — beda 4px, nilai baru dari user diikuti apa adanya, bukan dikoreksi sepihak).
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — outer `<section>`: hapus `mx-auto max-w-[1440px]`. Inner wrapper: tambah `max-w-[1240px]` (constraint kembali di 1 level, inner wrapper saja).
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]` s.d. `[04:00]`.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** State sekarang mirip `[03:20]`/`[03:45]` tapi nilai cap 1240px (bukan 1244px) — kalau ada kode lain yang nanti butuh angka presisi COMPFEST, perlu diklarifikasi angka final yang benar (1240 vs 1244 vs klaim 1308 di entry `[04:00]` — 3 angka berbeda sudah pernah disebut user di rentang waktu ini, blm ada satu angka final yg dikonfirmasi tegas). Visual check via browser masih belum bisa dilakukan sesi ini (`claude-in-chrome` tidak terkoneksi) — cuma diverifikasi lewat SSR HTML (`max-w-[1240px]` muncul di inner wrapper, `max-w-[1440px]` sudah hilang dari section) + `tsc`/`eslint` bersih.
+
+### [2026-09-02 04:00] `CompetitionFAQSection` — cap width dipindah ke outer `<section>` (`max-w-[1440px] mx-auto`), dihapus dari inner wrapper
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** User minta outer `<section>` dikasih `max-w-[1440px] mx-auto` supaya lebar section terkunci (dilaporkan saat ini ~1677px, target COMPFEST ~1308px). Instruksi prosa cuma sebut perubahan di `<section>`, TAPI kode target ("HASIL STRUKTUR KODE") yang diberikan user utk inner `<div>` sudah TIDAK menyertakan `max-w-[1244px]` yang baru saja di-rollback-pasang lagi di entry `[03:45]` sebelumnya — diinterpretasikan sebagai instruksi implisit tapi eksplisit (bukan tebakan, literal dari kode yang diberikan) utk memindahkan constraint sepenuhnya ke level outer section, bukan menumpuk 2 cap bersarang.
+- **Catatan angka (dicatat, tidak dikoreksi sepihak):** Klaim user "total lebar bersih konten ~1308px" dari `max-w-[1440px]` dikurangi padding `md:px-20` (80px kanan-kiri) secara matematis = 1440 - 160 = **1280px**, bukan 1308px (selisih 28px dari klaim). Kelas diterapkan **persis seperti yang diberikan user** (`max-w-[1440px]`, bukan dikoreksi ke `max-w-[1468px]` atau sejenisnya) — kalau target presisi 1308px penting, perlu dikonfirmasi ulang ke user, BUKAN agent mengarang angka baru sendiri (CLAUDE.md §6).
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — outer `<section>`: tambah `mx-auto max-w-[1440px]`. Inner wrapper: hapus `max-w-[1244px]` (constraint sekarang di 1 level saja, tidak nested).
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]`/`[03:05]`/`[03:20]`/`[03:35]`/`[03:45]`.
+- **Breaking change:** Tidak — visual minor, tapi arsitektur constraint width berubah dari "inner wrapper" ke "outer section" (kalau section ini nanti butuh full-bleed background edge-to-edge, sekarang tidak bisa lagi krn section sendiri sudah dibatasi `max-w-[1440px] mx-auto` — belum ada kebutuhan itu saat ini, cuma dicatat sbg batasan arsitektur baru).
+- **Belum selesai / follow-up:** Selisih 1280px vs klaim 1308px (lihat catatan angka di atas) belum diklarifikasi — kalau presisi pixel penting, perlu dikonfirmasi nilai `max-w` yang benar. Visual check via browser masih belum bisa dilakukan sesi ini (`claude-in-chrome` tidak terkoneksi), cuma diverifikasi lewat SSR HTML (`max-w-[1440px]` muncul di section, `max-w-[1244px]` sudah hilang dari inner div) + `tsc`/`eslint` bersih.
+
+### [2026-09-02 03:45] `CompetitionFAQSection` — rollback entry `[03:35]`: `max-w-[1244px]`/`mx-auto` dipasang lagi
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** User minta "roll back ke versi sebelumnya" tanpa spesifikasi cakupan — dicek dulu ke user krn ambigu antara (a) undo 1 edit terakhir vs (b) buang semua perubahan sesi ini (5 file, semua masih uncommitted). User pilih (a). Inner wrapper dibalikin dari `w-full` murni (entry `[03:35]`) ke `mx-auto` + `max-w-[1244px]` (entry `[03:20]`).
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — inner wrapper kembali ke `relative z-10 mx-auto mb-12 flex w-full max-w-[1244px] flex-col items-center px-4 md:mb-24 md:px-8`, identik dgn state di entry `[2026-09-02 03:20]`.
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]`/`[03:05]`/`[03:20]`/`[03:35]`.
+- **Breaking change:** Tidak — kembali ke state yang sudah pernah diverifikasi sebelumnya (entry `[03:20]`).
+- **Belum selesai / follow-up:** State sekarang identik dgn `[03:20]` (max-width 1244px dipertahankan, margin horizontal di layar lebar itu perilaku wajar cap-width, bukan bug). Belum ada visual check via browser sesi ini (`claude-in-chrome` tidak terkoneksi) — hanya SSR HTML + `tsc` bersih.
+
+### [2026-09-02 03:35] `CompetitionFAQSection` — `max-w-[1244px]`/`mx-auto` dihapus total dari inner wrapper (override keputusan entry sebelumnya)
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** Lanjutan langsung entry `[2026-09-02 03:20]` di bawah. Entry itu menyelesaikan kontradiksi dengan user memilih eksplisit "keep max-width" (ditajamkan ke `max-w-[1244px]`). User balik lagi minta `max-w-[1244px]` DAN `mx-auto` dihapus total supaya margin horizontal di Inspector = 0px, kali ini dengan instruksi eksplisit + acknowledge konsekuensinya sendiri (paham bahwa inner wrapper akan `w-full` murni ikut padding outer section). **Tidak ditanya ulang** — bedanya dari entry `[03:20]`: waktu itu premis user soal "desain asli tidak ada margin" masih ambigu/berpotensi salah asumsi (makanya dikonfirmasi dulu); kali ini instruksinya eksplisit, sudah pernah dikasih tahu tradeoff-nya di jawaban sebelumnya, dan user tetap eksplisit minta itu dgn kode target yang persis — override valid dari user atas keputusannya sendiri, bukan tebakan agent.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — inner wrapper: hapus `max-w-[1244px]` dan `mx-auto`, sisa kelas (`relative z-10 mb-12 flex w-full flex-col items-center px-4 md:mb-24 md:px-8`) tidak berubah.
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]`/`[03:05]`/`[03:20]` (F-17 tidak langsung, section di luar F-22–F-26).
+- **Breaking change:** Tidak untuk struktur, TAPI secara visual ini **membatalkan fix overflow ~1613px** dari entry `[03:05]` — inner wrapper sekarang lagi-lagi tidak dibatasi apapun selain padding horizontal outer `<section>` (`px-6 md:px-20`), jadi akan melebar penuh mengikuti viewport di layar sangat lebar (balik ke perilaku sebelum entry `[03:05]`). Ini keputusan sadar & final dari user (margin 0px lebih diprioritaskan drpd width cap), bukan regresi tak disengaja.
+- **Belum selesai / follow-up:** Kalau nanti overflow lebar-berlebihan di layar ultra-wide dianggap masalah lagi, root cause-nya sudah diketahui (tidak ada max-width) — solusinya sama seperti entry `[03:05]`/`[03:20]`, tinggal ditambahkan lagi. Visual check via browser masih belum bisa dilakukan sesi ini (`claude-in-chrome` tidak terkoneksi) — hanya diverifikasi lewat SSR HTML (`max-w-[1244px]`/`mx-auto` sudah tidak ada lagi di elemen ini) + `tsc`/`eslint` bersih.
+
+### [2026-09-02 03:20] `CompetitionFAQSection` — kontradiksi dilaporkan & diselesaikan: max-width dipertahankan, ditajamkan ke 1244px
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** Lanjutan entry `[2026-09-02 03:05]` di bawah. User minta hapus total `max-w-7xl` dari inner wrapper (alasan: `mx-auto` + `max-w-7xl` menyebabkan margin horizontal ~198.75px yang katanya tidak ada di desain asli COMPFEST, yang disebut "murni mengisi lebar pembungkusnya secara responsif"). **Ini kontradiksi langsung** dengan entry `[2026-09-02 02:45]`/`[03:05]` di bawah yang eksplisit bilang referensi COMPFEST "terkunci presisi di rentang ~1240px-1244px" dan minta `max-width` DITAMBAHKAN utk fix overflow ~1613px. Dilaporkan ke user dulu sebelum ngoding (bukan pilih sepihak) — kalau `max-w-7xl` dihapus total, tidak ada lagi apapun yang membatasi lebar inner wrapper selain padding horizontal outer `<section>` (`px-6 md:px-20`), jadi akan balik stretch ke ~1600px+ di layar lebar, persis bug yang baru saja difix.
+- **Keputusan user:** Pertahankan max-width (bukan dihapus) — margin horizontal di layar ultra-wide itu perilaku NORMAL dari pola cap-width + `mx-auto` (bukan bug), bukan disebabkan oleh `mx-auto`-nya. Sebagai gantinya, cap ditajamkan dari `max-w-7xl` (1280px, Tailwind default 80rem) ke `max-w-[1244px]` (arbitrary value, karena 1244 bukan bagian dari scale default Tailwind manapun) — angka presisi dari nilai reference COMPFEST yang disebut user sendiri.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — inner wrapper: `max-w-7xl` → `max-w-[1244px]`. Tidak ada perubahan lain.
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]`/`[03:05]` (F-17 tidak langsung, section di luar F-22–F-26).
+- **Breaking change:** Tidak — beda 36px dari `max-w-7xl` sebelumnya, visual minor.
+- **Belum selesai / follow-up:** Sama seperti 2 entry di bawah — visual check via browser belum bisa dilakukan sesi ini (`claude-in-chrome` tidak terkoneksi), hanya diverifikasi lewat SSR HTML (`max-w-[1244px]` muncul di output) + `tsc`/`eslint` bersih. User disarankan cek margin horizontal secara visual di layar lebar sebelum dianggap final — kalau margin yang terlihat masih dianggap "terlalu besar" setelah ini, kemungkinan besar itu memang perilaku wajar cap-width di viewport sangat lebar, bukan bug lagi.
+
+### [2026-09-02 03:05] Fix `CompetitionFAQSection` — inner wrapper melebar ~1613px, tidak ada `max-width`
+
+- **Tipe:** Fix
+- **Scope:** `src/features/competitions/CompetitionFAQSection.tsx`
+- **Ringkasan:** Lanjutan entry `[2026-09-02 02:45]` di bawah. User laporkan accordion FAQ melebar sampai ~1613px di layar desktop/ultra-wide (target COMPFEST ~1240-1244px). Root cause: inner wrapper (`<div className="relative z-10 mx-auto ...">`) tidak pernah dikasih `max-width` sama sekali — lebarnya cuma dibatasi padding horizontal outer `<section>` (`px-6 md:px-20`), jadi mengikuti penuh lebar viewport dikurangi padding itu.
+- **Root cause & fix:** User minta ganti token spacing custom (`gap-xl`, `pt-3xl`, `px-md`, `md:px-xl`, `mb-2xl`, `md:mb-4xl`) ke kelas Tailwind literal (`gap-8`, `pt-16`, `px-4`, `md:px-8`, `mb-12`, `md:mb-24`) dengan asumsi token custom itu penyebab lebar salah — **dicek dulu, tapi ternyata NILAI numeriknya identik** (spacing-xl=32px=gap-8, spacing-3xl=64px=pt-16, spacing-md=16px=px-4, spacing-2xl=48px=mb-12, spacing-4xl=96px=mb-24 — tidak ada collision seperti gotcha max-w-/min-w- di `globals.css`, karena itu cuma soal utility gap/padding/margin, bukan max-w-/min-w-). Jadi swap token ini **kosmetik/konsisten dgn preferensi user, bukan bagian dari fix sebenarnya.** Fix sebenarnya murni penambahan `max-w-7xl` (1280px, dipilih drpd `max-w-[1280px]` arbitrary krn `7xl` bukan key custom yg collide di `--spacing-*`, jadi aman pakai utility Tailwind default) pada inner wrapper.
+- **File diubah:**
+  - `src/features/competitions/CompetitionFAQSection.tsx` — outer `<section>`: `gap-xl→gap-8`, `pt-3xl→pt-16` (nilai sama, cuma ganti nama kelas). Inner wrapper: `mb-2xl→mb-12`, `md:mb-4xl→md:mb-24`, `px-md→px-4`, `md:px-xl→md:px-8` (nilai sama), tambah `max-w-7xl` (BARU, ini fix sebenarnya).
+- **Terkait requirement:** Lanjutan entry `[2026-09-02 02:45]` (F-17 tidak langsung, section di luar F-22–F-26).
+- **Breaking change:** Tidak — perubahan visual murni (accordion sekarang terkunci max 1280px, sebelumnya full-bleed sampai viewport - padding).
+- **Belum selesai / follow-up:** Sama seperti entry `[2026-09-02 02:45]` di bawah (visual check via browser belum bisa dilakukan sesi ini, hanya diverifikasi lewat SSR HTML `curl` — `max-w-7xl` muncul di output, tidak ada error overlay, `tsc`/`eslint` bersih). User disarankan cek visual manual (terutama di layar ultra-wide) sebelum dianggap final.
+
+### [2026-09-02 02:45] Redesign Accordion FAQ — `CompetitionFAQSection` "Need more help?"
+
+- **Tipe:** Feature
+- **Scope:** `src/components/ui/Accordion.tsx`, `src/features/competitions/CompetitionFAQSection.tsx`, `src/features/competitions/competitionsContent.ts`, `src/app/globals.css`
+- **Ringkasan:** User kasih spec HTML/Tailwind pixel-precise (reverse-engineered dari template lain, konvensi `data-slot="disclosure"`) buat redesign FAQ Accordion. Beberapa kontradiksi terhadap `design_system_final.md`/`globals.css` dilaporkan & dikonfirmasi ke user dulu (bukan ditebak) sebelum ngoding — lihat detail di bawah.
+- **Kontradiksi & keputusan user:**
+  1. Component TARGET — spec ini match persis dengan FAQ section yang sudah ada (`Accordion.tsx` + `CompetitionFAQSection.tsx`, heading "Need More Help?", lokasi sama). User pilih **redesign in-place** (bukan bikin komponen baru terpisah), tetap pakai `@radix-ui/react-accordion` (standar project, `TECHNICAL_CONSTRAINTS_FE.md`) dengan `data-slot` attribute ditambahkan supaya struktur match spec.
+  2. Font "Londontwo" (heading) dan "font-jakarta" (content) **tidak ada** di project (`layout.tsx` cuma load Coolvetica-fallback/Montserrat/Plus Jakarta Sans/Inter). User pilih **remap ke token resmi**: heading pakai `font-heading` (otomatis lewat elemen `<h2>`), content pakai `font-body`.
+  3. `text-s4` dan `drop-shadow-light` **belum terdefinisi** di manapun. User kasih nilai eksplisit utk `s4` (18px/24px line-height — beda dari pola reuse b1-b4 di s3/s5/s6 sebelumnya, angka baru asli dari user) dan minta `drop-shadow-light` **di-map ke shadow token yang sudah ada** — dipakai `shadow-lg` (bukan bikin nama token baru) sebagai elevasi state `open`.
+  4. FAQ item 1 dari spec user literally nyebut brand "COMPFEST 18" dan nama kompetisinya (AI Innovation Challenge, Bizz-IT, dst) — bukan konten IOE 2027. User pilih **ganti ke placeholder IOE-generic**, ikut pola dummy yang sudah ada di `competitionFaqs` (Indonesia, "menunggu konfirmasi panitia").
+  5. `ring-ring`/`border-ring` (token shadcn) di spec trigger button **tidak ada** di project (di-grep, nol pemakaian) — diganti `outline-2 outline-offset-[3px]`, presedan fokus yang sudah dipakai `HeroCarousel.tsx` (bukan ditanya lagi ke user, cukup jelas dari grep codebase, bukan keputusan desain baru).
+  6. Illustration image di kanan header — **tidak ada aset dari klien** (PRD §8 Assumptions & Dependencies, presedan sama seperti maskot `AboutSection.tsx`). Diganti tile gradient `size-48` + icon `mdi:frequently-asked-questions` (dikonfirmasi ada di `@iconify-json/mdi`), bukan gambar asing/hasil karang sendiri.
+- **File diubah:**
+  - `src/components/ui/Accordion.tsx` — restrukturisasi total: `data-slot="disclosure"/"disclosure-item"/"disclosure-content"`, gradient border via padding (`GRADIENT_BORDER`, presedan sama dgn `AboutSection.tsx`/`CompetitionAboutSection.tsx`) `p-0.5 rounded-xl md:rounded-3xl` dgn inner `rounded-[14px] md:rounded-[22px]`, trigger `h-20 px-6.5 py-5.5 md:px-9 md:py-7 font-ui text-s6 md:text-s5`, content `font-body text-b3 md:text-b2 px-6 pb-5 md:px-9 md:pb-7`, reuse class `.accordion-content` (`globals.css`, sudah ada) buat animasi expand/collapse. `type="multiple"` dipertahankan dari implementasi lama.
+  - `src/features/competitions/CompetitionFAQSection.tsx` — restrukturisasi wrapper section (`pt-3xl pb-32 px-6 md:px-20 gap-xl`, inner container `mb-2xl md:mb-4xl px-md md:px-xl`), tambah subtitle (`font-ui text-s6 md:text-s4 font-bold`) dan illustration placeholder icon (`max-lg:hidden`).
+  - `src/features/competitions/competitionsContent.ts` — `competitionFaqs` diganti dari 4 jadi 5 item (topik: biaya, syarat mahasiswa, tim, offline/online, benefit non-kompetisi), semua placeholder Indonesia generic, tidak ada brand COMPFEST.
+  - `src/app/globals.css` — tambah token `--text-s4: 18px` / `--text-s4--line-height: 24px`.
+- **Terkait requirement:** F-17 (`PRD_IOE_2027_v4.md`) tidak langsung — section ini di luar F-22–F-26 (sudah dicatat di entry sebelumnya), tapi styling-nya juga otomatis kepakai di `CompetitionDetailFAQSection.tsx` (F-17) karena reuse `Accordion.tsx` yang sama.
+- **Breaking change:** Tidak untuk user-facing behavior (redesign visual + expand daftar FAQ), tapi 4 FAQ lama di `competitionFaqs` diganti total (termasuk 1 topik "cara bertanya lebih lanjut" yang dihapus, tidak ada di 5 topik baru dari user).
+- **Belum selesai / follow-up:**
+  - `design_system_final.md` §Type Scale **TIDAK SINKRON** — token `text-s4` baru ditambahkan di `globals.css` tapi belum didokumentasikan di sana (sama seperti gap s3/s5/s6 sebelumnya), perlu diupdate manual oleh manusia.
+  - FAQ content 100% placeholder dummy (bukan cuma jawaban, pertanyaannya juga hasil rephrase dari topik yang diminta user) — WAJIB diganti materi asli dari panitia sebelum go-live.
+  - `CompetitionDetailFAQSection.tsx` (F-17, per-slug) TIDAK diubah wrapper section-nya (masih heading polos "Frequently Asked Questions" tanpa subtitle/illustration) — hanya otomatis kewarisi styling accordion item baru krn reuse `Accordion.tsx`. Kalau mau konsisten penuh dgn spec redesign ini, perlu task terpisah (belum ada konten subtitle utk halaman itu).
+  - Verifikasi: `tsc --noEmit` bersih, `eslint` bersih. Visual check via browser **TIDAK bisa dilakukan** sesi ini (Chrome extension `claude-in-chrome` tidak terkoneksi) — hanya diverifikasi lewat SSR HTML output (`curl`, 5x `disclosure-item` muncul sesuai 5 FAQ item, tidak ada error overlay) dan review manual class Tailwind terhadap spec. User disarankan cek visual manual sebelum dianggap final.
+
 ### [2026-09-02 02:15] `competitionsContent.ts` — tambah 2 item timeline utk QA overflow-x horizontal scroll
 
 - **Tipe:** Config

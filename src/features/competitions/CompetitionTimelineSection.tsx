@@ -63,6 +63,37 @@ import { overallTimelineItems, type OverallTimelineItem } from "./competitionsCo
 //      jadi bare number (dibagi 100 di dalam formula CSS) — mengalikan dua nilai
 //      berdimensi (% dan panjang) langsung di `calc()` itu invalid, formula baru butuh
 //      fraksi unitless dulu sebelum dikalikan ke `(100% - Nrem)`.
+//
+// REVISI [2026-09-03 11:20] — outer <section> di-cap `max-w-[1637.5px] mx-auto px-6 md:px-20`
+// (dari `px-4 md:px-8 xl:px-[92px]`, tanpa max-w) — user minta box node-wrapper (`rounded-3xl
+// border ... p-5 md:p-10` di bawah) punya "besar" render yang sama dengan div header
+// CompetitionFAQSection (`w-full ... px-4 md:px-8`, dibungkus section yang di-cap
+// `max-w-[1637.5px] mx-auto px-6 md:px-20`). Node-wrapper box sendiri `w-full` relatif ke
+// section ini — classes-nya TIDAK ikut diubah (beda role: bordered card box vs plain layout
+// div), yang disamakan cuma cap section-nya supaya lebar render akhirnya match. `mx-auto`
+// di section ini SEBELUMNYA no-op (belum ada max-w buat dia center-kan) — sekarang aktif.
+//
+// REVISI [2026-09-03 11:30] — base line & progress line sekarang `left-0 w-full`/
+// `w-[calc((var(--tl-progress)/100)*100%)]`, MEMBATALKAN pendekatan "presisi menyentuh
+// tepi node" dari REVISI [2026-09-02] poin 2 di atas. User komplain garis belum sampai ke
+// ujung box — base line ternyata inset TAMBAHAN 2.5rem (mobile)/5rem (desktop) DI ATAS
+// padding box (`p-5`/`md:p-10`) yang sudah ada, jadi ada gap kosong ganda dari tepi box
+// sampai garis mulai. Ditanya balik (AskUserQuestion) apakah maksudnya inset tambahan ini
+// yang mau dihapus — dikonfirmasi user, pilih "Recommended": inset tambahan dihapus total,
+// garis sekarang full-width relatif ke wrapper `relative w-fit` (yang sudah nempel pas
+// setelah padding box, tanpa margin/padding sendiri).
+// TRADE-OFF yang perlu diketahui (belum dikonfirmasi eksplisit ke user, catatan teknis):
+// node pertama/terakhir SECARA MATEMATIS tidak persis di tepi container (center node =
+// setengah lebar TimelineCard, w-40/w-80 → 5rem/10rem dari tepi, karena node di-`mx-auto`
+// di dalam grid column selebar card) — jadi garis sekarang mulai/berakhir SEDIKIT melewati
+// posisi center node pertama/terakhir secara visual, bukan pas berhenti di situ. Preseden
+// formula lama (REVISI 02) sebenarnya JUGA tidak match posisi node yang sebenarnya (inset
+// 2.5rem/5rem-nya bukan hasil hitungan dari lebar card, cuma angka approx literal dari user)
+// — jadi ini bukan regresi presisi baru, cuma trade-off yang beda dari yang sebelumnya sama
+// sekali belum accurate. `getProgressPercent()` (index/(length-1)*100) tetap valid dipakai
+// di skema baru ini karena node spacing UNIFORM (card width & gap sama semua) — asumsi
+// "posisi linear rata" tetap benar, cuma referensi 0%/100%-nya sekarang tepi container,
+// bukan center node pertama/terakhir.
 
 const CARD_GRADIENT_TOP = "linear-gradient(to bottom, var(--color-neutral-100), var(--color-primary-100))";
 const CARD_GRADIENT_BOTTOM = "linear-gradient(to top, var(--color-neutral-100), var(--color-primary-100))";
@@ -120,15 +151,15 @@ export function CompetitionTimelineSection() {
   return (
     <section
       id="timeline"
-      className="relative z-10 mx-auto flex w-full flex-col items-center px-4 md:px-8 xl:px-[92px]"
+      className="relative z-10 mx-auto flex w-full max-w-[1637.5px] flex-col items-center px-6 md:px-20"
     >
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
 
       <div className="mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 no-scrollbar hover:cursor-grab active:cursor-grabbing md:rounded-[36px] md:p-10">
         <div className="relative w-fit">
-          <div className="absolute left-1/2 top-1/2 h-1 w-[calc(100%-5rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-neutral-500 md:h-2 md:w-[calc(100%-10rem)]" />
+          <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />
           <div
-            className="absolute top-1/2 left-[2rem] h-1 w-[calc(((var(--tl-progress)_/_100)_*_(100%_-_5rem))_+_0.5rem)] -translate-y-1/2 rounded-full bg-secondary-500 md:left-[4.0625rem] md:h-2 md:w-[calc(((var(--tl-progress)_/_100)_*_(100%_-_10rem))_+_0.9375rem)]"
+            className="absolute left-0 top-1/2 h-1 w-[calc((var(--tl-progress)_/_100)_*_100%)] -translate-y-1/2 rounded-full bg-secondary-500 md:h-2"
             style={progressStyle}
           />
 

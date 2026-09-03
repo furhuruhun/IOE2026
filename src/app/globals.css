@@ -181,6 +181,16 @@
    */
   --text-s3: 20px; /* = b1 */
   --text-s3--line-height: 24px;
+
+  /* s4 — token literal dari spec redesign FAQ Accordion (CompetitionFAQSection,
+   * 2026-09-02). Beda dari s3/s5/s6 di atas: nilai ini TIDAK di-reuse dari b1-b4
+   * (18px/24px tidak match b2=16px maupun b1=20px manapun) — angka eksplisit diberikan
+   * user sendiri saat ditanya (bukan hasil tebakan agent), lihat CLAUDE.md §6.
+   * design_system_final.md §Type Scale TIDAK SINKRON — perlu ditambahkan manual oleh
+   * manusia. Lihat CHANGELOG [FAQ Accordion redesign].
+   */
+  --text-s4: 18px;
+  --text-s4--line-height: 24px;
 }
 
 /*

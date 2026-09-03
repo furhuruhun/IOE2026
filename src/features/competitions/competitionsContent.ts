@@ -116,7 +116,10 @@ export interface FaqItem {
   answer: string;
 }
 
-// Dummy FAQ — belum ada daftar pertanyaan resmi dari panitia.
+// Dummy FAQ — belum ada daftar pertanyaan resmi dari panitia. 5 item ini mengikuti topik
+// yang diminta user saat redesign Accordion FAQ (2026-09-02); pertanyaan asli user sempat
+// menyebut brand "COMPFEST 18" & nama kompetisinya secara literal — DIHAPUS/diganti IOE-generic
+// atas konfirmasi user (bukan konten IOE 2027 yang sebenarnya), lihat CHANGELOG.
 export const competitionFaqs: FaqItem[] = [
   {
     value: "faq-1",
@@ -130,13 +133,18 @@ export const competitionFaqs: FaqItem[] = [
   },
   {
     value: "faq-3",
-    question: "Apakah semua kompetisi berbasis tim?",
+    question: "Apakah semua kompetisi IOE 2027 berbasis tim?",
     answer: "Placeholder — ketentuan format tim/individu per kompetisi menunggu konfirmasi panitia.",
   },
   {
     value: "faq-4",
-    question: "Bagaimana cara bertanya lebih lanjut?",
-    answer: "Placeholder — kanal kontak resmi (Discord/Instagram/email) menunggu konfirmasi panitia.",
+    question: "Apakah kompetisi IOE 2027 akan diselenggarakan secara offline?",
+    answer: "Placeholder — format pelaksanaan (online/offline/hybrid) per kompetisi menunggu konfirmasi panitia.",
+  },
+  {
+    value: "faq-5",
+    question: "Apa saja yang bisa saya dapatkan dari IOE 2027 selain kompetisi?",
+    answer: "Placeholder — rangkaian acara/benefit non-kompetisi (workshop, talkshow, dst) menunggu konfirmasi panitia.",
   },
 ];
 
