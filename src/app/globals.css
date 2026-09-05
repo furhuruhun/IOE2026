@@ -191,6 +191,17 @@
    */
   --text-s4: 18px;
   --text-s4--line-height: 24px;
+
+  /* animate-glow-dim — token literal dari spec redesign CompetitionDetailHero (2026-09-03).
+   * Beda dari waterFlow/teamModalIn di bawah (yang dipakai lewat inline `style={{ animation }}`
+   * atau plain class) — ini didaftarkan sebagai theme key `--animate-*` supaya `animate-glow-dim`
+   * jadi utility class Tailwind asli (bisa dipakai langsung di className, sesuai instruksi user
+   * "preserve custom class names"), bukan cuma dipetakan ke animasi lain yang sudah ada. Dipakai
+   * di glow blob dekoratif belakang hero content (menggantikan 2 <img> light/dark + dark-mode
+   * variant dari spec asli — project ini belum ada aset & belum ada dark mode, lihat
+   * CompetitionDetailHero.tsx). design_system_final.md TIDAK SINKRON — perlu ditambahkan manual.
+   */
+  --animate-glow-dim: glow-dim 4s ease-in-out infinite;
 }
 
 /*
@@ -246,6 +257,17 @@ h5,
 h6 {
   font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
+}
+
+/* CompetitionDetailHero glow blob — lihat komentar --animate-glow-dim di @theme block atas. */
+@keyframes glow-dim {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.9;
+  }
 }
 
 /* Modal Create/Join Team §entrance animation — design_system_final.md §Modal Create/Join
