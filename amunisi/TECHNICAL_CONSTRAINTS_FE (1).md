@@ -8,7 +8,8 @@
 
 ## Stack
 
-- **Framework: Next.js + App Router** ✅ — dari `API_CONTRACT.md` (env var `.env.local`/`.env.staging`/`.env.production`) dan `DESIGN_SYSTEM.md` (referensi `next/font/google`). App Router dipilih karena middleware-based route guard dan Route Handlers untuk auth proxy.
+- **Framework: Next.js + App Router** ✅ — dari `API_CONTRACT.md` (env var `.env.local`/`.env.staging`/`.env.production`) dan `DESIGN_SYSTEM.md` (referensi `next/font/google`). App Router dipilih karena proxy-based route guard (dulu bernama middleware, berganti nama sejak Next.js 16) dan Route Handlers untuk auth proxy.
+- **Next.js version: 16.x** ✅ — route guard menggunakan `proxy.ts` (BUKAN `middleware.ts`, yang dideprecate mulai Next.js 16 dan tidak lagi dieksekusi meski filenya ada — silent failure, tidak ada error build).
 - **Hosting: Cloudflare Pages** ✅ — diputuskan tim.
 - **BE runtime: Cloudflare Workers** ✅ — diputuskan tim. FE tidak hit Workers langsung dari browser — semua lewat Next.js Route Handler proxy (lihat Auth Handling).
 - **Styling: Tailwind CSS** ✅ — dari `DESIGN_SYSTEM.md` yang konsisten pakai utility class di seluruh spec komponen (`rounded-3xl`, `backdrop-blur-md`, `bg-clip-text`, dst) dan eksplisit menyebut spacing scale "mirip basis Tailwind". Semantic color tokens (`primary`, `secondary`, `tertiary`, `success`, `error`, `warning`, `neutral`, step 100–1000) di-setup sebagai CSS variables lalu di-extend ke `tailwind.config` — **komponen SELALU pakai token semantic, JANGAN pakai primitive palette langsung**.
@@ -61,7 +62,7 @@ src/
     auth.ts                 # shared types dari API_CONTRACT.md
   utils/                    # helper functions, formatter tanggal ISO 8601 → WIB display
   styles/                   # design tokens (CSS variables semantic), global styles
-middleware.ts               # route guard — letakkan di root (satu level di atas src/)
+proxy.ts                    # route guard — letakkan di root (satu level di atas src/) — nama file ini menggantikan middleware.ts sejak Next.js 16
 ```
 
 ---
@@ -113,22 +114,22 @@ Browser tidak pernah melihat token. Workers tidak set cookie langsung — cukup 
 - **`lib/api.ts` adalah server-only** — berisi `fetchWorkers()` dan cookie constants. Tidak boleh di-import dari komponen atau hooks client.
 - **Token tidak pernah dikirim ke client** di response body Route Handler — hanya `user` object yang dikirim.
 - **`/api/auth/me`** adalah kunci persist session: saat hard refresh, `SessionBootstrap` trigger `useCurrentUser` → hit `/api/auth/me` → Next.js baca cookie → validasi ke Workers → user masuk cache TanStack Query.
-- **Redirect-back setelah login**: middleware set `?redirect=/path/tujuan` saat redirect ke `/login`. Hook `useLogin` dan `useGoogleLogin` baca query param ini di `onSuccess` dan push ke route tujuan.
+- **Redirect-back setelah login**: `proxy.ts` set `?redirect=/path/tujuan` saat redirect ke `/login`. Hook `useLogin` dan `useGoogleLogin` baca query param ini di `onSuccess` dan push ke route tujuan.
 - **Logout**: cukup clear cookie di `/api/auth/logout` (tidak perlu hit Workers kalau token stateless JWT). TanStack Query `queryClient.clear()` hapus semua cache di client.
 
 ### Force-auth di route Public (`/competitions/[slug]`)
 
-`/competitions/[slug]` adalah route Public — **tidak** ada di daftar protected middleware (lihat AUTH_IMPLEMENTATION.md §7). Tapi F-43a tetap mewajibkan login sebelum modal Create/Join Team bisa dibuka.
+`/competitions/[slug]` adalah route Public — **tidak** ada di daftar protected route di `proxy.ts` (lihat AUTH_IMPLEMENTATION.md §7). Tapi F-43a tetap mewajibkan login sebelum modal Create/Join Team bisa dibuka.
 
-- Guard dilakukan di **level komponen**, bukan middleware — cek `useIsLoggedIn()` saat tombol "Register" diklik
-- Belum login → redirect manual ke `/login?redirect=/competitions/[slug]` (pola `?redirect=` sama dengan middleware, supaya konsisten dibaca oleh `useLogin`/`useGoogleLogin`)
+- Guard dilakukan di **level komponen**, bukan `proxy.ts` — cek `useIsLoggedIn()` saat tombol "Register" diklik
+- Belum login → redirect manual ke `/login?redirect=/competitions/[slug]` (pola `?redirect=` sama dengan `proxy.ts`, supaya konsisten dibaca oleh `useLogin`/`useGoogleLogin`)
 - Sudah login → langsung buka modal Create/Join Team (client-state, tidak ganti route)
-- Beda dengan `/events/[slug]/register` yang otomatis ter-guard middleware karena routenya sendiri protected
+- Beda dengan `/events/[slug]/register` yang otomatis ter-guard `proxy.ts` karena routenya sendiri protected
 
 ### Role dan admin route
 - Field `role: 'peserta' | 'panitia'` ada di model `User` (API_CONTRACT v1.1) — dipakai hook `useIsAdmin()` untuk conditional rendering/redirect di komponen.
-- Middleware hanya cek ada/tidaknya cookie (tidak decode role) supaya tidak ada roundtrip ke Workers di setiap request. Validasi role di level komponen dengan `useIsAdmin()`. Workers tetap return `403 ADMIN_ONLY` sebagai safety net.
-- Kalau nanti ingin guard admin di middleware juga: simpan `role` sebagai JWT claim di Workers, decode di middleware dengan `jose` — tidak perlu hit Workers.
+- `proxy.ts` hanya cek ada/tidaknya cookie (tidak decode role) supaya tidak ada roundtrip ke Workers di setiap request. Validasi role di level komponen dengan `useIsAdmin()`. Workers tetap return `403 ADMIN_ONLY` sebagai safety net.
+- Kalau nanti ingin guard admin di `proxy.ts` juga: simpan `role` sebagai JWT claim di Workers, decode di `proxy.ts` dengan `jose` — tidak perlu hit Workers.
 
 ---
 
@@ -212,7 +213,7 @@ Route `/confirmation` bersifat Public, tapi **hanya boleh diakses sebagai hasil 
 - **Server-side check di halaman `/confirmation`:**
   - Kalau `searchParams.from === 'registration'` → tampilkan halaman seperti biasa
   - Kalau param tidak ada / tidak sesuai → `redirect('/')` (pakai `redirect()` dari `next/navigation`, dieksekusi di Server Component halaman)
-- Tidak perlu guard tambahan di middleware — `/confirmation` tetap Public, cukup di-handle di level halaman.
+- Tidak perlu guard tambahan di `proxy.ts` — `/confirmation` tetap Public, cukup di-handle di level halaman.
 
 ---
 ---
@@ -240,6 +241,7 @@ Route `/confirmation` bersifat Public, tapi **hanya boleh diakses sebagai hasil 
 > - ~~Endpoint PATCH visibility tim~~ → ditambahkan di API_CONTRACT v1.1.
 > - ~~Format CV~~ → PDF only, dikonfirmasi.
 > - ~~Base URL staging/production~~ → tidak blocking, diisi mendekati deploy.
+> - ~~Nama file route guard (`middleware.ts` vs `proxy.ts`)~~ → ditemukan saat scaffold bahwa Next.js 16 (versi yang ter-install) mendeprecate `middleware.ts` tanpa error build — file lama silent, tidak pernah dieksekusi. Sudah diperbaiki ke `proxy.ts` di kode dan disinkronkan ke dokumen ini serta `AUTH_IMPLEMENTATION.md`. Lihat `CHANGELOG.md` untuk detail temuannya.
 
 ---
 
@@ -251,4 +253,3 @@ Route `/confirmation` bersifat Public, tapi **hanya boleh diakses sebagai hasil 
 | A2 | **Staging & Production `WORKERS_API_URL`** — belum ada. Tidak blocking dev lokal, tapi harus diisi sebelum deploy ke staging | §Environment Variables | Tim BE + Cloudflare setup | -> akan terisi saat BE deploy ke Cloudflare
 | A3 | **Consent checkbox UU PDP** — PRD NFR §6 menyebut ini wajib di form registrasi, tapi belum ada di form fields §7 PRD, tidak ada di USER_FLOWS, dan tidak ada di API_CONTRACT request body. Perlu diputuskan scope-nya sebelum dev form registrasi akun dan event dimulai | §API Integration | Tim dev + klien | -> sudah selesai diputuskan
 | A4 | **Durasi expiry JWT di Workers** — cookie FE di-set `maxAge: 7 hari`. Harus diselaraskan dengan nilai expiry JWT di BE Workers sebelum implementasi auth dimulai | §Auth Handling | Tim BE | -> sudah diputuskan dan sudah clear
-

@@ -1,0 +1,20 @@
+.gradientText {
+  color: var(--color-secondary-1000);
+}
+
+@supports (background-clip: text) {
+  .gradientText {
+    background: linear-gradient(90deg, var(--color-primary-900), var(--color-secondary-800));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cardEnter { animation: cardEnter 500ms ease-out both; }
+}

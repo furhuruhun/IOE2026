@@ -34,7 +34,7 @@
 
 | Error Code | HTTP | Endpoint | Treatment | Detail |
 |---|---|---|---|---|
-| `VALIDATION_ERROR` | 400 | Semua endpoint dengan request body | **Inline (field-level)** | BE mengirim detail per field — mapping field BE → field FE harus didefinisikan per form (lihat §Catatan per Form). Kalau field dari BE tidak match field manapun di form, fallback ke form-level banner. |
+| `VALIDATION_ERROR` | 400 | Semua endpoint dengan request body | **Inline (field-level)**, dengan fallback form-level banner | ✅ Resolved (API_CONTRACT.md v1.2): response error membawa `error.fields` — object `{ namaField: pesanError }`, key-nya SAMA PERSIS dengan nama field di request body (camelCase), jadi TIDAK perlu mapping field BE→FE terpisah lagi. FE tinggal render pesan dari `error.fields[namaFieldForm]` di bawah field yang sesuai. Kalau field form tertentu tidak muncul di `error.fields` (BE lupa sertakan), fallback tampilkan `error.message` sebagai form-level banner supaya user tetap tahu ada masalah. |
 | `EMAIL_ALREADY_REGISTERED` | 400 | `POST /auth/register` | **Inline (field-level)** — di bawah field Email | Tambahkan link/CTA "Login di sini" di pesan yang sama |
 | `INVALID_CREDENTIALS` | 401 | `POST /auth/login` | **Inline (form-level banner)** | Jangan spesifikkan apakah email atau password yang salah (security best practice) |
 | `UNAUTHORIZED` | 401 | Semua endpoint protected tanpa token valid | **Redirect (silent)** ke `/login?redirect=<path saat ini>` | Tidak perlu toast — ini expected flow (token expired), bukan kesalahan user. Sekalian clear cache TanStack Query user (`queryClient.clear()`) |
@@ -84,12 +84,16 @@ src/
 ### Bentuk mapping (`errorMessages.ts`)
 
 ```ts
+// Shape error dari BE (API_CONTRACT.md [FONDASI 2/4], v1.2):
+// { code: string; message: string; fields?: Record<string, string> }
+// `fields` hanya ada untuk VALIDATION_ERROR, key = nama field request body (camelCase)
+
 export const ERROR_MESSAGES: Record<string, {
   message: string;
   treatment: 'inline-field' | 'inline-banner' | 'toast' | 'redirect-silent' | 'redirect-message';
   redirectTo?: string;
 }> = {
-  VALIDATION_ERROR: { message: 'Ada isian yang belum sesuai, cek lagi ya', treatment: 'inline-field' },
+  VALIDATION_ERROR: { message: 'Ada isian yang belum sesuai, cek lagi ya', treatment: 'inline-field' }, // render dari error.fields per field; fallback banner pakai message di atas kalau field tidak ada di error.fields
   EMAIL_ALREADY_REGISTERED: { message: 'Email ini sudah terdaftar, coba login', treatment: 'inline-field' },
   INVALID_CREDENTIALS: { message: 'Email atau password salah', treatment: 'inline-banner' },
   UNAUTHORIZED: { message: '', treatment: 'redirect-silent', redirectTo: '/login' },
@@ -111,16 +115,24 @@ export const ERROR_MESSAGES: Record<string, {
 export const DEFAULT_ERROR = ERROR_MESSAGES.SERVER_ERROR;
 ```
 
-### Catatan per Form (isi manual seiring form dibuat)
+### Catatan per Form — konsistensi nama field
 
-Setiap kali form baru dibuat, tambahkan baris di sini untuk mapping field BE → field FE (dibutuhkan untuk `VALIDATION_ERROR`):
+> **Update (API_CONTRACT.md v1.2):** mapping field BE → field FE manual di
+> bawah ini **tidak lagi diperlukan** untuk fungsi utamanya, karena
+> `error.fields` sekarang keyed langsung dengan nama field request body
+> (camelCase) — asalkan nama `name`/`id` input di form React Hook Form
+> SAMA PERSIS dengan nama field di request body endpoint terkait
+> (lihat `API_CONTRACT.md` per endpoint), render error otomatis nyambung
+> tanpa mapping tambahan.
+>
+> Tabel di bawah tetap dipertahankan sebagai **referensi cepat** field apa
+> saja yang perlu match persis — berguna untuk review cepat / debugging kalau
+> ada input yang salah nama, tapi bukan lagi mapping yang wajib diisi manual.
 
-| Form | Field BE | Field FE (nama input) |
+| Form | Field request body (= field FE, harus sama persis) | Status |
 |---|---|---|
-| Register | `email`, `password`, `name` | `email`, `password`, `name` (nama field FE identik dengan BE). `confirmPassword` dan `consentPdp` ada di form tapi TIDAK dikirim ke BE (validasi client-side only) — kalau BE mengembalikan `VALIDATION_ERROR` field lain di luar 3 ini, tidak ada field FE yang match → fallback ke form-level banner (lihat `src/features/auth/RegisterForm.tsx`) |
-| Login | `email`, `password` | `email`, `password` (identik) — lihat `src/features/auth/LoginForm.tsx` |
-| My Profile | `name`, `institution`, `phone`, `domicile` | Identical field names. The current API envelope has no documented field-error details; `VALIDATION_ERROR` falls back to the form-level banner. Email is read-only and never submitted. |
-| Requirement upload | `file` | `file` — auto-upload input; validation and size/format errors remain inline on the affected requirement. |
+| Register | `email`, `password`, `name` | ✅ Dikonfirmasi cocok (implementasi selesai) |
+| Login | `email`, `password` | ✅ Dikonfirmasi cocok (implementasi selesai) |
 | Create Team | `teamName` | *(isi saat form dibuat)* |
 | Event Registration | `institution`, `phone`, `domicile`, `lineId`, `cvFile`, dst | *(isi saat form dibuat)* |
 

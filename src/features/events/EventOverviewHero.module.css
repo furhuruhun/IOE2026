@@ -1,0 +1,21 @@
+.headingGradient {
+  color: var(--color-primary-100);
+}
+
+@supports (background-clip: text) {
+  .headingGradient {
+    background: linear-gradient(90deg, var(--color-primary-300), var(--color-neutral-100), var(--color-secondary-200));
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brandEnter { animation: fadeSlideIn 700ms ease-out 100ms both; }
+  .enter { animation: fadeSlideIn 700ms ease-out 300ms both; }
+}

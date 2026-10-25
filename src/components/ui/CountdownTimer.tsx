@@ -5,6 +5,8 @@ import { Icon } from "@iconify/react/offline";
 
 interface CountdownTimerProps {
   targetDate: Date;
+  /** Opt-in visual details for the Event Overview hero; other uses keep their current styling. */
+  variant?: "default" | "eventOverview";
 }
 
 interface TimeLeft {
@@ -60,8 +62,13 @@ const UNITS: { key: keyof TimeLeft; label: string }[] = [
 // "17 Jun 2026" (tidak match EVENT_DATE 5 Feb 2027 yang sudah dikonfirmasi final) — sepertinya
 // sisa teks draft lama yang belum terhapus saat revisi. Dipakai `mdi:timer` sesuai instruksi
 // eksplisit yang lebih detail & lebih baru.
-export function CountdownTimer({ targetDate }: CountdownTimerProps) {
+export function CountdownTimer({ targetDate, variant = "default" }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(targetDate));
+  const isEventOverview = variant === "eventOverview";
+  const hourDigits = String(timeLeft.hours).length;
+  const overviewHoursSize = hourDigits >= 5
+    ? "text-b2 md:text-h5"
+    : hourDigits >= 4 ? "text-h6 md:text-h4" : "text-h4 md:text-h3";
 
   useEffect(() => {
     const timer = setInterval(() => setTimeLeft(getTimeLeft(targetDate)), 1000);
@@ -93,17 +100,17 @@ export function CountdownTimer({ targetDate }: CountdownTimerProps) {
                 style={{ background: "linear-gradient(to bottom, var(--color-primary-500), var(--color-primary-1000))" }}
               >
                 <span className="font-ui text-b4 text-neutral-100">{unit.label}</span>
-                <span className="h-px w-4 bg-neutral-100/40" aria-hidden />
+                <span className={`h-px bg-neutral-100/40 ${isEventOverview ? "w-10 md:w-[70px]" : "w-4"}`} aria-hidden />
                 {/* suppressHydrationWarning: nilai ini SAH beda antara SSR-render dan client
                     hydrate (live clock) — pola resmi React untuk timestamp/clock. */}
-                <span className="font-heading text-h6 text-neutral-100 md:text-h3" suppressHydrationWarning>
+                <span className={`font-heading text-neutral-100 ${isEventOverview ? `tabular-nums ${unit.key === "hours" ? overviewHoursSize : "text-h4 md:text-h3"}` : "text-h6 md:text-h3"}`} suppressHydrationWarning>
                   {pad2(timeLeft[unit.key])}
                 </span>
               </div>
             </div>
 
             {i < UNITS.length - 1 && (
-              <div className="mx-2 flex flex-col gap-1 md:mx-3" aria-hidden>
+              <div className={`mx-2 flex flex-col md:mx-3 ${isEventOverview ? "gap-5" : "gap-1"}`} aria-hidden>
                 <span className="size-2 rounded-full bg-neutral-100/70" />
                 <span className="size-2 rounded-full bg-neutral-100/70" />
               </div>

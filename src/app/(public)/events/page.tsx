@@ -1,12 +1,20 @@
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { EventOverviewHero } from "@/features/events/EventOverviewHero";
+import { EventOverviewAbout } from "@/features/events/EventOverviewAbout";
+import { EventOverviewActivities } from "@/features/events/EventOverviewActivities";
+import { EventOverviewTimeline } from "@/features/events/EventOverviewTimeline";
+import { EventOverviewCTA, EventOverviewContact, EventOverviewSponsors } from "@/features/events/EventOverviewStaticSections";
 
-// Route: /events — Event Overview. Public. ROUTES.md.
+// F-35–F-39: enam section referensi visual + sponsor sebagai section ketujuh.
 export default function EventOverviewPage() {
   return (
-    <PlaceholderPage
-      title="Event Overview"
-      fId="F-35–F-39"
-      note="CountdownHero, CTAList, TimelineSection — belum dibangun."
-    />
+    <main className="flex flex-1 flex-col">
+      <EventOverviewHero />
+      <EventOverviewAbout />
+      <EventOverviewActivities />
+      <EventOverviewTimeline />
+      <EventOverviewCTA />
+      <EventOverviewContact />
+      <EventOverviewSponsors />
+    </main>
   );
 }

@@ -66,7 +66,7 @@ src/
   store/
     QueryProvider.tsx           # TanStack Query client setup, dipasang di root layout
     SessionBootstrap.tsx        # Trigger useCurrentUser sekali di root, masukkan user ke cache
-  middleware.ts                 # Route guard berbasis cookie (di root, satu level di atas src/)
+  proxy.ts                       # Route guard berbasis cookie (di root, satu level di atas src/) — nama file ini menggantikan middleware.ts sejak Next.js 16
 ```
 
 ---
@@ -78,7 +78,7 @@ src/
 Definisikan semua types yang diturunkan dari API_CONTRACT.md — `User`, `UserRole`, shape request body (register, login, google), dan shape response dari BE. File ini tidak punya logic apapun, murni type definitions.
 
 Yang penting ada di sini:
-- `User` object sesuai model di API_CONTRACT — **pastikan field `role: 'peserta' | 'panitia'` ada**, ini yang dipakai middleware dan komponen untuk guard admin route
+- `User` object sesuai model di API_CONTRACT — **pastikan field `role: 'peserta' | 'panitia'` ada**, ini yang dipakai `proxy.ts` dan komponen untuk guard admin route
 - `ApiSuccessResponse<T>` dan `ApiErrorResponse` sesuai format response global di API_CONTRACT
 - Request body types untuk tiap endpoint auth
 
@@ -206,7 +206,17 @@ Pasang keduanya di `app/layout.tsx`:
 
 ---
 
-### 7. Buat `src/middleware.ts`
+### 7. Buat `src/proxy.ts`
+
+> **Catatan versi:** Sejak Next.js 16, nama file konvensi untuk route guard
+> berubah dari `middleware.ts` menjadi `proxy.ts`. Fungsinya identik
+> (intercept request sebelum route handler dijalankan) — cuma nama file
+> dan cara importnya beda. Kalau project ini masih pakai `middleware.ts`
+> di Next.js 16+, file itu **tidak akan error saat build, tapi juga tidak
+> akan pernah dieksekusi saat runtime** — silent failure yang baru
+> ketahuan lewat testing manual, bukan dari pesan error. Semua instruksi
+> di bawah ini memakai nama `proxy.ts` sesuai versi Next.js yang dipakai
+> project (16.x).
 
 Letakkan di root project (satu level di atas `src/`), bukan di dalam `src/`.
 
@@ -217,18 +227,6 @@ Yang perlu di-handle:
 - `/profile`
 - `/events/[slug]/register` — tapi bukan `/events` dan `/events/[slug]` yang public
 
-**Catatan penting: `/competitions/[slug]` TIDAK masuk middleware**
-
-`/competitions/[slug]` tetap Public (lihat ROUTES.md) — tidak ada di daftar protected route di atas. Tapi PRD F-43a tetap mewajibkan force-auth saat user klik tombol "Register" di halaman itu (modal Create/Join Team hanya boleh muncul untuk user yang sudah login).
-
-Karena flow "Register" di sini adalah client-state (modal overlay, bukan navigasi ke route baru — lihat ROUTES.md §Pola Navigasi), guard-nya **tidak bisa lewat middleware**. Implementasinya di level komponen:
-
-1. Tombol "Register" di `/competitions/[slug]` cek `useIsLoggedIn()` sebelum membuka modal
-2. Kalau belum login → `router.push('/login?redirect=/competitions/[slug]')` (pola query param sama dengan yang di-set middleware, supaya `useLogin`/`useGoogleLogin` bisa baca dengan cara yang sama)
-3. Kalau sudah login → buka modal Create/Join Team seperti biasa
-
-Ini berbeda dari `/events/[slug]/register`, yang guard-nya otomatis lewat middleware karena routenya sendiri protected.
-
 Cara paling bersih: definisikan array route prefix yang protected, tambahkan whitelist regex untuk `/events` dan `/events/[slug]` yang public.
 
 **Auth routes** — redirect ke `/dashboard` kalau sudah ada cookie:
@@ -236,9 +234,9 @@ Cara paling bersih: definisikan array route prefix yang protected, tambahkan whi
 - `/register`
 
 **Catatan penting soal admin route:**
-Middleware hanya cek ada/tidaknya cookie (bukan decode role dari JWT) supaya tidak ada roundtrip ke Workers di middleware yang akan memperlambat semua request. Validasi role dilakukan di level komponen dengan `useIsAdmin()`. BE tetap return `403 ADMIN_ONLY` sebagai safety net kalau user biasa coba akses endpoint `/admin/*`.
+`proxy.ts` hanya cek ada/tidaknya cookie (bukan decode role dari JWT) supaya tidak ada roundtrip ke Workers di `proxy.ts` yang akan memperlambat semua request. Validasi role dilakukan di level komponen dengan `useIsAdmin()`. BE tetap return `403 ADMIN_ONLY` sebagai safety net kalau user biasa coba akses endpoint `/admin/*`.
 
-Kalau nanti ingin block admin route di middleware juga tanpa roundtrip, simpan `role` sebagai JWT claim di Workers dan decode di middleware dengan library seperti `jose` — tidak perlu hit Workers, cukup verify signature lokal.
+Kalau nanti ingin block admin route di `proxy.ts` juga tanpa roundtrip, simpan `role` sebagai JWT claim di Workers dan decode di `proxy.ts` dengan library seperti `jose` — tidak perlu hit Workers, cukup verify signature lokal.
 
 **Matcher config** — exclude `_next/static`, `_next/image`, `favicon.ico`, dan semua file dengan ekstensi (gambar, font, dst).
 
@@ -287,14 +285,14 @@ Mapping ini ditaruh di komponen form atau di file constants terpisah.
 Flow lengkapnya:
 ```
 User akses /events/ioe-talkshow/register (belum login)
-  → middleware: tidak ada cookie
+  → proxy.ts: tidak ada cookie
   → redirect ke /login?redirect=/events/ioe-talkshow/register
   → user login
   → useLogin onSuccess: baca ?redirect= dari URL
   → router.push('/events/ioe-talkshow/register')
 ```
 
-Query param `?redirect=` di-set oleh middleware saat redirect ke `/login`. Hook `useLogin` dan `useGoogleLogin` membacanya dari `window.location.search` di `onSuccess`.
+Query param `?redirect=` di-set oleh `proxy.ts` saat redirect ke `/login`. Hook `useLogin` dan `useGoogleLogin` membacanya dari `window.location.search` di `onSuccess`.
 
 ---
 
@@ -315,3 +313,4 @@ Query param `?redirect=` di-set oleh middleware saat redirect ke `/login`. Hook 
 | A1 | **Durasi expiry JWT di Workers** — cookie di-set `maxAge: 7 hari` di `lib/api.ts`. Nilai ini harus sama dengan expiry token di Workers — kalau beda, cookie masih ada tapi token sudah expired, user dapat error 401 tanpa bisa login ulang otomatis | §Langkah 2, §Yang Perlu Dikonfirmasi ke Tim BE | Tim BE | -> lihat AUTH_IMPLEMENTATION.md, bagian langkah 3, me/route.ts
 | A2 | **`NEXT_PUBLIC_GOOGLE_CLIENT_ID`** — belum diterima dari klien. Blocker untuk langkah implementasi Google OAuth button di komponen | §Environment Variables | Klien + BE | -> nanti akan diberitahu lagi link nya
 | A3 | **Token blocklist/revocation di Workers** — `logout/route.ts` saat ini hanya clear cookie tanpa hit Workers (asumsi JWT stateless). Kalau BE nanti implementasi revocation/blocklist, langkah logout perlu diupdate dengan call ke Workers sebelum clear cookie | §Langkah 3 (`logout/route.ts`) | Tim BE (konfirmasi apakah JWT stateless atau ada revocation) | -> stateless JWT saja sudah cukup
+| A4 | **Nama file route guard (`middleware.ts` vs `proxy.ts`)** — ditemukan saat scaffold bahwa Next.js 16 (versi yang ter-install) mendeprecate `middleware.ts` tanpa error build; file lama silent, tidak pernah dieksekusi runtime. Sudah diperbaiki ke `proxy.ts` di kode dan disinkronkan ke §Langkah 7 dokumen ini serta `TECHNICAL_CONSTRAINTS_FE.md` | §Langkah 7 | Sudah selesai | -> resolved, lihat CHANGELOG.md untuk detail temuan

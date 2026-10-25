@@ -29,6 +29,7 @@ Env var FE: `WORKERS_API_URL` (server-only, **tanpa** prefix `NEXT_PUBLIC_`) —
 |---|---|---|
 | 1.0 | [tgl] | Draft awal: Auth, Profile, Competitions, Team, Requirements, Events, Dashboard, Admin (placeholder) |
 | 1.1 | [tgl] | Tambah endpoint `PATCH /competitions/:id/team/visibility` untuk toggle Private/Public; update field `role` di User model; konfirmasi format CV PDF only; resolve auto-fill event registration dari Profile |
+| 1.2 | 2026-08-14 | Perluas format response error untuk `VALIDATION_ERROR` dengan field opsional `fields` (breakdown per field) — sebelumnya tabel Error Code Reference menjanjikan "detail per field" tapi format response global belum mendefinisikannya, ditemukan saat implementasi FE (lihat CHANGELOG.md FE) |
 
 ---
 
@@ -44,6 +45,24 @@ Env var FE: `WORKERS_API_URL` (server-only, **tanpa** prefix `NEXT_PUBLIC_`) —
 ```json
 { "success": false, "error": { "code": "string", "message": "string" } }
 ```
+- **Format response error khusus `VALIDATION_ERROR`** ✅ (resolve gap dokumentasi — lihat CHANGELOG.md FE untuk konteks temuan): response di atas diperluas dengan field opsional `fields`, berisi breakdown pesan error per field yang gagal validasi. **Semua field yang gagal ditampilkan sekaligus** dalam satu response (bukan cuma field pertama), supaya user tidak perlu submit berkali-kali untuk menemukan semua kesalahan.
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Ada isian yang belum sesuai, cek lagi ya",
+    "fields": {
+      "email": "Format email tidak valid",
+      "password": "Password minimal 8 karakter"
+    }
+  }
+}
+```
+  - `fields` HANYA muncul kalau `code === "VALIDATION_ERROR"`. Error code lain tetap `{code, message}` seperti format response error di atas, tidak berubah.
+  - **Key di `fields` HARUS sama persis dengan nama field di request body endpoint terkait** (camelCase, sesuai field yang didefinisikan di tiap endpoint dokumen ini) — BE cukup echo balik nama field yang diterima dari request, tidak perlu mapping tambahan karena seluruh request body di dokumen ini sudah konsisten camelCase.
+  - Berlaku di **semua endpoint** yang bisa mengembalikan `VALIDATION_ERROR` (lihat Error Code Reference di bawah — "Semua endpoint dengan request body"), bukan hanya endpoint auth.
+  - FE SHOULD tetap menyediakan fallback form-level banner untuk field yang gagal validasi tapi kebetulan tidak ada di `fields` (safety net kalau BE ternyata melewatkan field tertentu) — lihat `ERROR_HANDLING_FE.md`.
 - **HTTP Status Code standar:**
 
 | Code | Dipakai untuk |
@@ -363,7 +382,7 @@ Auto-upload saat file di-drop.
 **Auto-fill dari Profile (dikonfirmasi ✅):** saat halaman `/events/[slug]/register` dimuat, FE SHALL memanggil `GET /profile` satu kali untuk mengisi default value field `institution`, `phone`, `domicile`. Field tetap **editable** — user bisa mengubah nilai tanpa mempengaruhi data di `/profile` miliknya (submission event ini independen, tidak menulis balik ke Profile).
 
 **Response 201:** `{ "success": true, "data": { "registrationId": "string" } }`
-> Setelah response 201 dikirim, Workers trigger pengiriman email notifikasi ke user secara server-side (fire-and-forget — tidak blocking response). FE tidak perlu tahu hasilnya: cukup redirect ke `/confirmation?from=registration` saat terima 201. Kalau email gagal terkirim, pendaftaran tetap dianggap berhasil dan tidak di-rollback.
+> Setelah response 201 dikirim, Workers trigger pengiriman email notifikasi ke user secara server-side (fire-and-forget — tidak blocking response). FE tidak perlu tahu hasilnya: cukup redirect ke `/confirmation` saat terima 201. Kalau email gagal terkirim, pendaftaran tetap dianggap berhasil dan tidak di-rollback.
 **Response 400:** error code `REGISTRATION_CLOSED` atau `QUOTA_FULL`
 
 ### 3.5 Dashboard
@@ -408,7 +427,7 @@ Semua kemungkinan error code di seluruh API, satu tempat rujukan.
 
 | Error Code | HTTP Status | Muncul di Endpoint | Pesan User-Facing (ID) |
 |---|---|---|---|
-| `VALIDATION_ERROR` | 400 | Semua endpoint dengan request body | "Ada isian yang belum sesuai, cek lagi ya" (+ detail per field) |
+| `VALIDATION_ERROR` | 400 | Semua endpoint dengan request body | "Ada isian yang belum sesuai, cek lagi ya" — lihat shape `fields` di [FONDASI 2/4] Konvensi Global |
 | `EMAIL_ALREADY_REGISTERED` | 400 | POST /auth/register | "Email ini sudah terdaftar, coba login" |
 | `INVALID_CREDENTIALS` | 401 | POST /auth/login | "Email atau password salah" |
 | `UNAUTHORIZED` | 401 | Semua endpoint protected tanpa token valid | Redirect ke `/login`, tidak perlu pesan visual |
