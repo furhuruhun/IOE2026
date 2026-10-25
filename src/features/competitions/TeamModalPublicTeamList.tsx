@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Icon } from "@iconify/react/offline";
 import { Button } from "@/components/ui/Button";
 import { usePublicTeams, useJoinPublicTeam } from "@/hooks/useTeam";
@@ -17,9 +18,13 @@ interface TeamModalPublicTeamListProps {
 // F-18 Cabang C — join tim public tanpa Team Code. USER_FLOWS_v2.md §Cabang C: "Klik link →
 // konten modal berganti instan (bukan modal baru)... FE hit GET .../team/public".
 export function TeamModalPublicTeamList({ competitionId, onBack, onJoined, onToast }: TeamModalPublicTeamListProps) {
-  const { data: teams, isLoading, refetch } = usePublicTeams(competitionId, true);
+  const { data: teams, isLoading, isError, error, refetch } = usePublicTeams(competitionId, true);
   const joinPublicTeam = useJoinPublicTeam(competitionId);
   const handleApiError = useErrorHandler();
+
+  useEffect(() => {
+    if (error) handleApiError(error as ApiError, { onToast });
+  }, [error, handleApiError, onToast]);
 
   const handleJoin = (teamId: string) => {
     joinPublicTeam.mutate(teamId, {
@@ -44,6 +49,8 @@ export function TeamModalPublicTeamList({ competitionId, onBack, onJoined, onToa
         <Icon icon="mdi:chevron-left" className="size-4" />
         Kembali
       </button>
+
+      {isError && <Button type="button" variant="ghost" onClick={() => { void refetch(); }}>Coba lagi</Button>}
 
       {isLoading && (
         <div className="flex flex-col gap-2" aria-hidden>

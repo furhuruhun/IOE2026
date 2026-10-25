@@ -75,7 +75,7 @@ export function CompetitionDiscordCTA() {
             href={discordInviteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="relative inline-flex shrink-0 scale-75 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 sm:scale-90 md:scale-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+            className="relative inline-flex shrink-0 scale-75 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 sm:scale-90 md:scale-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
             style={{ background: CTA_GRADIENT }}
           >
             Join Now

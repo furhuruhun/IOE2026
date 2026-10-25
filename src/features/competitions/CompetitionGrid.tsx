@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Icon } from "@iconify/react/offline";
 import { Button } from "@/components/ui/Button";
@@ -108,7 +109,7 @@ function CompetitionCardMobile({
 
           <div className="flex min-h-0 w-full flex-1 flex-col justify-center px-12">
             {blurb && (
-              <img src={blurb.imageUrl} alt={competition.name} className="w-full object-contain" />
+              <Image src={blurb.imageUrl} alt={competition.name} width={192} height={169} unoptimized className="h-auto w-full object-contain" />
             )}
           </div>
 
@@ -132,20 +133,20 @@ function CompetitionCardDesktop({ competition, blurb }: CompetitionCardData) {
       >
         <div className="flex w-full items-center gap-10 p-8">
           {blurb && (
-            <img
+            <Image width={192} height={169} unoptimized
               src={blurb.imageUrl}
               alt={competition.name}
               className="h-[169px] w-[192px] shrink-0 object-contain drop-shadow-[0_2.544px_2.544px_#2e0002] md:max-lg:h-[144px] md:max-lg:w-[163px]"
             />
           )}
 
-          <div className="flex h-full flex-1 flex-col items-start justify-between gap-5">
+          <div className="flex h-full min-w-0 flex-1 flex-col items-start justify-between gap-5">
             <h3 className="w-full text-h3 text-secondary-1000 md:max-lg:text-h4">{competition.name}</h3>
             {blurb && <p className="w-full font-body text-b1 text-neutral-700">{blurb.description}</p>}
 
             <Link
               href={`/competitions/${competition.slug}`}
-              className="relative flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+              className="relative flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
               style={{ background: CTA_GRADIENT }}
             >
               Lihat Detail
@@ -166,7 +167,7 @@ export function CompetitionGrid() {
   const goToDetail = (slug: string) => router.push(`/competitions/${slug}`);
 
   return (
-    <section id="our-competition" className="flex w-full flex-col items-center gap-2xl py-16">
+    <section id="our-competition" className="wrap-anywhere flex w-full flex-col items-center gap-2xl py-16">
       <h2 className="text-h4 text-secondary-1000 md:text-h2">Our Competition</h2>
 
       {isLoading && (

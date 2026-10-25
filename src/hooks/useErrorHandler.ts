@@ -12,6 +12,7 @@ interface ErrorLike {
 }
 
 interface HandleErrorCallbacks {
+  redirectTo?: string;
   onInlineField?: (message: string) => void;
   onInlineBanner?: (message: string) => void;
   onToast?: (message: string) => void;
@@ -42,7 +43,7 @@ export function useErrorHandler() {
         case "redirect-silent":
           // UNAUTHORIZED — expected flow (token expired), tidak perlu toast.
           queryClient.clear();
-          router.push(entry.redirectTo ?? "/login");
+          router.push(callbacks.redirectTo ?? entry.redirectTo ?? "/login");
           break;
         case "redirect-message":
           callbacks.onToast?.(message);

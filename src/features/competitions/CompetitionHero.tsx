@@ -48,7 +48,7 @@ export function CompetitionHero() {
       style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
     >
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
-        <div className="animate-glow-dim size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
+        <div className="animate-glow-dim motion-reduce:animate-none size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-360 flex-col items-center justify-center gap-12 px-4 md:px-8 lg:flex-row xl:px-23">
@@ -61,22 +61,22 @@ export function CompetitionHero() {
             <h1 className="font-heading text-h3 text-neutral-100 md:text-h1">Competition Overview</h1>
           </div>
 
-          {isLoading || !nearestDeadline ? (
+          {isLoading ? (
             <div className="flex items-center gap-2" aria-hidden>
               {[0, 1, 2].map((i) => (
                 <div key={i} className="size-[72px] animate-pulse rounded-full bg-neutral-900 md:size-[112px]" />
               ))}
             </div>
-          ) : (
+          ) : nearestDeadline ? (
             <CountdownTimer targetDate={nearestDeadline} />
-          )}
+          ) : null}
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
             <div className="flex items-center justify-center gap-4 md:gap-6">
               <button
                 type="button"
                 onClick={() => router.push("#our-competition")}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
                 style={{ background: CTA_GRADIENT }}
               >
                 Lihat Semua Kompetisi
@@ -85,7 +85,7 @@ export function CompetitionHero() {
               <button
                 type="button"
                 onClick={() => router.push("#timeline")}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
               >
                 Lihat Timeline
               </button>

@@ -52,9 +52,9 @@ export function CompetitionDetailOtherCompetitionsCarousel({
             <button
               type="button"
               onClick={() => router.push(`/competitions/${competition.slug}`)}
-              className="flex flex-1 flex-col gap-sm rounded-3xl border border-neutral-300 bg-neutral-100 p-8 text-center transition-colors hover:bg-neutral-200"
+              className="flex min-w-0 flex-1 flex-col gap-sm rounded-3xl border border-neutral-300 bg-neutral-100 p-2 text-center sm:p-4 md:p-8 transition-colors hover:bg-neutral-200"
             >
-              <h3 className="text-h5 text-secondary-1000">{competition.name}</h3>
+              <h3 className="break-words text-b2 text-secondary-1000 sm:text-h5">{competition.name}</h3>
               <span className="text-b4 text-neutral-500">Lihat Detail</span>
             </button>
 

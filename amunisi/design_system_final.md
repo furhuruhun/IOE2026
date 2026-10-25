@@ -758,6 +758,16 @@ Isi: `mdi:alert-circle-outline`, pesan error dari `error.code` (mapping via Erro
 
 ---
 
+### Dashboard reference alignment — 2026-10-25
+
+The user-provided `Parent Frame Website dashboard (4).png` is the current visual reference for dashboard Home, superseding the earlier COMPFEST-derived layout where they differ. Use existing IOE 2027 typography, semantic colors and available brand assets; do not copy its sample names/dates, IOE 2026 branding or placeholder calendar image.
+
+- Desktop (`xl+`): unified portrait/navigation card on the left, My Journey and **My Preparation** in the center, and the real Calendar in a right sidebar. Tablet keeps the calendar below the central panels; mobile stacks the panels and retains the accessible sidebar disclosure.
+- Aqua gradient shell, dashboard-specific gradient Navbar, existing Footer, light rounded panels and prominent centered headings. The public Navbar retains its existing appearance.
+- **My Preparation** is the display heading for the existing Assignments module; its data contract and See Details flow are unchanged.
+- Calendar now uses a light `neutral/100` surface, `secondary/1000` text, a subtle light grid and existing `--calendar-accent` for scheduled dates. This overrides the old dark CalendarWidget palette below for this dashboard; retain real month navigation and schedule data.
+- The top-level Back action on Home returns to `/`, explicitly confirmed by the user. Activity-detail Back still returns to dashboard Home without changing `/dashboard`; Profile remains a dashboard tab with its separate `/profile` entry intact.
+
 ### CalendarWidget
 
 Dipakai di Dashboard (F-50, F-51).
@@ -1133,12 +1143,18 @@ Dipakai di Competition Details, section "What You'll Gain" (F-15). Sumber: Frame
 --tiltedcard-caption-text: oklch(0.98 0.01 210); /* nyaris putih */
 --tiltedcard-caption-border: color-mix(in oklch, #078EA4 45%, transparent); /* tint secondary tipis */
 
+**Shape/layout reference update — 2026-10-25:** follow the newly supplied three-card reference for geometry only. Keep the existing teal/mint visual identity, page background, sheen, text colors and border colors; do not copy the reference's black/red/magenta palette, gradients or artwork.
+
+Cards use a title at the top, existing icon in the middle and an always-visible description at the bottom. Widths are 256/288/384px; minimum heights 352/416/512px; corners 24px, rising to 40px on desktop. The center card sits in front, outer cards rotate ±10deg and overlap using responsive horizontal offsets of 192/216/288px. The fan retains local horizontal scrolling on smaller screens; document width must not grow. Existing hover/focus/click emphasis remains, with pressed-state semantics.
+
+**Automatic carousel behavior — 2026-10-25:** keep the current geometry, colors, typography and content. The initial middle item is the active/front card. After a 3000ms hold, animate the three items into their next slots over 500ms: right → center, center → left, left → right along a rear arc. Interpolate translation, rotation, scale and depth/z-index; do not spin individual cards in place. After the movement completes, hold the new center for a fresh 3000ms and repeat indefinitely. Hover/focus pauses the next rotation; an already-started movement finishes smoothly. Autoplay pauses while offscreen or the document is hidden and is disabled for reduced motion. Existing click emphasis remains, and an automatic cycle clears stale click emphasis once interaction has ended.
+
 **Transform per kartu** (`center = (total-1)/2`, `relative = index - center`):
 ```
 translate(-50%, -50%)
-translate(x, y)                /* x = relative × 130px, y = |relative| × 8px */
+translate(x, y)                /* x = relative × responsive offset (192/216/288px), y = |relative| × 8px */
 rotateX(tiltX) rotateY(tiltY) /* tilt dinamis mouse-follow */
-rotate(relative × 7deg)        /* rotasi statis dasar */
+rotate(relative × 10deg)        /* rotasi statis dasar */
 scale(baseScale)               /* 1 default, 1.02 hover, 1.08 focus */
 ```
 
@@ -1150,20 +1166,11 @@ tiltY = pointerX × 5deg
 `pointerX/Y` dari posisi kursor relatif ke container (-0.5 sampai 0.5).
 
 **Click-to-focus:**
-- Klik kartu → `scale(1.08)`, terangkat `-28px`, `z-index: 100`
+- Klik kartu → `scale(1.08)`, terangkat `-28px`, layering tetap mengikuti slot: kartu tengah selalu di depan kartu samping
 - Kartu lain → `opacity: 0.46`
 - Animation speed: **520ms**, `cubic-bezier(.2,.8,.2,1)`
 
-**Caption (glassmorphic pill, muncul hanya saat hover/focus):**
-```css
-border-radius: 999px;
-padding: 8px 11px;
-backdrop-filter: blur(16px);
-background: var(--tiltedcard-caption-bg);   /* ⚠️ placeholder */
-color: var(--tiltedcard-caption-text);      /* ⚠️ placeholder */
-border: 1px solid var(--tiltedcard-caption-border); /* ⚠️ placeholder */
-font: Plus Jakarta Sans, 12px, semibold;
-```
+**Description (current reference layout):** always visible below the artwork, in normal grid flow, full content width with wrapping. Use existing `--tiltedcard-caption-text` and body typography (14px → 16px). The older hover-only glass pill is superseded for this layout; its background/border variables remain available but are not applied to the paragraph. Do not reserve caption space using absolute positioning or hide it behind the title.
 
 **Radial sheen overlay:**
 ```css

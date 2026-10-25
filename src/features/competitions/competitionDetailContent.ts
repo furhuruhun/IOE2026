@@ -19,7 +19,7 @@ export interface GainItem {
   // icon+title+caption, bukan galeri foto seperti referensi Framer aslinya di
   // design_system_final.md §TiltedCard. Dicatat di CHANGELOG.md.
   title: string;
-  caption: string; // muncul di glassmorphic pill saat hover/focus TiltedCard
+  caption: string; // visible body description in the benefit-card layout
 }
 
 interface CompetitionDetailContentEntry {

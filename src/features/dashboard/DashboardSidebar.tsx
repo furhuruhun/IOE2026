@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import * as RadixTabs from "@radix-ui/react-tabs";
 import { Icon } from "@iconify/react/offline";
 import { useUser } from "@/hooks/useAuth";
-import { UserAvatar } from "@/components/ui/Navbar";
+
 import type { DashboardTab } from "./dashboardTabs";
 
 // Sidebar nav Home/My Profile/Registered Events = Radix Tabs (client-state, /dashboard
@@ -22,24 +23,27 @@ const TAB_ITEMS: { value: DashboardTab; label: string; icon: string }[] = [
 ];
 
 const TAB_TRIGGER_CLASS =
-  "flex h-[46px] w-full items-center gap-2.5 rounded-xl px-4 font-ui text-b3 font-bold text-neutral-1000 transition-colors hover:bg-black/10 data-[state=active]:bg-secondary-1000 data-[state=active]:text-neutral-100";
+  "flex h-[46px] w-full items-center gap-2.5 rounded-xl px-4 font-ui text-b3 font-bold text-neutral-1000 transition-colors hover:bg-black/10 data-[state=active]:bg-primary-100 data-[state=active]:text-neutral-1000";
 
 export function DashboardSidebar() {
   const user = useUser();
+  const mobileMenuId = useId();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex w-full flex-col gap-6 md:w-[280px] md:shrink-0 md:self-start">
+    <div className="flex w-full min-w-0 flex-col gap-6 rounded-3xl bg-neutral-100 p-6 md:self-start xl:mt-16 xl:min-h-[35rem]">
       {/* Profile card — F-45/F-46, avatar+nama otomatis dari akun Google */}
-      <div className="flex flex-col items-center gap-3 rounded-[24px] bg-neutral-200 px-6 py-8 text-center">
-        <UserAvatar avatarUrl={user?.avatarUrl} size="size-[22px]" />
-        <p className="font-ui text-b2 font-bold text-neutral-1000">{user?.name ?? "—"}</p>
+      <div className="flex flex-col items-center gap-5 py-4 text-center md:pb-8">
+        <p className="w-full wrap-anywhere font-heading text-h6 text-neutral-1000">{user?.name ?? '—'}</p>
+        {user?.avatarUrl ? <Image src={user.avatarUrl} alt="" width={128} height={128} unoptimized referrerPolicy="no-referrer" className="size-24 rounded-full object-cover md:size-28" /> : <Icon icon="mdi:account-circle" className="size-24 text-neutral-1000 md:size-28" />}
       </div>
 
       {/* Mobile — dropdown disclosure, cuma tampil <md */}
       <div className="relative w-full md:hidden">
         <button
           type="button"
+          aria-expanded={mobileMenuOpen}
+          aria-controls={mobileMenuOpen ? mobileMenuId : undefined}
           onClick={() => setMobileMenuOpen((v) => !v)}
           className="flex w-full items-center justify-between rounded-xl bg-neutral-200 px-4 py-2.5"
         >
@@ -53,7 +57,7 @@ export function DashboardSidebar() {
           />
         </button>
         {mobileMenuOpen && (
-          <RadixTabs.List className="mt-2 flex flex-col gap-2 rounded-xl bg-neutral-200 p-2">
+          <RadixTabs.List id={mobileMenuId} className="mt-2 flex flex-col gap-2 rounded-xl bg-neutral-200 p-2">
             {TAB_ITEMS.map((item) => (
               <RadixTabs.Trigger
                 key={item.value}

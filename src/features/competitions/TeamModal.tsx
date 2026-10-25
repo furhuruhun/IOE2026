@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Icon } from "@iconify/react/offline";
@@ -21,11 +21,13 @@ type Step = "form" | "success";
 // halaman (Hero, Join a Team Now) tanpa duplikasi instance modal.
 export function TeamModal() {
   const router = useRouter();
+  const returnFocus = useRef<HTMLElement | null>(null);
   const { isOpen, activeTab, competitionId, slug, competitionName, close, setActiveTab } = useTeamModalStore();
   const [step, setStep] = useState<Step>("form");
   const [successTeam, setSuccessTeam] = useState<Team | null>(null);
   const [wasCreated, setWasCreated] = useState(false);
   const [toast, setToast] = useState<{ status: ToastStatus; message: string } | null>(null);
+  const handleToast = useCallback((message: string) => setToast({ status: 'error', message }), []);
 
   // F-18 edge case (USER_FLOWS_v2.md): user yang sudah punya tim di kompetisi ini, modal
   // di-skip otomatis begitu diketahui. Query ini juga yang jadi dasar useRegisterGuard
@@ -88,12 +90,14 @@ export function TeamModal() {
           style={{ background: "rgba(15,30,32,.55)", backdropFilter: "blur(3px)" }}
         />
         <Dialog.Content
-          aria-describedby={undefined}
-          className="fixed left-1/2 top-1/2 z-[10002] w-[calc(100vw-2rem)] max-w-[440px] -translate-x-1/2 -translate-y-1/2 rounded-lg bg-neutral-100 p-8 shadow-xl"
+          onOpenAutoFocus={() => { returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+          onCloseAutoFocus={event => { event.preventDefault(); returnFocus.current?.focus(); }}
+
+          className="fixed left-1/2 top-1/2 z-[10002] w-[calc(100vw-2rem)] max-w-[440px] max-h-[calc(100dvh-2rem)] overflow-y-auto wrap-anywhere motion-reduce:animate-none! -translate-x-1/2 -translate-y-1/2 rounded-lg bg-neutral-100 p-8 shadow-xl"
           style={{ animation: "teamModalIn 260ms cubic-bezier(.2,.8,.2,1)" }}
         >
           <div className="mb-6 flex items-start justify-between gap-4">
-            <div>
+            <div className="min-w-0">
               <Dialog.Title className="font-ui text-h6 font-extrabold text-secondary-1000">
                 Create or Join a Team
               </Dialog.Title>
@@ -126,6 +130,7 @@ export function TeamModal() {
                   <button
                     key={tab.value}
                     type="button"
+                    aria-pressed={activeTab === tab.value}
                     onClick={() => setActiveTab(tab.value)}
                     className={`flex-1 rounded-full py-2 text-b3 font-bold transition-colors ${
                       activeTab === tab.value ? "bg-neutral-100 text-secondary-1000 shadow-sm" : "text-neutral-600"
@@ -143,7 +148,7 @@ export function TeamModal() {
                   competitionId={competitionId}
                   onJoined={handleJoined}
                   onSwitchToCreate={() => setActiveTab("create")}
-                  onToast={(message) => setToast({ status: "error", message })}
+                  onToast={handleToast}
                 />
               )}
             </>

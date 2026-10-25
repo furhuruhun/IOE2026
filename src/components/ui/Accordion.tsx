@@ -46,7 +46,7 @@ export function Accordion({ items }: AccordionProps) {
         >
           <div className="h-full w-full rounded-[14px] bg-neutral-100 md:rounded-[22px]">
             <RadixAccordion.Header>
-              <RadixAccordion.Trigger className="group flex h-20 w-full flex-1 cursor-pointer items-start justify-between gap-4 px-6.5 py-5.5 text-left font-ui text-s6 font-bold text-neutral-900 outline-none focus-visible:outline-2 focus-visible:outline-offset-[3px] md:px-9 md:py-7 md:text-s5">
+              <RadixAccordion.Trigger className="group flex min-h-20 w-full flex-1 cursor-pointer items-start justify-between gap-4 px-6.5 py-5.5 text-left font-ui text-s6 font-bold text-neutral-900 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-[3px] md:px-9 md:py-7 md:text-s5">
                 {item.question}
                 <Icon
                   icon="mdi:chevron-down"

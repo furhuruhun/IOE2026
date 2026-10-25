@@ -18,7 +18,9 @@ export function CompetitionDetailGainsSection({ slug }: CompetitionDetailGainsSe
       <h2 className="text-h4 text-secondary-1000 md:text-h2">
         What You&apos;ll <span className="text-primary-600">Gain</span>
       </h2>
-      <TiltedCard items={gains} />
+      <div className="w-full overflow-x-auto">
+        <TiltedCard items={gains} />
+      </div>
     </section>
   );
 }

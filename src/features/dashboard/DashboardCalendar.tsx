@@ -50,24 +50,24 @@ export function DashboardCalendar() {
   const nowIso = now.toISOString();
 
   return (
-    <section className="flex w-full flex-col gap-3">
-      <h2 className="font-heading text-h5 text-secondary-1000 md:text-h4">Calendar</h2>
+    <section className="flex w-full min-w-0 flex-col gap-4">
+      <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">Calendar</h2>
 
       <div
-        className="flex w-full flex-col gap-5 rounded-[24px] border px-4 py-5 sm:gap-6 sm:px-6 sm:py-6"
-        style={{ background: "var(--calendar-bg)", borderColor: "var(--calendar-border)", color: "var(--color-neutral-100)" }}
+        className="flex w-full xl:min-h-[35rem] flex-col gap-6 rounded-3xl bg-neutral-100 p-4 text-secondary-1000 sm:p-5"
+
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Icon icon="mdi:calendar-range" className="size-6 sm:size-7" />
-            <p className="font-heading text-[18px] sm:text-[20px]">{monthLabel}</p>
+            <p className="font-heading text-b3">{monthLabel}</p>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={goPrev}
               aria-label="Previous month"
-              className="grid size-7 place-items-center rounded-full hover:bg-white/10 sm:size-8"
+              className="grid size-7 place-items-center rounded-full hover:bg-primary-100 sm:size-8"
             >
               <Icon icon="mdi:chevron-left" className="size-5 sm:size-6" />
             </button>
@@ -75,17 +75,17 @@ export function DashboardCalendar() {
               type="button"
               onClick={goNext}
               aria-label="Next month"
-              className="grid size-7 place-items-center rounded-full hover:bg-white/10 sm:size-8"
+              className="grid size-7 place-items-center rounded-full hover:bg-primary-100 sm:size-8"
             >
               <Icon icon="mdi:chevron-right" className="size-5 sm:size-6" />
             </button>
           </div>
         </div>
 
-        <div className="rounded-[24px] p-3 sm:p-4" style={{ border: "1px solid var(--calendar-grid-border)" }}>
+        <div className="rounded-3xl border border-primary-200 bg-neutral-200/40 p-2">
           <div className="mb-1.5 grid grid-cols-7 sm:mb-2">
             {WEEKDAY_LABELS.map((d) => (
-              <div key={d} className="text-center font-ui text-[14px] leading-[1.7]">
+              <div key={d} className="text-center font-ui text-[10px] font-bold leading-[1.7] sm:text-b4">
                 {d}
               </div>
             ))}
@@ -98,11 +98,11 @@ export function DashboardCalendar() {
                 <button
                   key={cell.key}
                   type="button"
-                  className="h-9 w-full rounded-[40px] text-center font-ui text-[0.95rem] font-bold leading-[1.4] transition-colors hover:bg-(--calendar-day-bg-hover) sm:h-10 sm:text-b2"
+                  className="h-9 w-full rounded-full text-center font-ui text-b4 font-bold transition-colors hover:bg-primary-100"
                   style={{
                     opacity: cell.inCurrentMonth ? 1 : 0.2,
                     background: hasSchedule ? "var(--calendar-accent)" : "transparent",
-                    color: "var(--color-neutral-100)",
+                    color: hasSchedule ? "var(--color-neutral-100)" : "var(--color-secondary-1000)",
                     boxShadow: isToday && !hasSchedule ? "inset 0 0 0 1.5px var(--calendar-accent)" : undefined,
                   }}
                 >
@@ -121,10 +121,10 @@ export function DashboardCalendar() {
             sudah ada di codebase, per-item icon pakai logoUrl (fallback icon per type)
             bukan dot generik — sesuai spec "diferensiasi lewat logo, bukan warna/shape
             generik". */}
-        <div className="flex flex-col">
-          {isLoading && <div className="h-16 w-full animate-pulse rounded-xl bg-white/10" aria-hidden />}
+        <div className="flex flex-col gap-3">
+          {isLoading && <div className="h-16 w-full animate-pulse rounded-xl bg-neutral-200" aria-hidden />}
           {!isLoading && sortedSchedule.length === 0 && (
-            <p className="py-2 text-center text-b4" style={{ color: "var(--color-neutral-400)" }}>
+            <p className="py-2 text-center text-b4" style={{ color: "var(--color-neutral-700)" }}>
               Belum ada jadwal.
             </p>
           )}
@@ -133,7 +133,7 @@ export function DashboardCalendar() {
               const isPast = item.date < nowIso;
               const connectorColor = isPast ? "var(--color-neutral-700)" : "var(--calendar-accent)";
               return (
-                <div key={`${item.refId}-${item.date}`} className="grid w-full grid-cols-[3.75rem_1.25rem_minmax(0,1fr)] gap-x-2">
+                <div key={`${item.refId}-${item.date}`} className="grid w-full grid-cols-[3rem_1.25rem_minmax(0,1fr)] gap-x-1">
                   <span className="self-center text-end font-ui text-b4 leading-tight">{formatWibShortDate(item.date)}</span>
                   <div className="relative flex min-h-10 w-5 justify-center self-stretch">
                     {i > 0 && (

@@ -50,3 +50,12 @@ export async function fetchMyTeam(competitionId: string): Promise<Team | null> {
   if (res.status === 404) return null;
   return unwrap<Team>(res);
 }
+
+export async function setTeamVisibility(id: string, visibility: 'private' | 'public') {
+  return unwrap<{ visibility: 'private' | 'public' }>(await fetch(`/api/competitions/${encodeURIComponent(id)}/team/visibility`, {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visibility }),
+  }));
+}
+export async function removeTeamMember(id: string, memberId: string) {
+  await unwrap<unknown>(await fetch(`/api/competitions/${encodeURIComponent(id)}/team/members/${encodeURIComponent(memberId)}`, { method: 'DELETE' }));
+}

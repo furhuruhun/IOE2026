@@ -12,15 +12,15 @@ export function DashboardMyJourney() {
   const items = isError ? [] : (data ?? []);
 
   return (
-    <section className="flex w-full flex-col gap-3">
-      <h2 className="font-heading text-h5 text-secondary-1000 md:text-h4">My Journey</h2>
+    <section className="flex w-full min-w-0 flex-col gap-4">
+      <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">My Journey</h2>
 
-      <div className="flex w-full flex-row gap-2 overflow-hidden rounded-xl bg-neutral-100 p-6 shadow-sm md:gap-6 md:rounded-[36px] md:p-8">
+      <div className="flex min-h-32 w-full flex-row items-center gap-2 overflow-hidden rounded-3xl bg-neutral-100 p-6 md:gap-4">
         {/* Bagian 1 — Add Another (fixed, kiri). F-48: klik → redirect /competitions
             (USER_FLOWS_v2.md "Flow: Dashboard — Tambah Kompetisi ke My Journey"). */}
         <Link href="/competitions" className="flex shrink-0 flex-col items-center gap-2">
           <span className="text-b3 font-bold text-neutral-800 md:text-b2">Add Another</span>
-          <GradientBorderBox className="size-20 md:size-[100px]">
+          <GradientBorderBox className="size-18 md:size-20">
             <Icon icon="mdi:plus-circle-outline" className="size-11 text-secondary-1000" />
           </GradientBorderBox>
         </Link>
@@ -34,10 +34,10 @@ export function DashboardMyJourney() {
           {!isLoading &&
             items.map((item) => (
               <Link key={item.competitionId} href={`/competitions/${item.slug}`} className="flex shrink-0 flex-col items-center gap-2">
-                <span className="max-w-20 truncate text-b3 font-bold text-neutral-800 md:max-w-[100px] md:text-b2">
+                <span className="max-w-18 truncate text-b3 font-bold text-neutral-800 md:max-w-20 md:text-b2">
                   {item.name}
                 </span>
-                <GradientBorderBox className="size-20 md:size-[100px]">
+                <GradientBorderBox className="size-18 md:size-20">
                   {item.logoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- logoUrl dari klien, belum tentu domain ter-whitelist
                     <img src={item.logoUrl} alt="" className="size-full rounded-[15px] object-cover" />

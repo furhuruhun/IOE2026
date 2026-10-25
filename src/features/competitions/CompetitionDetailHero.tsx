@@ -128,7 +128,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
       style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
     >
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
-        <div className="animate-glow-dim size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
+        <div className="animate-glow-dim motion-reduce:animate-none size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-360 flex-col items-center justify-center gap-12 px-4 md:px-8 lg:flex-row xl:px-23">
@@ -148,7 +148,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
             {isLoading || !competition ? (
               <div className="h-12 w-64 animate-pulse rounded-lg bg-neutral-900 md:h-16 md:w-96" aria-hidden />
             ) : (
-              <h1 className="text-center font-heading text-h3 text-neutral-100 md:text-h1">{competition.name}</h1>
+              <h1 className="max-w-full wrap-anywhere text-center font-heading text-h3 text-neutral-100 md:text-h1">{competition.name}</h1>
             )}
           </div>
 
@@ -158,7 +158,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
                 type="button"
                 onClick={handleRegisterClick}
                 disabled={isLoading}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 disabled:pointer-events-none disabled:opacity-50 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 disabled:pointer-events-none disabled:opacity-50 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
                 style={{ background: CTA_GRADIENT }}
               >
                 Register
@@ -167,7 +167,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
 
               <a
                 href="#about"
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
               >
                 Explore More
                 <Icon icon="mdi:arrow-down" className="size-5 md:size-6" />

@@ -12,7 +12,7 @@ Peta seluruh route FE, dipetakan ke Functional Requirement ID di PRD v4 supaya C
 | `/events/[slug]/register` | Event Registration Form | **Protected** (force auth) | F-31, F-34a, §7 | RegistrationForm, SessionRadioGroup, PaymentProofUpload |
 | `/login` | Login | Public | F-40–F-41 | LoginForm, GoogleAuthButton |
 | `/register` | Register | Public | F-40, F-42 | RegisterForm |
-| `/profile` | My Profile | **Protected** | F-55–F-56 | ProfileForm |
+| `/profile` | My Profile | **Protected** | F-55–F-56 | Shared ProfileForm; standalone entry from Navbar |
 | `/dashboard` | Dashboard | **Protected** | F-44–F-52 | Sidebar, MyJourney, AssignmentList, CalendarWidget, ActivityDetailView (client-state, lihat catatan di bawah) |
 | `/confirmation` | Confirmation | Public (post-submit) | F-53–F-54 | SuccessMessage |
 | `/admin/*` | Admin Panel | **Protected** (role: Panitia) | F-57–F-58 | ⚠️ TBD — struktur sub-route belum ditentukan, perlu sesi requirement gathering terpisah |
@@ -25,6 +25,7 @@ Jangan disamakan treatment-nya, ini beda pattern yang disengaja:
 | **Pendaftaran Kompetisi** (Create/Join Team) | **Client-side state di endpoint yang sama** | Klik "Register" di `/competitions/[slug]` → tetap di `/competitions/[slug]`, modal Create/Join Team muncul sebagai overlay. Tidak ada perpindahan route. |
 | **Pendaftaran Event** | **Navigasi ke route terpisah** | Klik "Register" di `/events/[slug]` → navigasi sungguhan ke `/events/[slug]/register`, halaman penuh baru. |
 | **"See Details" di Dashboard Assignment** | **Client-side state di endpoint yang sama** | Klik "See Details" → tetap di `/dashboard`, konten utama berganti ke tampilan detail aktivitas (Your Team, Registration Requirements, dst). Tombol "Back" mengembalikan state, BUKAN browser back. |
+| **Dashboard My Profile** | **Client-side tab at the same URL** | Sidebar My Profile keeps `/dashboard`. The existing Navbar entry keeps `/profile`. Both render the same ProfileForm and share profile query data; neither entry redirects to the other. Resolves the August 30 changelog follow-up while retaining its explicit Tabs decision. |
 | **"Lihat Rundown" di Event Details** | **Client-side state (slide overlay)** dalam SpeakerCard | Tidak mengubah route sama sekali, cuma toggle state per card |
 
 ## Protected Route Behavior

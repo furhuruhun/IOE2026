@@ -1,12 +1,5 @@
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
-
-// Route: /profile — Protected (middleware.ts). ROUTES.md.
+import { ProfileForm } from '@/features/profile/ProfileForm';
+// Retain the existing protected Navbar entry point; dashboard sidebar remains a tab.
 export default function ProfilePage() {
-  return (
-    <PlaceholderPage
-      title="My Profile"
-      fId="F-55–F-56"
-      note="ProfileForm — belum dibangun."
-    />
-  );
+  return <main className="mx-auto w-full max-w-[80rem] px-6 py-10 md:px-12 md:py-16"><ProfileForm /></main>;
 }

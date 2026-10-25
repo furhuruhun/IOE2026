@@ -58,21 +58,22 @@ export function UserAvatar({ avatarUrl, size }: { avatarUrl?: string | null; siz
   );
 }
 
-export function Navbar() {
+export function Navbar({ appearance = "default" }: { appearance?: "default" | "dashboard" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const isLoggedIn = useIsLoggedIn();
   const user = useUser();
 
   return (
     <header>
-      <nav className="fixed top-0 inset-x-0 w-full h-14 md:h-20 bg-neutral-100 border-b border-neutral-300 px-6 md:px-20 grid grid-cols-[1fr_auto_1fr] items-center z-[10000]">
+      <nav className={`fixed top-0 inset-x-0 w-full border-b px-6 md:px-20 grid grid-cols-[1fr_auto_1fr] items-center z-[10000] ${appearance === 'dashboard' ? 'h-20 border-primary-200 md:h-26' : 'h-14 md:h-20 bg-neutral-100 border-neutral-300'}`}
+        style={appearance === 'dashboard' ? { background: 'linear-gradient(90deg, var(--color-primary-600), var(--color-primary-400), var(--color-primary-100))' } : undefined}>
         {/* Logo — belum ada aset final dari klien (design_system_final.md: "Logo di Navbar
             masih 'IOE 2026' — placeholder asset, menunggu aset final dari klien") */}
         <Link href="/" className="flex items-center gap-2 justify-self-start">
-          <span className="flex size-7 items-center justify-center rounded-md bg-secondary-1000 text-neutral-100 md:size-9">
-            <Icon icon="mdi:waves" className="size-4 md:size-5" />
+          <span className={'flex items-center justify-center rounded-md bg-secondary-1000 text-neutral-100 ' + (appearance === 'dashboard' ? 'size-10 md:size-16' : 'size-7 md:size-9')}>
+            <Icon icon="mdi:waves" className={appearance === 'dashboard' ? 'size-6 md:size-10' : 'size-4 md:size-5'} />
           </span>
-          <span className="font-heading text-[15px] text-secondary-1000 md:text-[17px]">IOE 2027</span>
+          <span className={'font-heading text-secondary-1000 ' + (appearance === 'dashboard' ? 'text-h6 md:text-h4' : 'text-[15px] md:text-[17px]')}>IOE 2027</span>
         </Link>
 
         {/* Menu group — tepat di tengah-tengah navbar (grid col tengah, bukan flex
@@ -81,7 +82,7 @@ export function Navbar() {
             ≥1280px. */}
         <div className="flex items-center gap-4 justify-self-center max-xl:hidden">
           {MENU_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className={MENU_PILL}>
+            <Link key={item.href} href={item.href} className={appearance === 'dashboard' ? 'flex w-56 items-center justify-between rounded-2xl border-2 border-neutral-100 px-4 py-4 font-ui text-b3 text-secondary-1000 hover:bg-neutral-100/20' : MENU_PILL}>
               {item.label}
               <Icon icon="mdi:chevron-down" className="size-4" />
             </Link>
@@ -93,7 +94,7 @@ export function Navbar() {
             desync state isDark/isHover antar breakpoint, lihat CHANGELOG), lalu user-pill
             (desktop) / hamburger (mobile) */}
         <div className="flex items-center gap-4 justify-self-end">
-          <ThemeToggle />
+          {appearance !== 'dashboard' && <ThemeToggle />}
 
           {/* User / Login pill — desktop only, ≥1280px */}
           <div className="hidden xl:flex">

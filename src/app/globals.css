@@ -276,11 +276,11 @@ h6 {
 @keyframes teamModalIn {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) translateY(18px) scale(0.97);
+    transform: translateY(18px) scale(0.97);
   }
   100% {
     opacity: 1;
-    transform: translate(-50%, -50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
   }
 }
 
