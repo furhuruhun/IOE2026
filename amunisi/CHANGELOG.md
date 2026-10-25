@@ -12,6 +12,26 @@
 
 ## Unreleased
 
+### [2026-10-25 10:48] Implement Dashboard Registered Events
+
+- **Tipe:** Feature
+- **Scope:** Dashboard Registered Events tab and GET /dashboard/events only.
+- **Ringkasan:** Replaced the tab placeholder with a responsive registered-event list using the existing type/service/hook. Display only documented name, session type and WIB date, with links to the already-defined /events/[slug] route; support populated, loading, empty, mapped error/toast and retry states without changing the dashboard tab URL. No payment, approval or attendance statuses were invented because the response has no status field.
+- **File diubah:**
+  - `src/features/dashboard/DashboardRegisteredEvents.tsx` — accessible list/state UI, long-content wrapping, existing design tokens, error hook and expired-session return to dashboard after login.
+  - `src/app/(protected)/dashboard/page.tsx` — mount the isolated component in the existing Registered Events tab.
+  - `src/app/api/dashboard/events/route.ts` — require participant cookie, forward token without caching, clear expired upstream 401 cookie, restrict empty mock data to development without a configured Workers backend, and return errors rather than mock successes for configured-backend failures.
+  - `amunisi/CHANGELOG.md` — record this isolated implementation and verification.
+- **Terkait requirement:** F-45; USER_FLOWS event-registration step 9; ROUTES dashboard tab and existing event-detail route; API_CONTRACT §3.5 GET /dashboard/events. F-51 calendar implementation was not modified.
+- **Breaking change:** No API contract change. Unauthenticated dashboard-events requests now correctly return 401; production without a backend returns 503 instead of demo data.
+- **Belum selesai / follow-up:**
+  - TypeScript and targeted ESLint passed. Full ESLint: zero errors, one existing RegisterForm React Hook Form/React Compiler warning. Final diff reviewed and whitespace checked.
+  - Headless Chrome with temporary participant/API fixtures passed 320/390/768/1440px: loading, populated including long unbroken titles/session text, empty, error, successful retry, exact event-detail navigation, expired-session redirect, no horizontal overflow, and no console errors/warnings. Populated two-event screenshots inspected at mobile and desktop sizes.
+  - At each width, smoke-tested dashboard Home, Activity Detail, requirements accordion/upload/remove, Back to Home, and Profile edit/cancel. These are frontend fixture checks, not live Workers or physical-device tests.
+  - Isolated executable checks against the actual route implementation verified token forwarding, no-store, development empty mock, production missing-backend failure, configured outage failure, upstream response forwarding and expired-cookie clearing. Actual running unauthenticated endpoint returned 401.
+  - Existing development event mocks remain empty; no registration persistence or event data was fabricated. No shared Event contracts/components, /events pages, event-registration/confirmation, calendar, payment, organizer/admin, notification or authentication infrastructure files were edited. Event-detail content remains owned by the parallel developer; only route navigation was verified here.
+
+
 ### [2026-10-25 10:03] Keep the benefit carousel center card in front
 
 - Removed hover/click layer promotion from side cards and flattened the shared stacking context while preserving perspective and the existing animated rear-wrap path.

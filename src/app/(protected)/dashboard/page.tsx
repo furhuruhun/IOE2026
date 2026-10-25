@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import * as RadixTabs from "@radix-ui/react-tabs";
 import { DashboardSidebar } from "@/features/dashboard/DashboardSidebar";
 import { DashboardMyJourney } from "@/features/dashboard/DashboardMyJourney";
+import { DashboardRegisteredEvents } from '@/features/dashboard/DashboardRegisteredEvents';
 import { DashboardAssignments } from "@/features/dashboard/DashboardAssignments";
 import { DashboardCalendar } from "@/features/dashboard/DashboardCalendar";
 import { DashboardActivityDetail } from '@/features/dashboard/DashboardActivityDetail';
@@ -53,11 +54,9 @@ export default function DashboardPage() {
             </>}
           </RadixTabs.Content>
 
-          {/* Profile uses the shared form; Registered Events awaits its own implementation. */}
+          {/* Both participant tabs keep the dashboard URL. */}
           <RadixTabs.Content value="profile" className="min-w-0"><ProfileForm /></RadixTabs.Content>
-          <RadixTabs.Content value="events" className="flex flex-col items-center gap-3 py-24 text-center">
-            <p className="text-b2 text-neutral-700">Registered Events — belum dibangun di tab ini.</p>
-          </RadixTabs.Content>
+          <RadixTabs.Content value="events" className="min-w-0"><DashboardRegisteredEvents /></RadixTabs.Content>
         </div>
       </main>
     </RadixTabs.Root>
