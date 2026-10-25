@@ -12,6 +12,24 @@
 
 ## Unreleased
 
+### [2026-10-25 11:04] Fix participant proxy and team-creation failure boundaries
+
+- **Tipe:** Fix
+- **Scope:** Dashboard My Journey/Calendar and competition team creation, including its existing-team preflight.
+- **Ringkasan:** Journey and Calendar now require and forward participant tokens with no-store requests; configured-backend failures return errors instead of mock success. Their UI shows mapped errors and Retry without treating failure as an empty schedule. Team creation now uses mocks only in development with no Workers URL; the same boundary applies to the existing-team GET that controls access to the create form.
+- **File diubah:**
+  - `src/app/api/dashboard/journey/route.ts` - token forwarding, explicit development mocks, 502/503 failures and upstream 401 cookie clearing.
+  - `src/app/api/dashboard/calendar/route.ts` - same participant and mock boundary for personal schedules.
+  - `src/app/api/competitions/[slug]/team/route.ts` - prevent mock create/preflight success on backend exceptions; preserve upstream responses and clear expired cookies.
+  - `src/features/dashboard/DashboardMyJourney.tsx` - error toast, persistent failure text, Retry and accessible loading announcement; successful layout preserved.
+  - `src/features/dashboard/DashboardCalendar.tsx` - error toast/Retry and loading announcement; empty message only for successful empty responses; month navigation preserved.
+  - `src/features/competitions/TeamModalCreateView.tsx` - show mapped server errors and form banners, retain name for retry and disable submit after documented REGISTRATION_CLOSED.
+  - `amunisi/CHANGELOG.md` - record implementation and verification.
+- **Terkait requirement:** F-18/F-18a/F-19/F-21, F-47 through F-51; documented team GET/POST and dashboard Journey/Calendar; AUTH_IMPLEMENTATION token forwarding; ERROR_HANDLING_FE retry and silent expired-session redirect.
+- **Breaking change:** No API contract changes. Configured backend outages and production without a backend no longer produce demo success.
+- **Belum selesai / follow-up:** TypeScript passed without incremental output. Full ESLint: zero errors, one existing RegisterForm React Compiler warning. Isolated checks of actual handlers passed missing-token, token forwarding, upstream status/body, configured exceptions, development mocks, production/no-backend and upstream 401-cookie cases; exceptions never invoked the mock team creator. Chrome frontend fixtures passed at 320/1440px for loading/populated/empty/error/retry, calendar navigation, team pending/error/no-success/retry-success and no console errors/warnings. Live Workers persistence, storage and multi-user authorization remain unverified. No Event Overview/Detail, event contracts, registration/confirmation, admin, notifications or join handlers were changed. Temporary test scripts remain outside the repo. Final diff and whitespace checks performed; no commit.
+
+
 ### [2026-10-25 10:48] Implement Dashboard Registered Events
 
 - **Tipe:** Feature

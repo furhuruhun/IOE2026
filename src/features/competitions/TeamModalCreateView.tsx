@@ -1,5 +1,8 @@
 "use client";
 
+import { useCallback, useState } from 'react';
+import { Toast } from '@/components/ui/Toast';
+import { FormBanner } from '@/components/ui/FormBanner';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/Button";
@@ -18,6 +21,10 @@ interface TeamModalCreateViewProps {
 // F-18/F-18a Cabang A — Create Team. Nama tim TIDAK perlu unik (USER_FLOWS_v2.md §Edge
 // Cases), identitas tim lewat Team Code yang di-generate sistem.
 export function TeamModalCreateView({ competitionId, onCreated }: TeamModalCreateViewProps) {
+  const [message, setMessage] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
+  const [closed, setClosed] = useState(false);
+  const dismiss = useCallback(() => setMessage(null), []);
   const createTeam = useCreateTeam(competitionId);
   const handleApiError = useErrorHandler();
   const {
@@ -28,10 +35,15 @@ export function TeamModalCreateView({ competitionId, onCreated }: TeamModalCreat
   } = useForm<CreateTeamFormValues>({ resolver: zodResolver(createTeamSchema) });
 
   const onSubmit = (values: CreateTeamFormValues) => {
+    setMessage(null);
+    setBanner(null);
     createTeam.mutate(values.teamName, {
       onSuccess: onCreated,
       onError: (error) => {
+        if ((error as ApiError).code === "REGISTRATION_CLOSED") setClosed(true);
         handleApiError(error as ApiError, {
+          onToast: setMessage,
+          onInlineBanner: setBanner,
           onInlineField: (message) => setError("teamName", { message }),
         });
       },
@@ -40,6 +52,8 @@ export function TeamModalCreateView({ competitionId, onCreated }: TeamModalCreat
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
+      {message && <Toast status="error" title={message} onDismiss={dismiss} />}
+      {banner && <FormBanner variant="error" message={banner} />}
       <TeamModalTextField
         label="Team Name"
         placeholder="e.g. Ocean Innovators"
@@ -52,7 +66,7 @@ export function TeamModalCreateView({ competitionId, onCreated }: TeamModalCreat
         <span className="font-bold">Team Code</span> to share with teammates so they can join.
       </p>
 
-      <Button type="submit" variant="primary" size="md" loading={createTeam.isPending} className="w-full">
+      <Button type="submit" variant="primary" size="md" disabled={closed} loading={createTeam.isPending} className="w-full">
         {createTeam.isPending ? "Creating..." : "Create Team"}
       </Button>
     </form>

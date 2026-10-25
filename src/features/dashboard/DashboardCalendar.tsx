@@ -1,6 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useCallback, useMemo, useState } from "react";
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { Button } from '@/components/ui/Button';
+import { Toast } from '@/components/ui/Toast';
 import { Icon } from "@iconify/react/offline";
 import { useCalendar } from "@/hooks/useDashboard";
 import { formatWibShortDate } from "@/utils/formatDate";
@@ -19,7 +22,13 @@ const WIB_MONTH_YEAR_FORMATTER = new Intl.DateTimeFormat("id-ID", {
 // Grid & list bawah adalah 1 sumber data (GET /dashboard/calendar) — sesuai spec "Grid &
 // list adalah 1 sumber data yang sama (1:1 mapping)".
 export function DashboardCalendar() {
-  const { data, isLoading, isError } = useCalendar();
+  const { data, isLoading, isFetching, isError, error, refetch } = useCalendar();
+  const handleError = useErrorHandler();
+  const [message, setMessage] = useState<string | null>(null);
+  const dismiss = useCallback(() => setMessage(null), []);
+  useEffect(() => {
+    if (error) handleError(error, { onToast: setMessage, redirectTo: '/login?redirect=%2Fdashboard' });
+  }, [error, handleError]);
   const items = useMemo(() => (isError ? [] : (data ?? [])), [isError, data]);
 
   const now = useMemo(() => new Date(), []);
@@ -51,6 +60,7 @@ export function DashboardCalendar() {
 
   return (
     <section className="flex w-full min-w-0 flex-col gap-4">
+      {message && <Toast status="error" title={message} onDismiss={dismiss} />}
       <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">Calendar</h2>
 
       <div
@@ -122,13 +132,18 @@ export function DashboardCalendar() {
             bukan dot generik — sesuai spec "diferensiasi lewat logo, bukan warna/shape
             generik". */}
         <div className="flex flex-col gap-3">
+          {isError && <div role="status" className="flex min-w-0 flex-col items-start gap-3">
+          <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your schedule.</p>
+          <Button size="sm" disabled={isFetching} onClick={() => { setMessage(null); void refetch(); }}>{isFetching ? 'Loading...' : 'Coba lagi'}</Button>
+        </div>}
+          {isLoading && <span role="status" className="sr-only">Loading schedule...</span>}
           {isLoading && <div className="h-16 w-full animate-pulse rounded-xl bg-neutral-200" aria-hidden />}
-          {!isLoading && sortedSchedule.length === 0 && (
+          {!isLoading && !isError && sortedSchedule.length === 0 && (
             <p className="py-2 text-center text-b4" style={{ color: "var(--color-neutral-700)" }}>
               Belum ada jadwal.
             </p>
           )}
-          {!isLoading &&
+          {!isLoading && !isError &&
             sortedSchedule.map((item, i) => {
               const isPast = item.date < nowIso;
               const connectorColor = isPast ? "var(--color-neutral-700)" : "var(--calendar-accent)";
