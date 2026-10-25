@@ -8,6 +8,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   icon?: string;
+  /** Documented pill shape and icon placement for Event Registration only. */
+  variant?: "default" | "event";
   // Opt-in show/hide toggle untuk type="password" — tidak ada di spec design_system_final.md
   // §Input, ditambahkan sebagai UX yang wajar & rendah risiko (bukan token desain baru).
   // Lihat CHANGELOG untuk catatan follow-up.
@@ -18,7 +20,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 // tidak disebut eksplisit pakai varian radius pill (Event Registration) atau
 // rounded-xl/2xl (ProfileForm), jadi dipakai base spec-nya langsung. Lihat CHANGELOG.
 export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
-  { label, error, icon, revealable, id, className = "", disabled, type, ...rest },
+  { label, error, icon, variant = "default", revealable, id, className = "", disabled, type, ...rest },
   ref
 ) {
   const inputId = id ?? rest.name;
@@ -33,14 +35,14 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {label}
       </label>
       <div
-        className={`group relative overflow-hidden rounded-xl border transition-colors duration-200 md:rounded-2xl ${
+        className={`group relative overflow-hidden border transition-colors duration-200 ${variant === "event" ? "rounded-full" : "rounded-xl md:rounded-2xl"} ${
           error ? "border-error-600" : "border-neutral-500 focus-within:border-neutral-1000"
         } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
       >
         {icon && (
           <Icon
             icon={icon}
-            className={`pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 md:left-[52px] md:size-7 ${
+            className={`pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 md:size-7 ${variant === "event" ? "md:left-4" : "md:left-[52px]"} ${
               error ? "text-neutral-1000" : "text-neutral-500 group-focus-within:text-neutral-1000"
             }`}
           />

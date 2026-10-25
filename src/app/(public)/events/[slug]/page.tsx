@@ -1,7 +1,7 @@
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { EventDetailPage } from "@/features/events/EventDetailPage";
 
 // Route: /events/[slug] — Event Details. Public. ROUTES.md.
-// Register CTA di sini navigasi sungguhan ke /events/[slug]/register — beda pattern dari kompetisi.
+// Registration remains unavailable until its read-side availability contract is defined.
 export default async function EventDetailsPage({
   params,
 }: {
@@ -9,11 +9,5 @@ export default async function EventDetailsPage({
 }) {
   const { slug } = await params;
 
-  return (
-    <PlaceholderPage
-      title={`Event: ${slug}`}
-      fId="F-27–F-34"
-      note="FannedCardSection, SpeakerCard, RundownOverlay — belum dibangun."
-    />
-  );
+  return <EventDetailPage slug={slug} />;
 }

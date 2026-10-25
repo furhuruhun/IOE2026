@@ -1,6 +1,6 @@
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { RegistrationFoundationPage } from "@/features/events/RegistrationFoundationPage";
 
-// Route: /events/[slug]/register — Protected (force auth via middleware.ts). ROUTES.md.
+// Protected by src/proxy.ts. This foundation has no registration mutation.
 // Auto-fill institution/phone/domicile dari GET /profile — lihat API_CONTRACT.md POST /events/:id/register.
 export default async function EventRegisterPage({
   params,
@@ -9,11 +9,5 @@ export default async function EventRegisterPage({
 }) {
   const { slug } = await params;
 
-  return (
-    <PlaceholderPage
-      title={`Register: ${slug}`}
-      fId="F-31, F-34a, §7"
-      note="RegistrationForm, SessionRadioGroup, PaymentProofUpload — belum dibangun."
-    />
-  );
+  return <RegistrationFoundationPage slug={slug} />;
 }

@@ -18,28 +18,28 @@ const activityContentBySlug: Record<string, EventActivityContent> = {
     icon: "mdi:forum-outline",
     palette: "mint",
     rotation: "clockwise",
-    detailStatus: "coming-soon",
+    detailStatus: "available",
   },
   workshop: {
     description: "Contoh deskripsi: sesi belajar praktik untuk mengeksplorasi ide dan solusi maritim bersama. Materi, fasilitator, dan kapasitas akan diperbarui oleh panitia.",
     icon: "mdi:account-group-outline",
     palette: "cyan",
     rotation: "counterclockwise",
-    detailStatus: "coming-soon",
+    detailStatus: "available",
   },
   "short-course": {
     description: "Contoh deskripsi: pembelajaran singkat untuk memperdalam wawasan di bidang maritim. Silabus, durasi, dan pengajar akan diumumkan kemudian.",
     icon: "mdi:school-outline",
     palette: "sage",
     rotation: "clockwise",
-    detailStatus: "coming-soon",
+    detailStatus: "available",
   },
   exhibition: {
     description: "Contoh deskripsi: ruang untuk mengenal karya, teknologi, dan inisiatif ekosistem maritim. Peserta pameran dan aktivitas final menunggu konfirmasi panitia.",
     icon: "mdi:storefront-outline",
     palette: "mint",
     rotation: "counterclockwise",
-    detailStatus: "coming-soon",
+    detailStatus: "available",
   },
 };
 
@@ -48,7 +48,7 @@ const fallbackContent: EventActivityContent = {
   icon: "mdi:calendar-star",
   palette: "cyan",
   rotation: "clockwise",
-  detailStatus: "coming-soon",
+  detailStatus: "available",
 };
 
 export function getEventActivityContent(slug: string): EventActivityContent {
