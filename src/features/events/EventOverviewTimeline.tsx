@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
-import { Icon } from "@iconify/react/offline";
+import { useId, useRef, type KeyboardEvent, type PointerEvent } from "react";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import { formatWibDate } from "@/utils/formatDate";
@@ -87,7 +86,7 @@ function RundownItem({ event, variant }: { event: RundownEvent; variant: "start"
 export function EventOverviewTimeline() {
   const { data, isLoading, isError } = useEvents();
   const scroller = useRef<HTMLDivElement>(null);
-  const [navigation, setNavigation] = useState({ canScrollLeft: false, canScrollRight: false });
+  const dragState = useRef<{ pointerId: number; startX: number; startScrollLeft: number } | null>(null);
   const events = (data?.events ?? [])
     .filter((event) => Number.isFinite(new Date(event.deadline).getTime()))
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
@@ -96,30 +95,6 @@ export function EventOverviewTimeline() {
     ...events.filter((event) => event !== awardingFromApi),
     awardingFromApi ?? AWARDING_CEREMONY_PLACEHOLDER,
   ];
-
-  const updateNavigation = useCallback(() => {
-    const container = scroller.current;
-    if (!container) return;
-    const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
-    const next = {
-      canScrollLeft: container.scrollLeft > 1,
-      canScrollRight: container.scrollLeft < maxScroll - 1,
-    };
-    setNavigation((current) => current.canScrollLeft === next.canScrollLeft && current.canScrollRight === next.canScrollRight ? current : next);
-  }, []);
-
-  useEffect(() => {
-    const container = scroller.current;
-    if (!container) return;
-    const observer = new ResizeObserver(updateNavigation);
-    observer.observe(container);
-    if (container.firstElementChild) observer.observe(container.firstElementChild);
-    const frame = requestAnimationFrame(updateNavigation);
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-    };
-  }, [rundownEvents.length, updateNavigation]);
 
   const scroll = (direction: -1 | 1) => {
     const container = scroller.current;
@@ -140,6 +115,29 @@ export function EventOverviewTimeline() {
     if (event.key === "ArrowRight") { event.preventDefault(); scroll(1); }
   };
 
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== "mouse" || event.button !== 0) return;
+    const container = event.currentTarget;
+    dragState.current = { pointerId: event.pointerId, startX: event.clientX, startScrollLeft: container.scrollLeft };
+    container.setPointerCapture(event.pointerId);
+    container.style.scrollSnapType = "none";
+    event.preventDefault();
+  };
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const drag = dragState.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.currentTarget.scrollLeft = drag.startScrollLeft + drag.startX - event.clientX;
+    event.preventDefault();
+  };
+
+  const finishPointerDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (dragState.current?.pointerId !== event.pointerId) return;
+    dragState.current = null;
+    event.currentTarget.style.scrollSnapType = "";
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
   return (
     <section id="rundown" className="relative isolate flex w-full flex-col items-center overflow-hidden bg-secondary-1000 py-20 text-neutral-100 sm:py-28 lg:py-32">
       <RundownBackground />
@@ -154,17 +152,11 @@ export function EventOverviewTimeline() {
         {!isLoading && (isError || events.length === 0) && <p className="mx-auto mt-2xl max-w-[42rem] rounded-lg border border-neutral-100/30 p-xl text-center font-body text-b2">{isError ? "Timeline belum dapat dimuat." : "Jadwal event akan diumumkan segera."}</p>}
 
         {!isLoading && !isError && events.length > 0 && (
-          <>
-            <div className="mx-auto mt-xl flex max-w-[80rem] justify-center gap-sm px-4 md:justify-end md:px-8">
-              <button type="button" onClick={() => scroll(-1)} disabled={!navigation.canScrollLeft} aria-label="Geser rundown ke kiri" className="grid size-11 place-items-center rounded-full border border-neutral-100/60 bg-secondary-1000/40 text-neutral-100 transition-colors hover:bg-neutral-100/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary-1000/40"><Icon icon="mdi:chevron-left" className="size-6" /></button>
-              <button type="button" onClick={() => scroll(1)} disabled={!navigation.canScrollRight} aria-label="Geser rundown ke kanan" className="grid size-11 place-items-center rounded-full border border-neutral-100/60 bg-secondary-1000/40 text-neutral-100 transition-colors hover:bg-neutral-100/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-secondary-1000/40"><Icon icon="mdi:chevron-right" className="size-6" /></button>
+          <div ref={scroller} role="region" aria-label="Timeline batas pendaftaran event, geser untuk melihat item lainnya" tabIndex={0} onKeyDown={handleKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointerDrag} onPointerCancel={finishPointerDrag} onLostPointerCapture={finishPointerDrag} className={`${styles.slideUp} ${styles.scrollRegion} relative mt-3xl w-full cursor-grab snap-x snap-proximity scroll-px-4 overflow-x-auto px-4 pb-lg active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 lg:scroll-px-8 lg:px-8`}>
+            <div className="flex w-max min-w-full items-stretch justify-center gap-sm">
+              {rundownEvents.map((event, index) => <RundownItem key={event.id} event={event} variant={index === rundownEvents.length - 1 ? "end" : index === 0 ? "start" : "default"} />)}
             </div>
-            <div ref={scroller} role="region" aria-label="Timeline batas pendaftaran event, geser untuk melihat item lainnya" tabIndex={0} onKeyDown={handleKeyDown} onScroll={updateNavigation} className={`${styles.slideUp} relative mt-lg w-full snap-x snap-proximity scroll-px-4 overflow-x-auto px-4 pb-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 lg:scroll-px-8 lg:px-8`}>
-              <div className="flex w-max min-w-full items-stretch justify-center gap-sm">
-                {rundownEvents.map((event, index) => <RundownItem key={event.id} event={event} variant={index === rundownEvents.length - 1 ? "end" : index === 0 ? "start" : "default"} />)}
-              </div>
-            </div>
-          </>
+          </div>
         )}
       </div>
     </section>

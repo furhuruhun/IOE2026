@@ -1,0 +1,22 @@
+.panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  width: max-content;
+  min-width: max(100%, 15rem);
+  max-width: min(22rem, calc(100vw - 24px));
+  max-height: calc(100dvh - 7rem);
+  overflow-y: auto;
+  transform: translateX(-50%);
+  transform-origin: top center;
+  animation: dropdownIn 180ms ease-out;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; scale: .95; }
+  to { opacity: 1; scale: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel { animation: none; }
+}

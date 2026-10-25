@@ -12,6 +12,31 @@
 
 ## Unreleased
 
+### [2026-10-25 16:05] Rekonstruksi Contact Person Event Overview
+
+- **Tipe:** Fix
+- **Scope:** `src/features/events/EventOverviewStaticSections.tsx`
+- **Ringkasan:** Contact Person `/events` kini memakai container terpusat maksimum 768px dan grup teks dengan gap 4px, diikuti area kontak berjarak 24px pada mobile dan 36px mulai tablet. Ikon besar serta kartu berborder/shadow dihapus; copy IOE dan status kontak resmi dipertahankan.
+- **File diubah:**
+  - `src/features/events/EventOverviewStaticSections.tsx` — memisahkan container dan grup konten, menggunakan `max-w-[48rem]` untuk menghindari konflik `max-w-3xl` dengan token spacing IOE, merapikan placeholder noninteraktif, serta menata link kontak resmi sebagai ghost links responsif dengan hover, active, dan focus state.
+  - `amunisi/CHANGELOG.md` — mencatat audit layout, verifikasi, dan batas data resmi.
+- **Terkait requirement:** Contact Person pada `/events`; F-35–F-39 (`PRD_IOE_2027_v4.md`).
+- **Breaking change:** Tidak — teks dan data kontak tidak berubah.
+- **Belum selesai / follow-up:** `eventContacts` masih kosong; `USER_FLOWS_v2.md` menyebut email/WhatsApp, tetapi nama dan tujuan kontak resmi belum tersedia, sehingga UI tetap menampilkan "Kontak resmi menyusul". Proyek belum memiliki dark mode aktif; styling kontak hanya mengikuti tema terang IOE. Chrome headless memverifikasi 12 viewport (320–1920px), geometri 4/24/36px, dan dua link simulasi pada mobile/tablet/desktop tanpa memasukkan kontak palsu ke kode produksi. Pada 320px dokumen tetap melebar 7px karena section CTA `#register` di luar scope; menyembunyikan Contact tidak mengubah lebar dokumen. Typecheck, lint file, dan build Webpack lulus; tidak ada test runner otomatis terkonfigurasi.
+
+### [2026-10-25 15:32] Sembunyikan kontrol scroll visual Rundown
+
+- **Tipe:** Fix
+- **Scope:** `src/features/events/EventOverviewTimeline.tsx`, `src/features/events/EventOverviewTimeline.module.css`
+- **Ringkasan:** Tombol panah dan scrollbar visual Rundown Event Overview dihapus sesuai permintaan. Timeline tetap dapat digeser melalui swipe, trackpad, tombol panah keyboard, atau drag dengan mouse.
+- **File diubah:**
+  - `src/features/events/EventOverviewTimeline.tsx` — menghapus kontrol panah dan state batas scroll, mempertahankan keyboard navigation, serta menambah pointer drag khusus mouse dengan cleanup pointer capture.
+  - `src/features/events/EventOverviewTimeline.module.css` — menyembunyikan scrollbar native tanpa mematikan overflow horizontal.
+  - `amunisi/CHANGELOG.md` — mencatat perubahan dan hasil verifikasi.
+- **Terkait requirement:** F-38 (`PRD_IOE_2027_v4.md`), section `#rundown` pada `/events`.
+- **Breaking change:** Tidak untuk data/API; kontrol scroll visual sengaja dihapus sesuai permintaan user.
+- **Belum selesai / follow-up:** Awarding Ceremony tetap memakai tanggal/waktu contoh sampai jadwal resmi tersedia. Chrome headless mengonfirmasi tidak ada tombol pada Rundown, scrollbar WebKit dan standar tersembunyi, serta keyboard, gesture sentuh, dan drag mouse masih menggeser timeline; item terakhir tetap dapat dijangkau. Typecheck, lint komponen, dan build Webpack lulus.
+
 ### [2026-09-03 12:45] `CompetitionHero` — koreksi target: spec "COMPFEST hero" yang dipasang di CompetitionDetailHero ternyata dimaksudkan utk hero /competitions overview ini
 
 - **Tipe:** Fix

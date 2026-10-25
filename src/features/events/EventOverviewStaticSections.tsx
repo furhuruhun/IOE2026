@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react/offline";
-import { sponsors } from "@/features/landing/landingContent";
 import { eventContacts } from "@/features/events/eventOverviewContent";
+import { eventSponsors } from "@/features/events/eventSponsors";
+import styles from "./EventOverviewSponsors.module.css";
 
 export function EventOverviewCTA() {
   return (
@@ -18,33 +19,53 @@ export function EventOverviewCTA() {
 export function EventOverviewContact() {
   return (
     <section id="contact" className="bg-neutral-100 px-6 py-3xl md:px-12 md:py-4xl">
-      <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-lg rounded-lg border border-secondary-300 bg-secondary-100 p-xl text-center shadow-sm md:p-2xl">
-        <div className="grid size-16 place-items-center rounded-full bg-secondary-1000 text-neutral-100" aria-hidden><Icon icon="mdi:chat-question-outline" className="size-8" /></div>
-        <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Ada pertanyaan?</h2>
-        <p className="max-w-[34rem] font-body text-b2 text-neutral-800">Hubungi panitia melalui kanal resmi untuk pertanyaan seputar rangkaian event.</p>
-        {eventContacts.length > 0 ? (
-          <div className="flex flex-wrap justify-center gap-md">
-            {eventContacts.map((contact) => (
-              <a key={contact.id} href={contact.url} target="_blank" rel="noopener noreferrer" aria-label={`Hubungi ${contact.name} melalui ${contact.platform}`} className="inline-flex min-h-12 items-center gap-sm rounded-lg bg-secondary-1000 px-lg py-sm font-ui text-b3 font-bold text-neutral-100 transition-colors hover:bg-secondary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800">
-                <Icon icon={contact.icon} className="size-5" />{contact.contactLabel}
+      <div className="relative z-10 mx-auto flex w-full max-w-[48rem] flex-col items-center justify-center py-lg text-center">
+        <div data-contact-content className="flex w-full min-w-0 flex-col items-center justify-center gap-xs">
+          <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Ada pertanyaan?</h2>
+          <p className="max-w-[34rem] font-body text-b2 text-neutral-800">Hubungi panitia melalui kanal resmi untuk pertanyaan seputar rangkaian event.</p>
+          <div data-contact-actions className="mt-5 flex w-full min-w-0 flex-col items-center justify-center gap-3 md:mt-xl md:flex-row md:flex-wrap md:gap-lg">
+            {eventContacts.length > 0 ? eventContacts.map((contact) => (
+              <a key={contact.id} href={contact.url} target="_blank" rel="noopener noreferrer" aria-label={`Hubungi ${contact.name} melalui ${contact.platform}`} className="inline-flex min-h-12 w-full min-w-0 items-center justify-center gap-sm rounded-lg border border-secondary-700 bg-transparent px-md py-sm font-ui text-b3 font-bold text-secondary-900 transition-colors hover:bg-secondary-100 active:bg-secondary-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:w-auto md:basis-[calc(50%-12px)] md:grow">
+                <Icon icon={contact.icon} aria-hidden="true" className="size-5 shrink-0" />
+                <span className="min-w-0 break-words text-center">{contact.contactLabel}</span>
               </a>
-            ))}
+            )) : (
+              <span data-contact-pending className="inline-flex max-w-full items-center justify-center rounded-full bg-secondary-100 px-lg py-sm font-ui text-b3 font-bold text-secondary-900">Kontak resmi menyusul</span>
+            )}
           </div>
-        ) : <span className="rounded-full border border-secondary-400 px-lg py-sm font-ui text-b3 font-bold text-secondary-900">Kontak resmi menyusul</span>}
+        </div>
       </div>
     </section>
   );
 }
 
 export function EventOverviewSponsors() {
+  const hasSponsors = eventSponsors.length > 0;
+  const items = hasSponsors ? eventSponsors : Array.from({ length: 5 }, (_, index) => ({
+    id: `pending-${index}`,
+    name: "Logo sponsor menyusul",
+    logoSrc: "/sponsors/placeholder.svg",
+  }));
+
+  const logos = (duplicate: boolean) => items.map((sponsor) => (
+    <div key={sponsor.id} className={`${styles.logo} flex items-center justify-center`}>
+      {/* SVG files retain their proportions in a fixed, responsive logo slot. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={sponsor.logoSrc} alt={duplicate ? "" : sponsor.name} width={192} height={96} className="h-full w-full object-contain" />
+    </div>
+  ));
+
   return (
     <section id="sponsors" className="bg-neutral-200 px-6 py-3xl md:px-12 md:py-4xl">
       <div className="mx-auto flex max-w-[80rem] flex-col items-center gap-lg text-center">
         <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-600">Bersama mitra</p>
         <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Sponsor IOE 2027</h2>
-        <p className="font-body text-b3 text-neutral-700">Nama berikut masih placeholder. Daftar sponsor resmi menunggu konfirmasi panitia.</p>
-        <div className="flex w-full flex-wrap justify-center gap-md">
-          {sponsors.map((sponsor) => <div key={sponsor} className="flex min-h-20 min-w-40 items-center justify-center rounded-lg border border-neutral-300 bg-neutral-100 px-lg font-ui text-b2 font-bold text-neutral-700 shadow-sm">{sponsor}</div>)}
+        {!hasSponsors && <p className="font-body text-b3 text-neutral-700">Logo sponsor resmi akan ditampilkan setelah dikonfirmasi panitia.</p>}
+        <div className={`${styles.viewport} w-full rounded-[22px] bg-neutral-100 py-6 md:py-10`} aria-label={hasSponsors ? "Daftar sponsor IOE 2027" : "Logo sponsor menyusul"}>
+          <div className={styles.track}>
+            <div className={styles.group}>{logos(false)}</div>
+            <div className={styles.group} aria-hidden="true">{logos(true)}</div>
+          </div>
         </div>
       </div>
     </section>

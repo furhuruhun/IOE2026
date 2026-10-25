@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react/offline";
 import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { MobileNavDrawer } from "@/components/ui/MobileNavDrawer";
+import { NavbarDropdown } from "@/components/ui/NavbarDropdown";
+import { navigationCategories } from "@/components/ui/navbarNavigation";
 
 // Spec: dimensi/layout Navbar diambil literal dari spec Compfest baru (container
 // fixed/480/h-14-h-20/dst, menu pill text-s6/s5, Login CTA text-s6!/s5!+after-overlay,
@@ -28,11 +31,6 @@ import { MobileNavDrawer } from "@/components/ui/MobileNavDrawer";
 // CHANGELOG entry "[Navbar — spec Compfest]" & plan file sesi ini.
 //
 // Toggle tema: lihat header comment di ThemeToggle.tsx — masih UI-only, belum fungsional.
-
-const MENU_ITEMS = [
-  { href: "/competitions", label: "Competitions" },
-  { href: "/events", label: "Events" },
-];
 
 // Exported: dipakai lagi di MobileNavDrawer.tsx buat footer Login/Profile CTA (biar
 // gradient & avatar-fallback-nya tetap satu sumber, bukan duplikat). Ini juga yang
@@ -60,8 +58,29 @@ export function UserAvatar({ avatarUrl, size }: { avatarUrl?: string | null; siz
 
 export function Navbar({ appearance = "default" }: { appearance?: "default" | "dashboard" }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<{ id: string; pathname: string } | null>(null);
+  const desktopMenuRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
   const isLoggedIn = useIsLoggedIn();
   const user = useUser();
+
+  useEffect(() => {
+    function handlePointerDown(event: PointerEvent) {
+      if (!desktopMenuRef.current?.contains(event.target as Node)) setOpenDropdown(null);
+    }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpenDropdown(null);
+        desktopMenuRef.current?.querySelector<HTMLButtonElement>('[aria-expanded="true"]')?.focus();
+      }
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
 
   return (
     <header>
@@ -80,12 +99,9 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
             justify-between yang cuma nge-equal-in gap, bukan true-center kalau lebar
             grup kiri/kanan beda — logo vs theme+CTA di sini beda lebar). Desktop only,
             ≥1280px. */}
-        <div className="flex items-center gap-4 justify-self-center max-xl:hidden">
-          {MENU_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className={appearance === 'dashboard' ? 'flex w-56 items-center justify-between rounded-2xl border-2 border-neutral-100 px-4 py-4 font-ui text-b3 text-secondary-1000 hover:bg-neutral-100/20' : MENU_PILL}>
-              {item.label}
-              <Icon icon="mdi:chevron-down" className="size-4" />
-            </Link>
+        <div ref={desktopMenuRef} className="flex items-center gap-4 justify-self-center max-xl:hidden">
+          {navigationCategories.map((category) => (
+            <NavbarDropdown key={category.id} category={category} open={openDropdown?.id === category.id && openDropdown.pathname === pathname} onToggle={() => setOpenDropdown(current => current?.id === category.id && current.pathname === pathname ? null : { id: category.id, pathname })} onClose={() => setOpenDropdown(null)} triggerClassName={appearance === 'dashboard' ? 'flex w-56 items-center justify-between rounded-2xl border-2 border-neutral-100 px-4 py-4 font-ui text-b3 text-secondary-1000 hover:bg-neutral-100/20' : MENU_PILL} />
           ))}
         </div>
 

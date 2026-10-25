@@ -6,57 +6,13 @@ import * as Accordion from "@radix-ui/react-accordion";
 import { Icon } from "@iconify/react/offline";
 import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
 import { UserAvatar, CTA_GRADIENT } from "@/components/ui/Navbar";
+import { navigationCategories } from "@/components/ui/navbarNavigation";
 
 // Off-canvas mobile nav (F-02), dibangun di atas Radix Dialog (role="dialog", aria-modal,
 // focus trap, Esc-to-close semua didapat gratis dari primitive-nya) + Radix Accordion
 // (kategori Competition/Events, expand satu per satu — "expandedCategory" via
 // type="single" collapsible).
 //
-// ⚠️ Sub-item (children) di NAV_CONFIG di bawah ini DUMMY/PLACEHOLDER, bukan dari
-// ROUTES.md/API — ROUTES.md cuma punya /competitions & /events (flat, tanpa sub-menu),
-// F-01 di PRD juga cuma nyebut "CTA Competition"/"CTA Event" tanpa konsep dropdown.
-// Diminta eksplisit oleh user buat tetap bangun mekanisme accordion-nya (infrastruktur
-// config-driven, biar gampang diisi beneran nanti) dan diisi 3 dummy children per
-// kategori dulu. Nama kategori dummy dipilih dari istilah yang MEMANG ada di
-// PRD_IOE_2027_v4.md (Business Case/Paper & Poster/Design Competition, Talkshow/
-// Exhibition/Short Course) supaya nggak asal ngarang, tapi slug/href-nya tetap
-// placeholder — ganti begitu ada data kompetisi/event individual yang real. Lihat
-// CHANGELOG follow-up.
-type NavChild = {
-  label: string;
-  href: string;
-};
-
-type NavCategory = {
-  label: string;
-  href: string;
-  icon: string;
-  children: NavChild[];
-};
-
-const NAV_CONFIG: NavCategory[] = [
-  {
-    label: "Competition",
-    href: "/competitions",
-    icon: "mdi:trophy-outline",
-    children: [
-      { label: "Business Case Competition", href: "/competitions/business-case-competition" },
-      { label: "Paper & Poster Competition", href: "/competitions/paper-poster-competition" },
-      { label: "Design Competition", href: "/competitions/design-competition" },
-    ],
-  },
-  {
-    label: "Events",
-    href: "/events",
-    icon: "mdi:calendar-star",
-    children: [
-      { label: "Talkshow & Seminar", href: "/events/talkshow-seminar" },
-      { label: "Exhibition", href: "/events/exhibition" },
-      { label: "Short Course", href: "/events/short-course" },
-    ],
-  },
-];
-
 function TreeConnector({ isLast }: { isLast: boolean }) {
   return (
     <>
@@ -94,7 +50,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
 
           <div className="flex-1 overflow-y-auto px-4 py-4 pb-8">
             <Accordion.Root type="single" collapsible className="flex flex-col">
-              {NAV_CONFIG.map((category) => (
+              {navigationCategories.map((category) => (
                 <Accordion.Item
                   key={category.href}
                   value={category.href}
@@ -118,8 +74,13 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
                   </Accordion.Header>
                   <Accordion.Content className="accordion-content">
                     <ul className="ml-2.5 flex flex-col pb-2 pt-1">
+                      <li>
+                        <Link href={category.href} onClick={close} className="flex min-h-12 items-center rounded-md px-3 font-ui text-sm font-semibold text-secondary-1000 hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800">
+                          {category.parentLabel}
+                        </Link>
+                      </li>
                       {category.children.map((child, index) => (
-                        <li key={child.href} className="relative pl-4">
+                        <li key={child.id} className="relative pl-4">
                           <TreeConnector isLast={index === category.children.length - 1} />
                           <Link
                             href={child.href}

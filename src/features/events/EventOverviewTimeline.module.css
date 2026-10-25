@@ -12,3 +12,12 @@
   .fadeIn { animation: fadeIn 450ms ease-out both; }
   .slideUp { animation: slideUp 500ms ease-out both; }
 }
+
+.scrollRegion {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollRegion::-webkit-scrollbar {
+  display: none;
+}

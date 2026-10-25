@@ -1,0 +1,48 @@
+.viewport {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: sponsorScroll 28s linear infinite;
+}
+
+.group {
+  display: flex;
+  flex: none;
+  gap: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.logo {
+  width: 9rem;
+  height: 4.5rem;
+  flex: none;
+}
+
+@media (min-width: 768px) {
+  .group {
+    gap: 3rem;
+    padding-right: 3rem;
+  }
+
+  .logo {
+    width: 12rem;
+    height: 6rem;
+  }
+}
+
+@keyframes sponsorScroll {
+  to { transform: translateX(-50%); }
+}
+
+.viewport:hover .track,
+.viewport:focus-within .track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track { animation: none; }
+  .viewport { overflow-x: auto; }
+}
