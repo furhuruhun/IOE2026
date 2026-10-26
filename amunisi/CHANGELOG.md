@@ -12,6 +12,41 @@
 
 ## Unreleased
 
+### [2026-10-26 16:15] Implementasi Backend IOE 2027 (Cloudflare Workers + D1 + R2 + Hono)
+
+- **Tipe:** Feat
+- **Scope:** `backend/`
+- **Ringkasan:** Mengimplementasikan backend lengkap untuk platform IOE 2027 menggunakan Cloudflare Workers, framework Hono, database SQL Cloudflare D1, penyimpanan berkas Cloudflare R2, enkripsi kata sandi PBKDF2-SHA256 (100.000 iterasi), dan token JWT (HS256) menggunakan jose. Seluruh skema database (migrasi D1 `0001_initial.sql`), data benih awal (`seed.sql`), skrip pembuatan admin lokal, serta modul-modul API (auth, profile, competitions, teams, requirements, events, dashboard, files, dan admin) telah selesai dibangun, divalidasi dengan Zod, dan diuji 100% lulus (30 skenario uji) menggunakan Vitest dan Workers Pool.
+- **File diubah:**
+  - `backend/package.json` — konfigurasi dependensi runtime (hono, jose, zod) dan dev (wrangler, vitest, typescript, @cloudflare/vitest-pool-workers).
+  - `backend/wrangler.jsonc` — konfigurasi bindings Cloudflare Workers (D1 database `ioe2027`, R2 bucket `ioe2027-files`, vars runtime lokal).
+  - `backend/tsconfig.json` & `backend/test/env.d.ts` — konfigurasi TypeScript strict ES2022 dan deklarasi tipe environment Worker.
+  - `backend/migrations/0001_initial.sql` — DDL skema database D1 lengkap (users, competitions, batches, prizes, timeline, teams, team_members, requirements, submissions, events, event_registrations, announcements, notifications).
+  - `backend/seed/seed.sql` — data benih awal untuk 3 kompetisi, batch pendaftaran, template persyaratan, 4 event, dan pembicara.
+  - `backend/scripts/create-admin.mjs` — utilitas seeding akun panitia/admin lokal.
+  - `backend/src/env.ts` — definisi interface Bindings, AuthUser, Variables, dan AppContext.
+  - `backend/src/lib/` (`errors.ts`, `response.ts`, `validate.ts`, `time.ts`, `ids.ts`, `password.ts`, `jwt.ts`, `google.ts`, `signedUrl.ts`, `files.ts`, `resolve.ts`) — pustaka inti penanganan error, standardisasi response, enkripsi, verifikasi token, magic bytes validator, dan signed URL R2.
+  - `backend/src/middleware/` (`requestId.ts`, `errorHandler.ts`, `auth.ts`) — middleware ID request, global error handler, dan role guard.
+  - `backend/src/modules/` (`auth`, `profile`, `competitions`, `teams`, `requirements`, `events`, `dashboard`, `files`, `admin`) — implementasi seluruh rute endpoint sesuai spesifikasi `BACKEND_IMPLEMENTATION.md` dan kontrak API.
+  - `backend/test/` (`health.test.ts`, `auth.test.ts`, `profile.test.ts`, `competitions.test.ts`, `teams.test.ts`, `requirements.test.ts`, `events.test.ts`, `dashboard.test.ts`, `admin.test.ts`, `helpers.ts`) — suite pengujian integrasi otomatis (30 skenario uji).
+  - `backend/README.md` — dokumentasi arsitektur, panduan local dev, instruksi migrasi, pengujian, dan integrasi frontend.
+  - `.env.local` — file konfigurasi local development mengarahkan `WORKERS_API_URL` ke `http://localhost:8000/api`.
+  - `amunisi/CHANGELOG.md` — pencatatan audit trail implementasi backend.
+- **Terkait requirement:** Seluruh F-01 sampai F-39 (`PRD_IOE_2027_v4.md`), `API_CONTRACT.md`, dan `BACKEND_IMPLEMENTATION.md`.
+- **Breaking change:** Tidak — implementasi backend baru yang sepenuhnya kompatibel dengan kontrak frontend.
+- **Belum selesai / follow-up:** Deployment ke Cloudflare Workers produksi di Cloudflare Dashboard ketika kredensial dan akun organisasi ITB/IOE siap. Integrasi live end-to-end dengan UI Next.js berjalan lancar melalui proxy Route Handlers yang sudah ada di frontend.
+
+### [2026-10-26 15:23] Panduan implementasi backend (BE) IOE 2027
+
+- **Tipe:** Docs
+- **Scope:** amunisi/
+- **Ringkasan:** Menambah `BACKEND_IMPLEMENTATION.md` - panduan BE (Cloudflare Workers) hasil membaca seluruh dokumen amunisi + kode FE: alur user ke endpoint, stack, data model (DDL D1), auth, aturan bisnis per endpoint, file upload/signed URL, rencana fase, catatan integrasi FE, dan daftar gap/pertanyaan terbuka.
+- **File diubah:**
+  - `amunisi/BACKEND_IMPLEMENTATION.md` - file baru (tidak ada kode aplikasi yang diubah).
+- **Terkait requirement:** seluruh F-ID backend dan API_CONTRACT v1.2
+- **Breaking change:** Tidak
+- **Belum selesai / follow-up:** `API_CONTRACT.md` dan `ERROR_HANDLING_FE.md` TIDAK SINKRON dengan usulan di BACKEND_IMPLEMENTATION.md sec.13 (error code ALREADY_IN_TEAM/ALREADY_REGISTERED, endpoint GET /files/*, avatarUrl di GET /profile, EventDetail, announcements, admin pakai submissionId) - perlu diputuskan & diupdate manual oleh manusia. Temuan sisi FE di sec.12 (token tidak diteruskan di /api/competitions*, timeline[].date dirender mentah, proxy multipart register event belum ada) belum diperbaiki.
+
 ### [2026-10-25 16:05] Rekonstruksi Contact Person Event Overview
 
 - **Tipe:** Fix
@@ -1215,7 +1250,31 @@ dengan format:
 
 <!--
 Kalau project sudah mulai deploy ke staging/production, entry-entry di atas
-"## Unreleased" bisa dipindahkan ke sini per tanggal rilis, dikelompokkan
+"## Unreleased
+
+### [2026-10-26 16:15] Implementasi Backend IOE 2027 (Cloudflare Workers + D1 + R2 + Hono)
+
+- **Tipe:** Feat
+- **Scope:** `backend/`
+- **Ringkasan:** Mengimplementasikan backend lengkap untuk platform IOE 2027 menggunakan Cloudflare Workers, framework Hono, database SQL Cloudflare D1, penyimpanan berkas Cloudflare R2, enkripsi kata sandi PBKDF2-SHA256 (100.000 iterasi), dan token JWT (HS256) menggunakan jose. Seluruh skema database (migrasi D1 `0001_initial.sql`), data benih awal (`seed.sql`), skrip pembuatan admin lokal, serta modul-modul API (auth, profile, competitions, teams, requirements, events, dashboard, files, dan admin) telah selesai dibangun, divalidasi dengan Zod, dan diuji 100% lulus (30 skenario uji) menggunakan Vitest dan Workers Pool.
+- **File diubah:**
+  - `backend/package.json` — konfigurasi dependensi runtime (hono, jose, zod) dan dev (wrangler, vitest, typescript, @cloudflare/vitest-pool-workers).
+  - `backend/wrangler.jsonc` — konfigurasi bindings Cloudflare Workers (D1 database `ioe2027`, R2 bucket `ioe2027-files`, vars runtime lokal).
+  - `backend/tsconfig.json` & `backend/test/env.d.ts` — konfigurasi TypeScript strict ES2022 dan deklarasi tipe environment Worker.
+  - `backend/migrations/0001_initial.sql` — DDL skema database D1 lengkap (users, competitions, batches, prizes, timeline, teams, team_members, requirements, submissions, events, event_registrations, announcements, notifications).
+  - `backend/seed/seed.sql` — data benih awal untuk 3 kompetisi, batch pendaftaran, template persyaratan, 4 event, dan pembicara.
+  - `backend/scripts/create-admin.mjs` — utilitas seeding akun panitia/admin lokal.
+  - `backend/src/env.ts` — definisi interface Bindings, AuthUser, Variables, dan AppContext.
+  - `backend/src/lib/` (`errors.ts`, `response.ts`, `validate.ts`, `time.ts`, `ids.ts`, `password.ts`, `jwt.ts`, `google.ts`, `signedUrl.ts`, `files.ts`, `resolve.ts`) — pustaka inti penanganan error, standardisasi response, enkripsi, verifikasi token, magic bytes validator, dan signed URL R2.
+  - `backend/src/middleware/` (`requestId.ts`, `errorHandler.ts`, `auth.ts`) — middleware ID request, global error handler, dan role guard.
+  - `backend/src/modules/` (`auth`, `profile`, `competitions`, `teams`, `requirements`, `events`, `dashboard`, `files`, `admin`) — implementasi seluruh rute endpoint sesuai spesifikasi `BACKEND_IMPLEMENTATION.md` dan kontrak API.
+  - `backend/test/` (`health.test.ts`, `auth.test.ts`, `profile.test.ts`, `competitions.test.ts`, `teams.test.ts`, `requirements.test.ts`, `events.test.ts`, `dashboard.test.ts`, `admin.test.ts`, `helpers.ts`) — suite pengujian integrasi otomatis (30 skenario uji).
+  - `backend/README.md` — dokumentasi arsitektur, panduan local dev, instruksi migrasi, pengujian, dan integrasi frontend.
+  - `.env.local` — file konfigurasi local development mengarahkan `WORKERS_API_URL` ke `http://localhost:8000/api`.
+  - `amunisi/CHANGELOG.md` — pencatatan audit trail implementasi backend.
+- **Terkait requirement:** Seluruh F-01 sampai F-39 (`PRD_IOE_2027_v4.md`), `API_CONTRACT.md`, dan `BACKEND_IMPLEMENTATION.md`.
+- **Breaking change:** Tidak — implementasi backend baru yang sepenuhnya kompatibel dengan kontrak frontend.
+- **Belum selesai / follow-up:** Deployment ke Cloudflare Workers produksi di Cloudflare Dashboard ketika kredensial dan akun organisasi ITB/IOE siap. Integrasi live end-to-end dengan UI Next.js berjalan lancar melalui proxy Route Handlers yang sudah ada di frontend." bisa dipindahkan ke sini per tanggal rilis, dikelompokkan
 seperti contoh di bawah. Ini opsional — dipakai kalau tim butuh pemisahan
 "belum dirilis" vs "sudah live".
 

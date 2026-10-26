@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ioe2027-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ioe2027",
+      "database_id": "local-ioe2027-db",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "FILES",
+      "bucket_name": "ioe2027-files"
+    }
+  ],
+  "vars": {
+    "JWT_TTL_SECONDS": "604800",
+    "FILE_URL_TTL_SECONDS": "3600",
+    "APP_TZ": "Asia/Jakarta",
+    "JWT_SECRET": "dev-jwt-secret-key-at-least-32-chars-long-ioe2027",
+    "FILE_SIGNING_SECRET": "dev-file-signing-secret-key-at-least-32-chars",
+    "GOOGLE_CLIENT_ID": "mock-google-client-id"
+  }
+}
