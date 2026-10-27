@@ -12,6 +12,25 @@
 
 ## Unreleased
 
+### [2026-10-27] Halaman detail Short Course mengikuti struktur Xcelerate
+
+- **Tipe:** Fitur
+- **Scope:** `/events/short-course` dan tautan Short Course dari `/events`.
+- **Ringkasan:** Mengganti placeholder dengan Hero dua kolom, Sponsored by, About Short Course, What Will You Gain, Timeline, dan Course Sessions dalam urutan referensi. Komponen Documentation disiapkan sebagai carousel bertumpuk dan hanya dirender ketika foto resmi tersedia. Navbar/Footer serta halaman event lain dipertahankan.
+- **File diubah:** `src/app/(public)/events/[slug]/page.tsx`, `src/features/events/ShortCoursePage.tsx`, `src/features/events/shortCourseContent.ts`, `src/features/events/eventActivityContent.ts`, `src/components/ui/CountdownTimer.tsx`, dan `amunisi/CHANGELOG.md`.
+- **Data dan interaksi:** Nama, status, dan batas pendaftaran berasal dari `GET /events` melalui `useEvents`. Deadline mock tidak dipakai sebagai data resmi. Countdown bersama mendapat varian Short Course untuk ukuran 320px, tablet, dan desktop tanpa mengubah varian lama. Timeline menerima milestone resmi dan otomatis menambahkan batas pendaftaran dari API jika valid. Sponsor, manfaat, sesi, dan dokumentasi berbasis array data; tidak ada logo, hasil belajar, pengajar, atau foto rekaan. Seluruh CTA daftar memakai status tunggal dan tetap nonaktif hingga form asli selesai. Tombol Pelajari Program menuju section About.
+- **Verifikasi:** Typecheck, ESLint file terkait, dan build Webpack lulus. Chrome headless memeriksa 13 viewport dari 320×720 hingga 1920×1080: satu `h1`, section berurutan, Hero satu kolom di mobile/dua kolom mulai `md`, dan tidak ada overflow horizontal. Respons API simulasi sementara di browser mengonfirmasi countdown serta milestone saat deadline mendatang, status tutup tanpa countdown saat deadline lewat, dan layout tetap muat pada 320px/768px. HTML asli `Pasted text(7).txt` tidak tersedia dalam workspace/attachment sesi ini; geometri mengikuti prompt tekstual.
+- **Belum selesai / follow-up:** Form registrasi masih placeholder. Sponsor resmi, kurikulum/manfaat, jadwal lengkap, sesi, pengajar, logo/artwork, dan foto dokumentasi belum tersedia. Karena itu benefit cards, session cards, serta carousel dokumentasi aktual belum dapat diverifikasi secara visual; dokumentasi disembunyikan sampai ada foto resmi. Build Turbopack default sebelumnya gagal pada `next/font/google` di layout global; task ini memakai jalur build Webpack yang lulus.
+
+### [2026-10-27] Halaman detail Talkshow mengikuti struktur COMPFEST Talks
+
+- **Tipe:** Fitur
+- **Scope:** `/events/talkshow` dan tautan Talkshow di `/events`.
+- **Ringkasan:** Mengganti placeholder Talkshow dengan enam section berurutan: Hero, Our Talks, Our Speakers, Registration Recall, FAQ, dan Contact Person. Struktur responsif mengikuti blueprint COMPFEST Talks, sedangkan warna, font, border, dan dekorasi memakai token IOE. Navbar/Footer serta event lain tidak diubah.
+- **File diubah:** `src/app/(public)/events/[slug]/page.tsx`, `src/features/events/TalkshowPage.tsx`, `src/features/events/talkshowContent.ts`, `src/features/events/eventActivityContent.ts`, dan `amunisi/CHANGELOG.md`.
+- **Data dan interaksi:** Nama Talkshow serta status registrasi diambil dari `GET /events` melalui `useEvents`; dua FAQ memakai perilaku auth dan status jadwal yang sudah tercatat di dokumen proyek; kontak memakai `eventContacts` yang saat ini kosong. Tautan More Details menuju `#talkshow-details`; accordion memakai komponen Radix yang sudah ada. Semua CTA registrasi memakai satu state. Form `/events/talkshow/register` masih placeholder, sehingga CTA dinonaktifkan dengan pesan yang jujur.
+- **Verifikasi:** `npx tsc --noEmit` dan ESLint file terkait lulus. `npm run lint` lulus dengan satu warning lama pada `RegisterForm.tsx` di luar scope. `npm run build -- --webpack` lulus. Build Turbopack default gagal pada pemrosesan `next/font/google` di layout global; tidak ada perubahan layout global dalam task ini. Chrome headless memeriksa 12 viewport dari 320×720 sampai 1920×1080: enam section, satu `h1`, tanpa overflow horizontal, tombol daftar konsisten, accordion membuka, More Details mengubah hash ke target, dan tidak ada gambar rusak di dalam `main`.
+- **Belum selesai / follow-up:** Tidak ada file HTML COMPFEST Talks maupun aset Talkshow resmi di workspace; rekonstruksi memakai geometri yang tertulis pada prompt. Tanggal/waktu sesi, lokasi, tema final, pembicara, potret, dan kontak resmi belum tersedia. Ilustrasi memakai bentuk dan ikon dengan token IOE. Countdown acara dan kartu pembicara aktual menunggu data resmi. Form registrasi tetap task terpisah.
 ### [2026-10-26 16:15] Implementasi Backend IOE 2027 (Cloudflare Workers + D1 + R2 + Hono)
 
 - **Tipe:** Feat
