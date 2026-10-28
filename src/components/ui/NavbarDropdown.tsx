@@ -20,7 +20,7 @@ export function NavbarDropdown({ category, open, onToggle, onClose, triggerClass
     <div className="relative">
       <button type="button" aria-expanded={open} aria-controls={`${category.id}-dropdown`} onClick={onToggle} className={`${triggerClassName} ${open ? "bg-neutral-200" : ""} focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800`}>
         {category.label}
-        <Icon icon="mdi:chevron-down" aria-hidden="true" className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
+        <Icon icon="mdi:chevron-down" aria-hidden="true" className={`size-6 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open && (
         <div id={`${category.id}-dropdown`} className={`${styles.panel} z-[10001] rounded-xl border border-neutral-300 bg-neutral-100 p-2 shadow-lg`}>

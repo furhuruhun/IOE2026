@@ -34,7 +34,7 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen flex-col" style={{ background: 'radial-gradient(ellipse at 30% 25%, var(--color-primary-400), transparent 65%), radial-gradient(ellipse at 85% 75%, var(--color-secondary-200), transparent 65%), var(--color-neutral-100)' }}>
     <Navbar appearance="dashboard" />
-    <RadixTabs.Root orientation="vertical" className="flex-1 pt-20 md:pt-26" value={tab} onValueChange={(v) => { closeDetail(); setTab(v as DashboardTab); }}>
+    <RadixTabs.Root orientation="vertical" className="flex-1 pt-14 md:pt-20" value={tab} onValueChange={(v) => { closeDetail(); setTab(v as DashboardTab); }}>
       {tab === 'home' && !slug && <div className="site-container pt-6 pb-6">
         <Link href="/" aria-label="Back to homepage" className="ui-action ui-action-secondary"><Icon icon="mdi:chevron-left" className="size-6" />Back</Link>
       </div>}

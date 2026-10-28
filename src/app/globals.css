@@ -148,7 +148,7 @@
   --color-neutral-900: #3e3e3e;
   --color-neutral-1000: #393c3c;
 
-  /* base surface — belum ada spec dark mode di design_system_final.md, light-only untuk sekarang */
+  /* Base surface follows the active neutral palette. */
   --color-background: var(--color-neutral-100);
   --color-foreground: var(--color-neutral-1000);
 
@@ -306,6 +306,89 @@ body {
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Navbar roles are composed only from the existing IOE palette. */
+:root {
+  --navbar-cta-gradient: radial-gradient(circle at 30% 30%, var(--color-tertiary-500) 0%, var(--color-primary-300) 42%, var(--color-secondary-400) 80%), linear-gradient(90deg, var(--color-success-800) 0%, var(--color-tertiary-500) 33%, var(--color-primary-300) 68%, var(--color-secondary-400) 100%);
+  --navbar-switch-gradient: linear-gradient(110deg, var(--color-primary-600), var(--color-secondary-600));
+  --navbar-switch-track: var(--color-neutral-100);
+  --navbar-switch-thumb: var(--color-secondary-1000);
+  --navbar-cta-text: var(--color-success-1000);
+}
+
+/* Dark values reuse the approved IOE palette in reverse tonal order. */
+html[data-theme="dark"] {
+  --color-primary-100: #2c5f53;
+  --color-primary-200: #306f61;
+  --color-primary-300: #347f6e;
+  --color-primary-400: #3a9882;
+  --color-primary-500: #42c0a3;
+  --color-primary-600: #71d0ba;
+  --color-primary-700: #8ed9c8;
+  --color-primary-800: #a0dfd1;
+  --color-primary-900: #b3e6da;
+  --color-primary-1000: #c6ece3;
+  --color-secondary-100: #154b54;
+  --color-secondary-200: #135661;
+  --color-secondary-300: #10616e;
+  --color-secondary-400: #0d7383;
+  --color-secondary-500: #078ea4;
+  --color-secondary-600: #45aabb;
+  --color-secondary-700: #6abbc8;
+  --color-secondary-800: #83c7d1;
+  --color-secondary-900: #9cd2db;
+  --color-secondary-1000: #b5dde4;
+  --color-tertiary-100: #4e6b5c;
+  --color-tertiary-200: #5a7f6b;
+  --color-tertiary-300: #66927a;
+  --color-tertiary-400: #79af92;
+  --color-tertiary-500: #96dfb8;
+  --color-tertiary-600: #b0e7ca;
+  --color-tertiary-700: #c0ecd4;
+  --color-tertiary-800: #cbefdb;
+  --color-tertiary-900: #d5f2e3;
+  --color-tertiary-1000: #dff5ea;
+  --color-neutral-100: #393c3c;
+  --color-neutral-200: #3e3e3e;
+  --color-neutral-300: #5f5f5f;
+  --color-neutral-400: #717171;
+  --color-neutral-500: #898989;
+  --color-neutral-600: #a6a5a5;
+  --color-neutral-700: #c0c0c0;
+  --color-neutral-800: #d6d6d5;
+  --color-neutral-900: #e5e5e4;
+  --color-neutral-1000: #f8f8f9;
+  --navbar-cta-gradient: linear-gradient(110deg, var(--color-primary-100), var(--color-secondary-100));
+  --navbar-cta-text: var(--color-neutral-1000);
+}
+
+.navbar-cta {
+  background: var(--navbar-cta-gradient);
+  color: var(--navbar-cta-text);
+  isolation: isolate;
+  overflow: hidden;
+}
+.navbar-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--color-secondary-1000);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.navbar-cta:hover::after { opacity: .1; }
+.navbar-cta:active::after { opacity: .2; }
+.navbar-theme-frame { background: var(--navbar-switch-gradient); }
+.navbar-theme-track { background: var(--navbar-switch-track); transition: background 300ms ease-out; }
+.navbar-theme-thumb { background: var(--navbar-switch-thumb); }
+.navbar-theme-sun, .navbar-theme-moon { color: var(--color-secondary-800); transition: opacity 300ms ease-out, transform 300ms ease-out; }
+html[data-theme="dark"] .navbar-theme-sun,
+html:not([data-theme="dark"]) .navbar-theme-moon { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .navbar-theme-thumb, .navbar-theme-track, .navbar-theme-sun, .navbar-theme-moon, .navbar-cta::after { transition: none !important; }
+}
+
 h1,
 h2,
 h3,
@@ -422,21 +505,6 @@ h6 {
   }
   .hero-card-3d {
     transition: opacity 300ms ease;
-  }
-}
-
-/* ThemeToggle §layer positioning — top/left datang dari lookup table inline style per
- * state (lihat ThemeToggle.tsx), bukan Tailwind utility, jadi transisi-nya dipusatkan
- * di sini supaya bisa di-override reduced-motion, sama seperti .hero-card-3d di atas. */
-.theme-toggle-layer {
-  transition:
-    top 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
-    left 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-toggle-layer {
-    transition: none;
   }
 }
 

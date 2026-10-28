@@ -46,6 +46,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${montserrat.variable} ${montserratUi.variable} ${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var saved=localStorage.getItem('ioe-theme');var theme=saved==='light'||saved==='dark'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(e){document.documentElement.dataset.theme='light'}})();` }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <a href="#main-content" className="skip-link ui-action ui-action-secondary">Lewati ke konten utama</a>
