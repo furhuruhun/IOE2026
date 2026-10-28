@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Icon } from "@iconify/react/offline";
 
 interface CountdownTimerProps {
@@ -72,9 +72,42 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
     : hourDigits >= 4 ? "text-h6 md:text-h4" : "text-h4 md:text-h3";
 
   useEffect(() => {
-    const timer = setInterval(() => setTimeLeft(getTimeLeft(targetDate)), 1000);
+    const timer = setInterval(() => {
+      setTimeLeft(getTimeLeft(targetDate));
+      if (isShortCourse && Date.now() >= targetDate.getTime()) clearInterval(timer);
+    }, 1000);
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate, isShortCourse]);
+
+  if (isShortCourse) {
+    return (
+      <div className="flex flex-col items-center gap-8 mb-8">
+        <span className="flex gap-2 items-center font-ui font-bold text-neutral-100 md:text-s5">
+          <Icon icon="mdi:timer" className="size-5 shrink-0" aria-hidden="true" />
+          {formatTargetLabel(targetDate)}
+        </span>
+        <div className="flex items-center gap-3">
+          {UNITS.map((unit, i) => (
+            <Fragment key={unit.key}>
+              {i > 0 && (
+                <div className="flex flex-col gap-5" aria-hidden="true">
+                  <span className="size-2 rounded-full bg-neutral-100" />
+                  <span className="size-2 rounded-full bg-neutral-100" />
+                </div>
+              )}
+              <div className="size-18 md:size-28 p-0.5 rounded-full bg-linear-to-br from-primary-300 via-secondary-600 to-tertiary-600 shadow-md">
+                <div className="size-17 md:size-27 rounded-full flex flex-col items-center justify-center bg-linear-to-b from-primary-500 to-primary-1000 text-neutral-100 md:gap-0.5">
+                  <span className="font-ui text-s6 md:text-s5">{unit.label}</span>
+                  <div className="h-px w-10 md:w-17.5 bg-neutral-100/70" aria-hidden="true" />
+                  <span className="font-heading text-h4 md:text-h3 tabular-nums" suppressHydrationWarning>{pad2(timeLeft[unit.key])}</span>
+                </div>
+              </div>
+            </Fragment>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center gap-sm">

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+  <title id="title">Ilustrasi abstrak Short Course IOE</title>
+  <desc id="desc">Lingkaran, garis, dan gelombang laut dengan warna identitas IOE.</desc>
+  <defs>
+    <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#a0dfd1"/>
+      <stop offset=".55" stop-color="#6abbc8"/>
+      <stop offset="1" stop-color="#b0e7ca"/>
+    </linearGradient>
+    <linearGradient id="deep" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#10616e"/>
+      <stop offset="1" stop-color="#154b54"/>
+    </linearGradient>
+    <clipPath id="disc"><circle cx="400" cy="400" r="318"/></clipPath>
+  </defs>
+  <circle cx="400" cy="400" r="346" fill="none" stroke="#a0dfd1" stroke-opacity=".45" stroke-width="2"/>
+  <circle cx="400" cy="400" r="318" fill="url(#sea)"/>
+  <g clip-path="url(#disc)">
+    <circle cx="581" cy="228" r="114" fill="#dff5ea" fill-opacity=".75"/>
+    <circle cx="581" cy="228" r="78" fill="none" stroke="#154b54" stroke-opacity=".32" stroke-width="3"/>
+    <path d="M82 482c104-70 197-70 305 0s205 70 331-3v321H82Z" fill="#10616e" fill-opacity=".65"/>
+    <path d="M82 538c104-70 197-70 305 0s205 70 331-3v265H82Z" fill="url(#deep)"/>
+    <path d="M82 507c104-70 197-70 305 0s205 70 331-3" fill="none" stroke="#dff5ea" stroke-opacity=".8" stroke-width="7"/>
+    <path d="M82 607c104-70 197-70 305 0s205 70 331-3" fill="none" stroke="#a0dfd1" stroke-opacity=".65" stroke-width="4"/>
+    <path d="M82 683c104-70 197-70 305 0s205 70 331-3" fill="none" stroke="#6abbc8" stroke-opacity=".55" stroke-width="3"/>
+    <path d="M173 300h212m-212 32h164m-164 32h112" stroke="#154b54" stroke-opacity=".5" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="182" cy="197" r="9" fill="#154b54" fill-opacity=".5"/>
+    <circle cx="218" cy="197" r="9" fill="#154b54" fill-opacity=".32"/>
+    <circle cx="254" cy="197" r="9" fill="#154b54" fill-opacity=".2"/>
+  </g>
+  <circle cx="400" cy="400" r="318" fill="none" stroke="#dff5ea" stroke-width="5"/>
+  <circle cx="690" cy="118" r="16" fill="#b0e7ca"/>
+  <circle cx="95" cy="680" r="10" fill="#6abbc8"/>
+</svg>

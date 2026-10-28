@@ -12,6 +12,32 @@
 
 ## Unreleased
 
+### [2026-10-28] Hierarki Hero Short Course dan jarak CTA
+
+- **Tipe:** Perbaikan UI
+- **Scope:** Kolom kiri Hero `/events/short-course`.
+- **Ringkasan:** Memberi ruang vertikal pada fallback teks di area logo 60% agar jejak visualnya mendekati gambar logo referensi. Heading registrasi kini menampilkan status yang sebelumnya membuat label CTA terlalu panjang. Dua CTA memakai label `Register Now` dan `More Details` sesuai prompt Xcelerate; tombol detail menggunakan permukaan IOE transparan seperti geometri tombol sekunder referensi.
+- **File diubah:** `src/features/events/ShortCoursePage.tsx` dan `amunisi/CHANGELOG.md`.
+- **Verifikasi:** ESLint file terkait, typecheck frontend, dan `git diff --check` lulus. Chrome headless pada 320, 768, dan 1280 px menunjukkan kedua CTA setinggi 36/48px, gap grup 12px, padding 16/20px horizontal dan 8/12px vertikal, radius 12/16px, ikon 20/24px. CTA berdampingan mulai 768px dan membungkus pada 320px sesuai `flex-wrap` referensi; tidak ada scroll horizontal halaman.
+
+### [2026-10-28] Countdown dan ukuran CTA Hero Short Course
+
+- **Tipe:** Perbaikan UI
+- **Scope:** Hero `/events/short-course` dan varian countdown Short Course.
+- **Ringkasan:** Menampilkan kembali countdown saat API memakai data demo atau, khusus development, gagal dan data mock lokal tersedia. Tenggat contoh diberi label "Data contoh"; status dan CTA pendaftaran tetap nonaktif. Geometri CTA diselaraskan dengan HTML Xcelerate: `flex-wrap` dengan gap 12px, radius 12/16px, padding 16/20px dan 8/12px, font 12/14px, serta ikon 20/24px.
+- **File diubah:** `src/features/events/ShortCoursePage.tsx`, `src/components/ui/CountdownTimer.tsx`, dan `amunisi/CHANGELOG.md`.
+- **Verifikasi:** ESLint dan typecheck khusus frontend lulus. Chrome headless memperlihatkan countdown serta kedua CTA pada 320, 768, dan 1280 px saat backend lokal mengembalikan 502. Kedua CTA membungkus ke dua baris bila label status IOE tidak muat dalam kolom kiri, sesuai `flex-wrap` pada HTML referensi.
+
+### [2026-10-28] Hero Short Course mengikuti markup Xcelerate
+
+- **Tipe:** Perbaikan UI
+- **Scope:** Hero `/events/short-course` saja; section lain dan navigasi tidak diubah.
+- **Ringkasan:** Mengganti hero lama dengan wrapper, panel grid, urutan konten, countdown tiga lingkaran, grup tombol, dan container artwork sesuai HTML referensi Xcelerate. Warna, font, dan interaksi tombol memakai token IOE. SVG lokal abstrak dipakai sementara hingga artwork resmi tersedia.
+- **File diubah:** `src/features/events/ShortCoursePage.tsx`, `src/components/ui/CountdownTimer.tsx`, `public/short-course/hero-placeholder.svg`, dan `amunisi/CHANGELOG.md`.
+- **Data dan interaksi:** Tenggat countdown tetap hanya berasal dari respons event non-demo. CTA registrasi tetap nonaktif selama `registrationFormReady` bernilai `false`; tombol detail menuju About Short Course.
+- **Verifikasi:** ESLint kedua file TSX dan typecheck khusus frontend lulus. Kompilasi Webpack lulus, tetapi build penuh dan typecheck repo gagal karena dependensi dan tipe backend belum terpasang; lint repo gagal pada error lama di tes backend. Chrome headless mengukur 12 viewport dari 320 sampai 1920 px dengan respons API non-demo sementara: padding, grid gap, diameter lingkaran, separator, container artwork, dan status CTA sesuai referensi.
+- **Keterbatasan visual:** Pada 320 px countdown 280 px melewati tepi panel 12 px per sisi, tanpa scroll horizontal halaman. Pada 768 px min-content countdown memaksa kolom grid menjadi 400 px dan sekitar 74 px, sehingga artwork sangat kecil. Angka total jam empat digit melampaui lebar lingkaran pada ukuran kecil. Geometri asli dipertahankan sesuai keputusan pemilik proyek.
+
 ### [2026-10-27] Halaman detail Short Course mengikuti struktur Xcelerate
 
 - **Tipe:** Fitur
