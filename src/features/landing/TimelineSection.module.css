@@ -1,0 +1,116 @@
+.header {
+  max-width: 900px;
+  margin: 0 auto 48px;
+  text-align: center;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: clip;
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  padding-bottom: 32px;
+}
+
+.item:last-child {
+  padding-bottom: 0;
+}
+
+.item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 32px;
+  bottom: -32px;
+  left: calc(50% - 1px);
+  width: 2px;
+  background: var(--color-secondary-300);
+  pointer-events: none;
+}
+
+.item::after {
+  content: "";
+  position: absolute;
+  top: 31px;
+  width: 36px;
+  height: 2px;
+  background: var(--color-secondary-300);
+  pointer-events: none;
+}
+
+.item.left::after { right: 50%; }
+.item.right::after { left: 50%; }
+
+.node {
+  position: absolute;
+  z-index: 1;
+  top: 24px;
+  left: calc(50% - 8px);
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--color-neutral-100);
+  border-radius: 50%;
+  background: var(--color-primary-600);
+  box-shadow: 0 0 0 2px var(--color-secondary-600);
+  pointer-events: none;
+}
+
+.cardReveal {
+  min-width: 0;
+  width: calc(100% - 36px);
+}
+
+.left .cardReveal {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.right .cardReveal {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.card {
+  min-width: 0;
+  min-height: 64px;
+  padding: 24px;
+  border: 1px solid var(--color-secondary-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-neutral-100);
+  box-shadow: var(--shadow-sm);
+}
+
+.reveal {
+  opacity: 1;
+  transform: translate(0);
+  transition: opacity 700ms ease-out 100ms, transform 700ms ease-out 100ms;
+}
+
+.reveal[data-reveal="waiting"] { opacity: 0; transition: none; }
+.up[data-reveal="waiting"] { transform: translateY(32px); }
+.left[data-reveal="waiting"] { transform: translateX(-60px); }
+.right[data-reveal="waiting"] { transform: translateX(60px); }
+
+@media (max-width: 767px) {
+  .item { display: block; }
+  .item:not(:last-child)::before { left: 15px; }
+  .item::after { right: auto; left: 16px; width: 32px; }
+  .node { left: 8px; }
+  .cardReveal { width: calc(100% - 48px); margin-left: 48px; }
+  .left[data-reveal="waiting"],
+  .right[data-reveal="waiting"] { transform: translateX(24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal[data-reveal="waiting"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

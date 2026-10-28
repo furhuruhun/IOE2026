@@ -70,18 +70,23 @@ export const aboutStats: AboutStat[] = [
 ];
 
 export interface TimelineItem {
-  date: string;
-  label: string;
+  id: string;
+  title: string;
+  dateLabel?: string;
+  dateTime?: string;
 }
 
-// F-10 — tanggal PLACEHOLDER (PRD §13 Awareness A6: deadline konten dari klien belum
-// ditetapkan). Urutan bulan mengacu ke F-50 (kalender dashboard s.d. Mei 2027).
+// F-10 — development placeholders. Belum ada delapan milestone dan tanggal resmi
+// dari panitia; ganti data di sini ketika jadwal resmi tersedia.
 export const timelineItems: TimelineItem[] = [
-  { date: "Jan 2027", label: "Pendaftaran Dibuka" },
-  { date: "Mar 2027", label: "Batas Akhir Pendaftaran Kompetisi" },
-  { date: "Apr 2027", label: "Pengumuman Finalis" },
-  { date: "Mei 2027", label: "Rangkaian Acara Utama" },
-  { date: "Mei 2027", label: "Grand Final & Awarding Night" },
+  { id: "milestone-01", title: "Milestone 01" },
+  { id: "milestone-02", title: "Milestone 02" },
+  { id: "milestone-03", title: "Milestone 03" },
+  { id: "milestone-04", title: "Milestone 04" },
+  { id: "milestone-05", title: "Milestone 05" },
+  { id: "milestone-06", title: "Milestone 06" },
+  { id: "milestone-07", title: "Milestone 07" },
+  { id: "milestone-08", title: "Milestone 08" },
 ];
 
 export interface MemoryItem {

@@ -43,7 +43,7 @@ assert.ok(!render("components/ui/Navbar.tsx","Navbar").includes('role="switch"')
 assert.ok(timeline.includes('id="timeline"'), "secondary schedule destination remains available");
 assert.equal(about.includes("Sponsor A"), preview);
 assert.equal(about.includes("about-stats-track"), preview);
-assert.equal(timeline.includes("Jan 2027"), preview);
+assert.equal(timeline.includes("Milestone 01"), preview);
 assert.equal(shortCourse.includes("Real-Case Project Exposure"), preview);
 assert.equal(shortCourse.includes("15 Agustus 2026"), preview);
 assert.equal(shortCourse.includes("Pembicara seminar menyusul"), preview);
