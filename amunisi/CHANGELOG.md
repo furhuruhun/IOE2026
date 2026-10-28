@@ -12,6 +12,20 @@
 
 ## Unreleased
 
+### [2026-10-28 16:49] Hero Carousel landing memakai flex track dan perspektif per kartu
+
+- **Tipe:** Refactor
+- **Scope:** Hero Carousel `/`.
+- **Ringkasan:** Mengganti tiga slide absolute yang bertumpuk di satu titik tengah dengan sembilan slot Flexbox dalam tiga grup. Track bergerak dengan `translate3d` dan diukur dari lebar viewport/slot; kartu bagian dalam memakai perspektif 1000px, rotasi ±18°, skala 0.88, dan opacity 0.6 pada sisi. Loop berpindah ke salinan tengah setelah `transitionend` tanpa animasi rebase, sementara isi kartu, sonar, CTA, countdown, dan pagination IOE tetap dipakai.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — struktur track/slot/kartu, pengukuran ResizeObserver, indeks fisik dan logis, antrean navigasi cepat, gesture, keyboard, autoplay, dan aksesibilitas salinan slide.
+  - `src/app/globals.css` — transisi sinkron pada track dan kartu serta aturan reduced motion.
+  - `amunisi/CHANGELOG.md` — catatan perubahan dan deviasi spec.
+- **Terkait requirement:** F-07–F-08, `/` di `ROUTES.md`.
+- **Breaking change:** Tidak pada konten dan rute; geometri carousel berubah sesuai master prompt terbaru.
+- **Verifikasi:** Typecheck FE terpisah, ESLint komponen, dan `git diff --check` lulus. Kompilasi Webpack lulus; build penuh berhenti di typecheck backend karena dependency backend belum terpasang. Chrome headless memeriksa 13 viewport (320×720 sampai 1920×1080, termasuk 1470×531): pusat slot aktif tepat di pusat viewport, lebar slot 320–512px di bawah `lg` dan 880px di `lg+`, satu `h1`, dan tanpa overflow horizontal halaman. Klik kartu samping, delapan langkah maju melintasi batas grup, keyboard mundur, swipe mouse, tiga klik pagination cepat, dan reduced motion lulus. Pada 1440px gap kartu aktif ke kartu samping 47px, opacity samping 0.6, dan transform samping `perspective(1000px) rotateY(18deg) scale(0.88)`. Autoplay berhenti saat hover lebih dari 6 detik dan maju setelah pointer keluar. Screenshot 320, 768, 1440, dan 1470×531 diperiksa; pada desktop pendek konten hero berlanjut melalui scroll vertikal sebagaimana tinggi kartu 560px yang dipertahankan.
+- **Belum selesai / follow-up:** `design_system_final.md` §HeroCarousel (baris 912–1089) masih mendokumentasikan slide absolute, offset persentase, dan loop tanpa duplikasi; master prompt pengguna terbaru secara eksplisit menggantinya dengan flex track dan tiga grup. Lebar kartu lama `min(880px, 85vw)` juga diganti slot responsif 512/880px dengan padding 12px sesuai prompt. Dua HTML referensi COMPFEST/IOE (`Pasted text(8).txt` dan `(9).txt`) tidak tersedia di attachment/workspace, sehingga perbandingan screenshot 1:1 terhadap COMPFEST tidak dapat dilakukan. Build penuh repo tetap terhalang error dependency/type backend yang sudah ada sebelum perubahan ini; `npm run lint` gagal pada 40 error `no-explicit-any` lama di tes backend (ESLint komponen yang diubah lulus).
+
 ### [2026-10-28] Hierarki Hero Short Course dan jarak CTA
 
 - **Tipe:** Perbaikan UI
