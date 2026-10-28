@@ -44,7 +44,6 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
       <p className="font-body text-neutral-500" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
         {slide.desc}
       </p>
-      {slide.showCountdown && process.env.NODE_ENV === "development" && <div><p className="mb-2 font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={EVENT_DATE} /></div>}
       <Link href={slide.cta.href} tabIndex={active ? 0 : -1}
         className={buttonStyles("secondary", "sm")} style={{ pointerEvents: active ? "auto" : "none" }}>
         {slide.cta.label}

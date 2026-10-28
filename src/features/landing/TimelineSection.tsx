@@ -31,7 +31,6 @@ function ScrollReveal({ children, direction, className = "" }: { children: React
 function TimelineHeader() {
   return (
     <ScrollReveal direction="up" className={styles.header}>
-      <p className="font-body text-b3 font-bold uppercase tracking-widest text-secondary-800">Timeline</p>
       <h2 id="timeline-title" className="mt-sm font-heading text-h4 text-secondary-1000 md:text-h2">
         Timeline <span className="text-primary-800">IOE 2027</span>
       </h2>
@@ -60,7 +59,6 @@ export function TimelineSection() {
     <section id="timeline" aria-labelledby="timeline-title" className="site-container section-space bg-neutral-100">
       <div className="mx-auto max-w-[1000px]">
         <TimelineHeader />
-        {process.env.NODE_ENV === "development" && <p className="mt-2 text-center font-micro text-b3 text-neutral-800">Preview</p>}
         {process.env.NODE_ENV === "development" && <ol className={`${styles.timeline} mt-lg`}>
           {timelineItems.map((item, index) => {
             const side = index % 2 === 0 ? "left" : "right";
@@ -72,9 +70,6 @@ export function TimelineSection() {
             );
           })}
         </ol>}
-        {process.env.NODE_ENV === "development" && <p className="mt-lg text-center font-body text-b4 text-neutral-800" role="note">
-          Milestone dan jadwal di atas adalah slot pengembangan. Informasi resmi dari panitia menyusul.
-        </p>}
       </div>
     </section>
   );

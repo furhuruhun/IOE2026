@@ -9,10 +9,7 @@ export function MemoriesSection() {
   return (
     <section className="site-container section-space">
       <div className="w-full">
-        <p className="text-center font-micro text-b3 text-neutral-800">Preview</p>
         <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Memories</h2>
-        <p className="mt-2 text-center text-b2 text-neutral-700">Dokumentasi IOE di tahun-tahun sebelumnya.</p>
-
         <div className="mt-2xl grid grid-cols-2 gap-md md:grid-cols-4">
           {memories.map((memory) => (
             <figure key={memory.id} className="overflow-hidden rounded-lg bg-neutral-200">
