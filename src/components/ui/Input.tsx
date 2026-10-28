@@ -8,7 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
   icon?: string;
-  /** Documented pill shape and icon placement for Event Registration only. */
+  /** Documented pill shape for Event Registration only. */
   variant?: "default" | "event";
   // Opt-in show/hide toggle untuk type="password" — tidak ada di spec design_system_final.md
   // §Input, ditambahkan sebagai UX yang wajar & rendah risiko (bukan token desain baru).
@@ -42,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {icon && (
           <Icon
             icon={icon}
-            className={`pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 md:size-7 ${variant === "event" ? "md:left-4" : "md:left-[52px]"} ${
+            className={`pointer-events-none absolute top-1/2 left-3 size-5 -translate-y-1/2 md:left-4 md:size-7 ${
               error ? "text-neutral-1000" : "text-neutral-500 group-focus-within:text-neutral-1000"
             }`}
           />

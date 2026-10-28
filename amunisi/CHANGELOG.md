@@ -12,6 +12,14 @@
 
 ## Unreleased
 
+### [2026-10-28] Fix shared authentication input icon overlap
+
+- **Tipe:** Fix
+- **Scope:** Shared Input leading icons used by Login and Register.
+- **Ringkasan:** Confirmed default desktop icons started at 52px, overlapping text with 52px left padding. Reused the event variant's `md:left-4` placement (16px) for all leading icons, leaving 28px icons and an 8px text gap. Mobile placement, input padding, dimensions, visual states, and password toggle logic remain unchanged. Removed the now-unnecessary variant condition and updated its prop comment.
+- **File diubah:** `src/components/ui/Input.tsx`, `amunisi/CHANGELOG.md`.
+- **Verifikasi:** Inspected Login email/password and Register name/email/password/confirmation callers, plus Profile inputs without icons and the event variant. Targeted ESLint passed with zero errors and the existing RegisterForm React Hook Form warning; frontend TypeScript check passed with zero diagnostics. Repository lint found 40 existing backend test errors; repository typecheck failed on backend dependencies/types. Diff whitespace check passed. Login returned HTTP 200. Headless Chrome automation launched but stalled opening Login, so viewport measurements, screenshots, and password-toggle interaction checks could not be completed. UI Skills registry discovery failed with an npm error; existing repository styling conventions were used. No authentication logic or dependencies changed.
+
 ### [2026-10-28 16:49] Hero Carousel landing memakai flex track dan perspektif per kartu
 
 - **Tipe:** Refactor
