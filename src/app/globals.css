@@ -380,13 +380,50 @@ html[data-theme="dark"] {
 .navbar-cta:hover::after { opacity: .1; }
 .navbar-cta:active::after { opacity: .2; }
 .navbar-theme-frame { background: var(--navbar-switch-gradient); }
-.navbar-theme-track { background: var(--navbar-switch-track); transition: background 300ms ease-out; }
-.navbar-theme-thumb { background: var(--navbar-switch-thumb); }
-.navbar-theme-sun, .navbar-theme-moon { color: var(--color-secondary-800); transition: opacity 300ms ease-out, transform 300ms ease-out; }
-html[data-theme="dark"] .navbar-theme-sun,
-html:not([data-theme="dark"]) .navbar-theme-moon { opacity: 0; }
+.navbar-theme-track {
+  background: radial-gradient(circle at 25% 50%, var(--color-secondary-100), var(--color-secondary-400) 60%, var(--color-secondary-600));
+  transition: background 300ms ease-out;
+}
+html[data-theme="dark"] .navbar-theme-track {
+  background: radial-gradient(circle at 75% 50%, var(--color-secondary-200), var(--color-secondary-100) 55%, var(--color-neutral-100));
+}
+.navbar-theme-glow {
+  background: radial-gradient(circle at 25% 50%, var(--color-neutral-100) 0%, transparent 60%);
+  opacity: .4;
+  transition: opacity 300ms ease-out;
+}
+html[data-theme="dark"] .navbar-theme-glow {
+  background: radial-gradient(circle at 75% 50%, var(--color-secondary-600) 0%, transparent 65%);
+  opacity: .3;
+}
+.navbar-theme-night, .navbar-theme-day,
+.navbar-theme-sun-disc, .navbar-theme-moon-disc {
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+.navbar-theme-night { color: var(--color-neutral-1000); opacity: 0; transform: translateY(-5px); }
+.navbar-theme-day { color: var(--color-neutral-100); opacity: 1; transform: translateY(0); }
+html[data-theme="dark"] .navbar-theme-night { opacity: 1; transform: translateY(0); }
+html[data-theme="dark"] .navbar-theme-day { opacity: 0; transform: translateY(5px); }
+.navbar-theme-thumb { z-index: 1; }
+.navbar-theme-sun-disc {
+  background: linear-gradient(135deg, var(--color-tertiary-200), var(--color-tertiary-600));
+  box-shadow: 0 0 8px var(--color-tertiary-500);
+  opacity: 1;
+}
+.navbar-theme-sun-ring { border-color: color-mix(in srgb, var(--color-neutral-100) 45%, transparent); }
+.navbar-theme-moon-disc {
+  background: linear-gradient(135deg, var(--color-neutral-1000), var(--color-neutral-700));
+  box-shadow: 0 0 7px color-mix(in srgb, var(--color-neutral-1000) 45%, transparent);
+  opacity: 0;
+}
+.navbar-theme-crater { background: color-mix(in srgb, var(--color-neutral-500) 48%, transparent); }
+html[data-theme="dark"] .navbar-theme-sun-disc { opacity: 0; }
+html[data-theme="dark"] .navbar-theme-moon-disc { opacity: 1; }
+.navbar-theme-sparkle { animation: navbar-sparkle 3s ease-in-out infinite; transform-origin: center; }
+@keyframes navbar-sparkle { 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) {
-  .navbar-theme-thumb, .navbar-theme-track, .navbar-theme-sun, .navbar-theme-moon, .navbar-cta::after { transition: none !important; }
+  .navbar-theme-thumb, .navbar-theme-track, .navbar-theme-glow, .navbar-theme-night, .navbar-theme-day, .navbar-theme-sun-disc, .navbar-theme-moon-disc, .navbar-cta::after { transition: none !important; }
+  .navbar-theme-sparkle { animation: none; }
 }
 
 h1,
