@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Accordion from "@radix-ui/react-accordion";
 import { Icon } from "@iconify/react/offline";
 import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
-import { UserAvatar, CTA_GRADIENT } from "@/components/ui/Navbar";
+import { UserAvatar } from "@/components/ui/Navbar";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
 
 // Off-canvas mobile nav (F-02), dibangun di atas Radix Dialog (role="dialog", aria-modal,
@@ -26,6 +27,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
   const isLoggedIn = useIsLoggedIn();
   const user = useUser();
   const close = () => onOpenChange(false);
+  const opener = useRef<HTMLElement | null>(null);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -35,6 +37,8 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
           style={{ background: "rgba(15,30,32,.55)", backdropFilter: "blur(3px)" }}
         />
         <Dialog.Content
+          onOpenAutoFocus={() => { opener.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; }}
+          onCloseAutoFocus={event => { event.preventDefault(); if (opener.current?.isConnected) opener.current.focus(); }}
           aria-describedby={undefined}
           className="nav-drawer-content fixed inset-y-0 right-0 z-[10002] flex h-screen w-80 max-w-[calc(100vw-3rem)] flex-col bg-neutral-100 xl:hidden"
         >
@@ -42,7 +46,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
             <Dialog.Title className="text-base font-semibold text-neutral-1000">Menu</Dialog.Title>
             <Dialog.Close
               aria-label="Tutup menu"
-              className="flex size-8 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-neutral-200"
+              className="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-secondary-800 text-neutral-800 transition-colors hover:bg-neutral-200"
             >
               <Icon icon="mdi:close" className="size-5" />
             </Dialog.Close>
@@ -65,7 +69,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
                       <Icon icon={category.icon} className="size-5 shrink-0 text-secondary-1000" />
                       {category.label}
                     </Link>
-                    <Accordion.Trigger className="group flex size-8 shrink-0 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-neutral-200">
+                    <Accordion.Trigger aria-label={`Tampilkan submenu ${category.label}`} className="group flex size-11 shrink-0 items-center justify-center rounded-full text-neutral-800 transition-colors hover:bg-neutral-200">
                       <Icon
                         icon="mdi:chevron-down"
                         className="size-5 transition-transform duration-200 group-data-[state=open]:rotate-180"
@@ -112,8 +116,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
               <Link
                 href="/login"
                 onClick={close}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-full text-sm font-semibold text-secondary-1000 transition-opacity hover:opacity-90 active:opacity-80"
-                style={{ background: CTA_GRADIENT }}
+                className="ui-action ui-action-primary ui-action-sm w-full"
               >
                 <Icon icon="mdi:account-circle" className="size-5 shrink-0" />
                 Login

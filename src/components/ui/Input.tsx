@@ -62,10 +62,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         {showToggle && (
           <button
             type="button"
-            tabIndex={-1}
+            aria-pressed={visible}
+            disabled={disabled}
             onClick={() => setVisible((v) => !v)}
             aria-label={visible ? "Sembunyikan password" : "Tampilkan password"}
-            className={`absolute top-1/2 right-3 -translate-y-1/2 md:right-4 [&_svg]:size-5 md:[&_svg]:size-7 ${
+            className={`absolute top-1/2 right-0 flex size-11 items-center justify-center rounded-lg -translate-y-1/2 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-secondary-800 md:right-1 [&_svg]:size-5 md:[&_svg]:size-7 ${
               error ? "text-neutral-1000" : "text-neutral-500 group-focus-within:text-neutral-1000"
             }`}
           >

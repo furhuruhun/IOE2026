@@ -90,7 +90,7 @@ function EventCard({ event, index, isDemo, now }: { event: EventSummary; index: 
             {isDemo && <span className="font-normal text-neutral-700">(tanggal contoh)</span>}
           </p>
           {content.detailStatus === "available" ? (
-            <Link href={`/events/${encodeURIComponent(event.slug)}`} className="mt-sm inline-flex min-h-12 items-center gap-sm rounded-lg bg-linear-to-r from-primary-600 to-secondary-700 px-lg py-sm font-ui text-b3 font-bold text-neutral-100 transition-opacity hover:opacity-90 active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800">
+            <Link href={`/events/${encodeURIComponent(event.slug)}`} className="ui-action ui-action-primary ui-action-sm mt-sm">
               Lihat Detail <Icon icon="mdi:arrow-right" className="size-5" aria-hidden="true" />
             </Link>
           ) : (
@@ -110,7 +110,7 @@ export function EventOverviewActivities() {
   const errorMessage = getErrorEntry(error instanceof ApiError ? error.code : "SERVER_ERROR").message;
 
   return (
-    <section id="events" className="relative isolate w-full overflow-hidden bg-neutral-100 px-6 py-20 md:px-12 md:py-28 lg:py-32">
+    <section id="events" className="relative isolate w-full overflow-hidden bg-neutral-100 section-space">
       <span id="whats-in" className="absolute top-0" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute inset-0 bg-linear-to-b from-primary-100/35 via-neutral-100 to-secondary-100/35" />
@@ -122,7 +122,7 @@ export function EventOverviewActivities() {
           <path fill="currentColor" d="M0 155C250 45 410 280 750 160S1210 30 1440 120V0H0Z" />
         </svg>
       </div>
-      <div className="relative z-10 mx-auto flex w-full max-w-[80rem] flex-col gap-3xl lg:gap-4xl">
+      <div className="relative z-10 site-container flex flex-col gap-3xl lg:gap-4xl">
         <div className="flex flex-col items-center gap-md text-center">
           <p className="font-ui text-b3 font-bold uppercase tracking-widest text-secondary-800">What&apos;s in IOE</p>
           <h2 className="max-w-[48rem] font-heading text-h4 text-secondary-1000 md:text-h3 lg:text-h2">

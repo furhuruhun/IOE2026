@@ -12,6 +12,86 @@
 
 ## Unreleased
 
+### [2026-10-28 21:05] Track B1/B2 public clarity and dashboard presentation
+
+- **Tipe:** Fix
+- **Scope:** Landing discovery, public provisional content/controls, dashboard preparation and calendar presentation.
+- **Ringkasan:** Added permanent discovery actions independent of carousel slides; retained six-second autoplay and Track A safeguards. Guarded known sample content and placeholder destinations using existing environment/provenance information, and moved Preparation before Journey with stable deadline ordering and explicit calendar-list scope.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` - persistent existing destinations, secondary per-slide actions and preview-only unconfirmed milestone timer.
+  - `src/components/ui/Navbar.tsx` and `src/components/ui/Footer.tsx` - remove theme preview from navigation; prevent placeholder social destinations without deleting data.
+  - Landing/event/competition presentation components listed individually in `amunisi/TRACK_B1_B2_UX_INTEGRATION.md` - labeled development previews and production guards for known sample-backed content; no assets or sample arrays replaced.
+  - `src/app/(protected)/dashboard/page.tsx` - Preparation before Journey in reading order.
+  - `src/features/dashboard/DashboardAssignments.tsx` and `src/utils/sortByDeadline.ts` - stable deadline-only ordering, preserve all items/statuses, safe absent-date display.
+  - `src/features/dashboard/DashboardCalendar.tsx` - clarify all-registered-schedules list scope while retaining month controls and read-only dates.
+  - `scripts/check-ui.mjs`, `scripts/check-deadline-sort.mjs`, `scripts/check-public-content.mjs` - browser regressions, pure sorting checks and development/production component guard checks.
+  - `amunisi/design_system_final.md` and `amunisi/TRACK_B1_B2_UX_INTEGRATION.md` - approved presentation notes, complete file manifest, validation and blockers.
+- **Terkait requirement:** D1, partial D2, D7/D8 safe public presentation, D5/D6. Existing routes and contracts retained.
+- **Breaking change:** Tidak - intended production suppression of known provisional presentation; sample data retained in development.
+- **Belum selesai / follow-up:** Persistent touch pause remains unresolved under the approved autoplay policy. Owner content and reliable API publication provenance remain dependencies; unmarked competition mock fallback is unchanged. No new preview publishing configuration, B3 navigation changes or registration functionality were introduced. Production guards were component-render tested; browser coverage uses local client fixtures, not deployed backend integration.
+
+
+### [2026-10-28 20:18] Track A: remaining technical UI and accessibility remediation
+
+- **Tipe:** Fix
+- **Scope:** Dashboard, shared navigation/notifications, event pagination, statistics accessibility and browser regressions.
+- **Ringkasan:** Fixed confirmed post-audit focus, duplicate-ID, contrast, touch-target, read-only calendar, dashboard readability and feedback issues while preserving routing, palette/assets, content values and Product behavior. Corrected the browser auth fixture and added targeted keyboard, populated/empty/loading/error, retry, toast timing and reduced-motion checks.
+- **File diubah:**
+  - `src/components/ui/MobileNavDrawer.tsx` - restore opener focus, enlarge close target, reuse shared login action.
+  - `src/features/dashboard/DashboardSidebar.tsx` - single responsive tab list, selected mobile label, disclosure focus restoration and compact mobile identity.
+  - `src/app/(protected)/dashboard/page.tsx` - selected-tab prop, vertical tab semantics and home page heading.
+  - `src/features/dashboard/DashboardMyJourney.tsx` - wrap names, expose native scrolling, local errors and contextual empty state.
+  - `src/features/dashboard/DashboardAssignments.tsx` - accessible loading/busy state, local persistent error/retry, readable names and reduced empty-panel height.
+  - `src/features/dashboard/DashboardCalendar.tsx` - read-only dates with full accessible labels, readable scheduled dates and local feedback.
+  - `src/features/dashboard/DashboardRegisteredEvents.tsx` - page heading, contextual empty action, shared details action and local errors.
+  - `src/components/ui/Toast.tsx` - readable existing shades, atomic announcements, persistent errors and hover/focus-safe timed dismissal.
+  - `src/features/events/EventOverviewAbout.tsx` - 44px documentation-pagination targets around existing dots.
+  - `src/features/events/RegistrationFoundationForm.tsx` - correct notice contrast without changing form behavior.
+  - `src/features/competitions/TeamModal.tsx` and `src/features/competitions/TeamModalPublicTeamList.tsx` - readable existing shades on neutral surfaces.
+  - `src/features/landing/TimelineSection.tsx` - readable provisional-date disclaimer.
+  - `src/features/landing/AboutSection.tsx` and `src/app/globals.css` - all original statistics accessible in reduced motion; decorative duplicates hidden from assistive technology.
+  - `src/features/competitions/CompetitionHero.tsx` and `src/features/competitions/CompetitionDetailHero.tsx` - shared equivalent action styles and wrapping.
+  - `src/features/competitions/CompetitionTestimonialCarousel.tsx` - fix verified narrow-screen flex-card overflow.
+  - `scripts/check-ui.mjs` - correct data: User/null fixture, native Enter simulation, targeted state/focus/contrast regressions and bounded CDP commands.
+  - `amunisi/design_system_final.md` and `amunisi/ERROR_HANDLING_FE.md` - record accessibility and local query-feedback treatments.
+  - `amunisi/UI_PASS_REVIEW.md` and `amunisi/TRACK_A_UI_REMEDIATION.md` - follow-up link, scope/file manifest, verification and deferrals.
+- **Terkait requirement:** Existing dashboard F-45-F-51, navigation F-02, landing statistics F-09, event overview and registration foundation; no API or route changes.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Track B carousel/navigation/theme decisions, owner content/social destinations and registration submission remain deferred. Root TypeScript and ESLint retain existing backend failures. Browser verification uses isolated client fixtures, not real backend integration; see TRACK_A_UI_REMEDIATION.md for final results and the isolated-viewport invocation.
+
+
+### [2026-10-28] Remove visible landing carousel pause button
+
+- **Tipe:** Fix
+- **Scope:** Landing hero carousel.
+- **Ringkasan:** Removed the visible pause/resume button at the owner?s request. Retained pagination, hover pausing, keyboard-focus pausing and reduced-motion behavior.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` ? remove rotation button and unused Button import.
+  - `scripts/check-ui.mjs` ? check absence of the button and verify keyboard pause through stable slide selection.
+  - `amunisi/design_system_final.md` and `amunisi/UI_PASS_REVIEW.md` ? reflect the updated owner decision.
+- **Terkait requirement:** `/` landing carousel; owner override of the earlier visible-control requirement.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** None for this removal.
+
+
+### [2026-10-28 19:09] Unify UI layout/actions and address responsive accessibility findings
+
+- **Tipe:** Fix
+- **Scope:** Shared UI, Landing, Events/Short Course/Talkshow, Dashboard and registration foundation.
+- **Ringkasan:** Unified content containers, major-section rhythm, typography roles and shared action hierarchy using the existing palette/fonts. Fixed Short Course narrow-screen geometry, carousel controls, keyboard password visibility, touch targets, skip navigation and identified contrast combinations; moved the existing registration-unavailable notice before the fields.
+- **File diubah:**
+  - `src/app/globals.css` and `src/components/ui/Button.tsx` ? shared container/section/action styles and readable body leading.
+  - `src/components/ui/{Navbar,MobileNavDrawer,ThemeToggle,Input,CountdownTimer,Footer,GoogleAuthButton,PlaceholderPage}.tsx` ? shared presentation, responsive controls, accessible targeting and consistent actions.
+  - `src/features/landing/`, `src/features/events/`, `src/app/(protected)/dashboard/page.tsx` ? align containers/actions and section spacing; fit the countdown; provide rotation control and neutral preview labels.
+  - `src/app/layout.tsx`, page main elements and remaining touched auth/competition/dashboard components ? skip destinations and existing darker foreground shades.
+  - `scripts/check-ui.mjs` ? dependency-free rendered responsive/keyboard/contrast checks with browser-only fixtures.
+  - `amunisi/design_system_final.md` ? implementation addendum superseding earlier button geometry/spacing and documenting reused tokens.
+  - `amunisi/UI_PASS_REVIEW.md` ? full changed-file manifest, findings, deferrals and verification details.
+- **Terkait requirement:** Existing public pages, participant dashboard, auth forms and `/events/[slug]/register`; no routing or API contract changes.
+- **Breaking change:** Tidak ? UI-only; existing palette, fonts, assets, content values and registration semantics retained.
+- **Belum selesai / follow-up:** Final owner content and registration submission remain separate work. Theme control remains visual-only and social destinations remain provisional. Root TypeScript/ESLint remain blocked by existing backend issues; frontend checks pass. Browser checks use client fixtures and do not certify backend integration. Full details and all changed files are listed in UI_PASS_REVIEW.md.
+
+
 ### [2026-10-28] Fix shared authentication input icon overlap
 
 - **Tipe:** Fix

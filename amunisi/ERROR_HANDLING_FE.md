@@ -145,3 +145,9 @@ export const DEFAULT_ERROR = ERROR_MESSAGES.SERVER_ERROR;
 | A1 | Durasi toast auto-dismiss (draft: 4 detik) — belum dikonfirmasi desain final | Tim desain |
 | A2 | Redirect target untuk `NOT_FOUND` yang sifatnya route-level (404 penuh) — belum ada desain halaman 404 kustom | Tim desain + PRD |
 | A3 | `ADMIN_ONLY` redirect ke `/dashboard` vs halaman 403 tersendiri — masih ambigu juga di ROUTES.md dan API_CONTRACT.md, keputusan final belum ada | Tim dev + PRD |
+
+## Track A dashboard read feedback - 2026-10-28
+
+For Journey, Preparation, Calendar and Registered Events read queries, display persistent mapped error text next to the affected content with a local retry button. The existing useErrorHandler mapping still supplies the message and auth redirects; these components render their message callback locally rather than creating parallel global toasts. Retry is disabled during its active request. Loading has an accessible status and busy indication; empty state is distinct from an error.
+
+Shared action-error toasts use role=alert and remain until explicitly dismissed. Other toast statuses use role=status; their existing timed dismissal is suspended while hovered or focused, followed by a fresh reading interval. This supersedes earlier automatic dismissal guidance for error toasts only. No API codes or contracts change.

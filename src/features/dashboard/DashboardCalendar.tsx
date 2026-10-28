@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useCallback, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Button } from '@/components/ui/Button';
-import { Toast } from '@/components/ui/Toast';
 import { Icon } from "@iconify/react/offline";
 import { useCalendar } from "@/hooks/useDashboard";
 import { formatWibShortDate } from "@/utils/formatDate";
@@ -25,7 +24,6 @@ export function DashboardCalendar() {
   const { data, isLoading, isFetching, isError, error, refetch } = useCalendar();
   const handleError = useErrorHandler();
   const [message, setMessage] = useState<string | null>(null);
-  const dismiss = useCallback(() => setMessage(null), []);
   useEffect(() => {
     if (error) handleError(error, { onToast: setMessage, redirectTo: '/login?redirect=%2Fdashboard' });
   }, [error, handleError]);
@@ -60,11 +58,10 @@ export function DashboardCalendar() {
 
   return (
     <section className="flex w-full min-w-0 flex-col gap-4">
-      {message && <Toast status="error" title={message} onDismiss={dismiss} />}
       <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">Calendar</h2>
 
       <div
-        className="flex w-full xl:min-h-[35rem] flex-col gap-6 rounded-3xl bg-neutral-100 p-4 text-secondary-1000 sm:p-5"
+        aria-busy={isFetching} className="flex w-full xl:min-h-[35rem] flex-col gap-6 rounded-3xl bg-neutral-100 p-4 text-secondary-1000 sm:p-5"
 
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -77,7 +74,7 @@ export function DashboardCalendar() {
               type="button"
               onClick={goPrev}
               aria-label="Previous month"
-              className="grid size-7 place-items-center rounded-full hover:bg-primary-100 sm:size-8"
+              className="grid size-11 place-items-center rounded-full hover:bg-primary-100 focus-visible:outline-2 focus-visible:outline-secondary-800"
             >
               <Icon icon="mdi:chevron-left" className="size-5 sm:size-6" />
             </button>
@@ -85,7 +82,7 @@ export function DashboardCalendar() {
               type="button"
               onClick={goNext}
               aria-label="Next month"
-              className="grid size-7 place-items-center rounded-full hover:bg-primary-100 sm:size-8"
+              className="grid size-11 place-items-center rounded-full hover:bg-primary-100 focus-visible:outline-2 focus-visible:outline-secondary-800"
             >
               <Icon icon="mdi:chevron-right" className="size-5 sm:size-6" />
             </button>
@@ -105,19 +102,22 @@ export function DashboardCalendar() {
               const hasSchedule = itemsByDateKey.has(cell.key);
               const isToday = cell.key === todayKey;
               return (
-                <button
+                <time
                   key={cell.key}
-                  type="button"
-                  className="h-9 w-full rounded-full text-center font-ui text-b4 font-bold transition-colors hover:bg-primary-100"
+                  dateTime={cell.key}
+                  aria-current={isToday ? "date" : undefined}
+                  data-outside-month={!cell.inCurrentMonth || undefined}
+                  className="grid h-9 w-full place-items-center rounded-full text-center font-ui text-b4 font-bold"
                   style={{
-                    opacity: cell.inCurrentMonth ? 1 : 0.2,
-                    background: hasSchedule ? "var(--calendar-accent)" : "transparent",
-                    color: hasSchedule ? "var(--color-neutral-100)" : "var(--color-secondary-1000)",
+                    background: hasSchedule ? "var(--color-secondary-800)" : "transparent",
+                    color: hasSchedule ? "var(--color-neutral-100)" : cell.inCurrentMonth ? "var(--color-secondary-1000)" : "var(--color-neutral-800)",
+                    fontWeight: cell.inCurrentMonth ? 700 : 400,
                     boxShadow: isToday && !hasSchedule ? "inset 0 0 0 1.5px var(--calendar-accent)" : undefined,
                   }}
                 >
-                  {cell.day}
-                </button>
+                  <span aria-hidden="true">{cell.day}</span>
+                  <span className="sr-only">{cell.key}{hasSchedule ? ", scheduled" : ""}</span>
+                </time>
               );
             })}
           </div>
@@ -132,15 +132,16 @@ export function DashboardCalendar() {
             bukan dot generik — sesuai spec "diferensiasi lewat logo, bukan warna/shape
             generik". */}
         <div className="flex flex-col gap-3">
+          <p className="font-body text-b3 text-neutral-800">Semua jadwal kompetisi dan event yang kamu ikuti, tidak hanya bulan yang ditampilkan.</p>
           {isError && <div role="status" className="flex min-w-0 flex-col items-start gap-3">
-          <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your schedule.</p>
+          <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your schedule.{message && <span className="mt-1 block">{message}</span>}</p>
           <Button size="sm" disabled={isFetching} onClick={() => { setMessage(null); void refetch(); }}>{isFetching ? 'Loading...' : 'Coba lagi'}</Button>
         </div>}
           {isLoading && <span role="status" className="sr-only">Loading schedule...</span>}
-          {isLoading && <div className="h-16 w-full animate-pulse rounded-xl bg-neutral-200" aria-hidden />}
+          {isLoading && <div className="h-16 w-full animate-pulse motion-reduce:animate-none rounded-xl bg-neutral-200" aria-hidden />}
           {!isLoading && !isError && sortedSchedule.length === 0 && (
             <p className="py-2 text-center text-b4" style={{ color: "var(--color-neutral-700)" }}>
-              Belum ada jadwal.
+              Belum ada jadwal. Jadwal kompetisi dan event yang kamu ikuti ditampilkan di sini.
             </p>
           )}
           {!isLoading && !isError &&

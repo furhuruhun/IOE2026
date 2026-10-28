@@ -58,6 +58,14 @@ function FooterBrand({ iconSize, textSize }: { iconSize: string; textSize: strin
   );
 }
 
+function SocialDestinations() {
+  return SOCIAL_LINKS.map((social, i) => social.href !== "#" && /^https?:\/\//.test(social.href) ? (
+    <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="flex size-11 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-secondary-800"><Icon icon={social.icon} className="size-6" /></a>
+  ) : process.env.NODE_ENV === "development" ? (
+    <span key={i} aria-label={social.label} className="flex flex-col items-center gap-1 font-micro text-b4 text-secondary-1000"><Icon icon={social.icon} className="size-6" aria-hidden="true" />Preview</span>
+  ) : null);
+}
+
 export function Footer() {
   const year = new Date().getFullYear();
 
@@ -67,7 +75,7 @@ export function Footer() {
       style={{ background: "linear-gradient(90deg, var(--color-primary-600), var(--color-primary-400), var(--color-primary-100))" }}
     >
       {/* Mobile / tablet — rata tengah, satu kolom (lg:hidden) */}
-      <div className="flex flex-col items-center justify-center gap-5 p-4 lg:hidden">
+      <div className="site-container flex flex-col items-center justify-center gap-5 py-8 lg:hidden">
         <FooterBrand iconSize="size-8" textSize="text-lg" />
 
         <nav className="flex flex-col items-center justify-start gap-5">
@@ -82,31 +90,20 @@ export function Footer() {
           ))}
         </nav>
 
-        <div className="inline-flex items-center justify-center gap-14">
-          {SOCIAL_LINKS.map((social, i) => (
-            <a
-              key={i}
-              href={social.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={social.label}
-              className="transition-opacity hover:opacity-80"
-            >
-              <Icon icon={social.icon} className="size-6 md:size-9" />
-            </a>
-          ))}
+        <div className="inline-flex items-center justify-center gap-4">
+          <SocialDestinations />
         </div>
 
         <div className="flex w-full flex-col items-center justify-center gap-3.5">
           <div className="h-px w-full bg-neutral-1000/15" />
-          <p className="font-body text-[10px] tracking-wide text-neutral-1000">
+          <p className="font-body text-b4 tracking-wide text-neutral-1000">
             © {year} Indonesia Ocean Expo — KMKL ITB.
           </p>
         </div>
       </div>
 
       {/* Desktop — 3 kolom (hidden lg:flex) */}
-      <div className="hidden flex-col items-center justify-start gap-[30px] px-[80px] py-[35px] lg:flex">
+      <div className="site-container hidden flex-col items-center justify-start gap-8 py-8 lg:flex">
         <div className="flex w-full items-start justify-between">
           <FooterBrand iconSize="size-9" textSize="text-xl xl:text-2xl" />
 
@@ -122,25 +119,14 @@ export function Footer() {
             ))}
           </nav>
 
-          <div className="flex w-80 flex-col items-start justify-start gap-10">
+          {(process.env.NODE_ENV === "development" || SOCIAL_LINKS.some(social => social.href !== "#" && /^https?:\/\//.test(social.href))) && <div className="flex w-80 flex-col items-start justify-start gap-10">
             <p className="font-body text-b1 font-semibold tracking-normal text-neutral-1000">
               For more information, check out our other social media!
             </p>
-            <div className="inline-flex items-center justify-start gap-14">
-              {SOCIAL_LINKS.map((social, i) => (
-                <a
-                  key={i}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={social.label}
-                  className="transition-opacity hover:opacity-80"
-                >
-                  <Icon icon={social.icon} className="size-8 xl:size-10" />
-                </a>
-              ))}
+            <div className="inline-flex items-center justify-start gap-4">
+              <SocialDestinations />
             </div>
-          </div>
+          </div>}
         </div>
 
         <div className="flex w-full flex-col items-start justify-center gap-7">

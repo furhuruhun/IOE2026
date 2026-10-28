@@ -4,6 +4,7 @@ import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useEvents } from "@/hooks/useEvents";
@@ -13,9 +14,9 @@ import { formatWibDate } from "@/utils/formatDate";
 import { shortCourseContent, type ShortCourseMilestone } from "./shortCourseContent";
 import { ShortCoursePanelIllustration, ShortCourseSpeakerIllustration } from "./ShortCourseSpeakerIllustration";
 
-const shell = "relative mx-auto w-full max-w-[1440px] px-8 md:px-20";
-const heroAction = "relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 font-ui text-s6 transition-all outline-none focus-visible:ring-[3px] focus-visible:ring-primary-300/50 md:rounded-2xl md:px-5 md:py-3 md:text-s5";
-const action = "inline-flex min-h-10 min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-2 text-center font-ui text-s6 font-bold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:min-h-12 md:rounded-2xl md:px-5 md:py-3 md:text-s5";
+const shell = "site-container relative";
+const heroAction = buttonStyles("secondary", "sm");
+const action = buttonStyles("secondary", "sm");
 
 type RegistrationState = {
   available: boolean;
@@ -45,23 +46,23 @@ function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, 
 function RegistrationAction({ state, className = "" }: { state: RegistrationState; className?: string }) {
   if (state.available) {
     return (
-      <Link href={shortCourseContent.registrationHref} className={`${action} bg-primary-300 text-secondary-1000 shadow-md transition-colors hover:bg-primary-400 active:bg-primary-500 ${className}`}>
+      <Link href={shortCourseContent.registrationHref} className={`${buttonStyles("primary", "sm")} ${className}`}>
         <Icon icon="mdi:pencil" className="size-5 shrink-0" aria-hidden="true" />{state.label}
       </Link>
     );
   }
-  return <button type="button" disabled className={`${action} cursor-not-allowed border border-neutral-300 bg-neutral-200 text-neutral-800 ${className}`}>{state.label}</button>;
+  return <Button disabled size="sm" className={className}>{state.label}</Button>;
 }
 
 function HeroRegistrationAction({ state }: { state: RegistrationState }) {
   if (state.available) {
     return (
-      <Link href={shortCourseContent.registrationHref} className={`${heroAction} bg-primary-300 text-secondary-1000 hover:bg-primary-400 active:bg-primary-500`}>
+      <Link href={shortCourseContent.registrationHref} className={buttonStyles("primary", "sm")}>
         <Icon icon="mdi:door-open" className="size-5 shrink-0 md:size-6" aria-hidden="true" />Register Now
       </Link>
     );
   }
-  return <button type="button" disabled aria-label={`Register Now — ${state.label}`} className={`${heroAction} cursor-not-allowed bg-neutral-200 text-neutral-800`}><Icon icon="mdi:door-open" className="size-5 shrink-0 md:size-6" aria-hidden="true" />Register Now</button>;
+  return <Button disabled size="sm"><Icon icon="mdi:door-open" className="size-5 shrink-0" aria-hidden="true" />{state.label}</Button>;
 }
 
 function ShortCourseHero({ state, title, now, demoDeadline }: { state: RegistrationState; title: string; now: number | null; demoDeadline: Date | null }) {
@@ -70,23 +71,23 @@ function ShortCourseHero({ state, title, now, demoDeadline }: { state: Registrat
 
   return (
     <section aria-labelledby="short-course-title" className="w-full">
-      <div className="px-8 md:px-20 py-10 relative z-10">
-        <div className="rounded-xl p-0.5 grid grid-cols-[1.3fr_0.8fr] max-md:grid-cols-1 gap-4 max-md:gap-8 w-full border-2 border-primary-500 bg-secondary-1000 px-12 max-md:px-8 py-10 max-md:py-6 text-neutral-100">
-          <div className="flex flex-col h-full justify-center">
-            <div className="w-[60%] self-center h-auto relative items-center py-6 md:py-8">
+      <div className="site-container relative z-10 py-10">
+        <div className="grid w-full grid-cols-1 gap-8 rounded-xl border-2 border-primary-500 bg-secondary-1000 p-4 text-neutral-100 md:p-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)] xl:p-12">
+          <div className="flex min-w-0 flex-col h-full justify-center">
+            <div className="w-full self-center h-auto relative items-center py-6 md:py-8">
               <h1 id="short-course-title" className="text-center font-heading text-h3 leading-tight text-primary-100 md:text-h2">{title}</h1>
             </div>
             <p className="font-heading text-h5 max-md:text-h6 text-center mb-2">{state.label}</p>
             {futureDeadline ? (
-              <CountdownTimer targetDate={futureDeadline} variant="shortCourse" />
+              <div>{!state.deadline && demoDeadline && <p className="mb-2 text-center font-micro text-b3 text-neutral-100">Sample</p>}<CountdownTimer targetDate={futureDeadline} variant="shortCourse" /></div>
             ) : null}
             <div className="flex flex-wrap justify-center gap-3">
               <HeroRegistrationAction state={state} />
-              <a href="#about-short-course" className={`${heroAction} bg-neutral-100/10 text-neutral-100 hover:bg-neutral-100/20 active:bg-neutral-100/30`}><Icon icon="mdi:door-open" className="size-5 shrink-0 md:size-6" aria-hidden="true" />More Details</a>
+              <a href="#about-short-course" className={`${heroAction} `}><Icon icon="mdi:door-open" className="size-5 shrink-0 md:size-6" aria-hidden="true" />More Details</a>
             </div>
           </div>
           <div className="w-full flex items-center justify-center">
-            <div className="w-[80%] max-md:w-[85%] h-auto relative">
+            <div className="w-full max-w-[400px] h-auto relative">
               <Image src="/short-course/hero-placeholder.svg" alt="Ilustrasi abstrak Short Course IOE" width={800} height={800} className="object-contain" />
             </div>
           </div>
@@ -98,7 +99,7 @@ function ShortCourseHero({ state, title, now, demoDeadline }: { state: Registrat
 
 function AboutShortCourse() {
   return (
-    <section id="about-short-course" aria-labelledby="short-course-about-title" className="w-full scroll-mt-24 px-8 md:scroll-mt-28 md:px-20">
+    <section id="about-short-course" aria-labelledby="short-course-about-title" className="site-container scroll-mt-24 md:scroll-mt-28">
       <div className="flex flex-col gap-8">
         <div className="text-center md:text-left">
           <p className="font-ui text-b2 font-bold uppercase tracking-wide text-secondary-700">What is</p>
@@ -116,6 +117,7 @@ function AboutShortCourse() {
 
 function ShortCourseBenefits() {
   const benefits = shortCourseContent.benefits;
+  if (process.env.NODE_ENV !== "development") return null;
   const cardGradients = [
     "from-primary-700 to-secondary-800",
     "from-secondary-700 to-secondary-900",
@@ -123,13 +125,14 @@ function ShortCourseBenefits() {
     "from-primary-1000 to-secondary-1000",
   ];
   return (
-    <section aria-labelledby="short-course-benefits-title" className="w-full px-8 md:px-20">
+    <section aria-labelledby="short-course-benefits-title" className="site-container">
+      <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>
       <h2 id="short-course-benefits-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">What Will You Gain?</h2>
       {benefits.length > 0 ? (
         <div className="grid w-full grid-cols-2 gap-4 md:flex md:justify-center md:gap-0">
           {benefits.map((benefit, index) => (
             <article key={benefit.id} className={`relative flex min-w-0 w-full shrink-0 flex-col items-center gap-4 rounded-2xl bg-linear-to-b ${cardGradients[index % cardGradients.length]} px-4 py-5 text-center text-neutral-100 md:w-[25%] md:px-8 md:py-10 ${index > 0 ? "md:-ml-[2.3%]" : ""}`} style={{ zIndex: benefits.length - index }}>
-              <div className="relative flex h-70 w-full items-center justify-center">
+              <div className="relative flex aspect-square w-full items-center justify-center">
                 {benefit.illustrationSrc ? <Image src={benefit.illustrationSrc} alt={benefit.illustrationAlt ?? ""} fill sizes="(max-width: 768px) 40vw, 22vw" className="object-contain" /> : <Icon icon="mdi:school-outline" className="size-24 text-neutral-100" aria-hidden="true" />}
               </div>
               <h3 className="break-words font-heading text-h6 md:text-h5">{benefit.title}</h3>
@@ -146,6 +149,7 @@ function ShortCourseTimeline({ milestones, now }: { milestones: ShortCourseMiles
   const dragState = useRef<{ pointerId: number; startX: number; startScrollLeft: number } | null>(null);
   const isPreview = milestones.length === 0;
   const items = isPreview ? shortCourseContent.previewMilestones : milestones;
+  if (isPreview && process.env.NODE_ENV !== "development") return null;
   const completedIndex = now === null ? -1 : items.reduce((last, item, index) => new Date(item.date).getTime() <= now ? index : last, -1);
   const activeIndex = isPreview ? items.length - 1 : Math.max(0, completedIndex);
   const progress = items.length > 1 ? (activeIndex / (items.length - 1)) * 100 : 0;
@@ -179,7 +183,8 @@ function ShortCourseTimeline({ milestones, now }: { milestones: ShortCourseMiles
   };
 
   return (
-    <section aria-labelledby="short-course-timeline-title" className="w-full px-8 md:px-20">
+    <section aria-labelledby="short-course-timeline-title" className="site-container">
+      {isPreview && <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>}
       <h2 id="short-course-timeline-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">Our Timeline</h2>
       <div
         ref={scroller}
@@ -223,7 +228,7 @@ function MilestoneCard({ milestone, onTop }: { milestone: ShortCourseMilestone; 
   return (
     <article className={`w-40 flex-1 rounded-md bg-linear-to-r from-primary-600 via-secondary-600 to-secondary-900 p-0.5 md:w-80 md:rounded-2xl ${onTop ? "" : "order-3"}`}>
       <div className={`flex h-full w-full flex-col items-center justify-center rounded-sm from-neutral-100 to-primary-100 p-2.5 text-secondary-1000 md:rounded-[18px] md:p-5 ${onTop ? "bg-linear-to-b" : "bg-linear-to-t"}`}>
-        <p className="text-center font-ui text-s6 md:text-s3">{milestone.title}</p>
+        <p className="text-center font-ui text-b4 md:text-b1">{milestone.title}</p>
         <div className="my-2 h-px w-full bg-neutral-1000 md:mb-4" aria-hidden="true" />
         <time dateTime={milestone.date} className="text-center font-body text-b4 md:text-b2">{milestone.displayDate ?? formatWibDate(milestone.date)}</time>
       </div>
@@ -242,7 +247,7 @@ function ShortCourseSessionCard({ session, state }: { session: (typeof shortCour
       <article className="relative z-10 w-full rounded-3xl bg-linear-to-r from-primary-500 via-secondary-500 to-tertiary-600 p-0.5">
         <div className="grid w-full overflow-hidden rounded-[22px] bg-neutral-100 md:grid-cols-[1fr_2fr]">
           <div className="flex flex-col items-center justify-center gap-4 bg-linear-to-b from-neutral-100 to-secondary-100/40 p-3 text-center md:p-6">
-            <span className="rounded-full border border-secondary-300 bg-neutral-100/80 px-3 py-1 font-ui text-s5 text-secondary-1000 md:text-s4">Speaker</span>
+            <span className="rounded-full border border-secondary-300 bg-neutral-100/80 px-3 py-1 font-ui text-b3 text-secondary-1000 md:text-s4">Speaker</span>
             {session.portraitSrc ? (
               <Image src={session.portraitSrc} alt={session.moderator ? `Foto ${session.instructorName} dan ${session.moderator.name}` : `Potret ${session.instructorName}`} width={440} height={360} className="h-auto w-full object-contain" />
             ) : session.moderator ? (
@@ -262,7 +267,7 @@ function ShortCourseSessionCard({ session, state }: { session: (typeof shortCour
                       {index < agenda.length - 1 && <div className="w-2 flex-1 bg-secondary-900" />}
                     </div>
                     <div className="pb-6">
-                      <p className="bg-linear-to-r from-primary-900 to-secondary-900 bg-clip-text font-heading text-s6 text-transparent md:text-s5">{item.label}</p>
+                      <p className="bg-linear-to-r from-primary-900 to-secondary-900 bg-clip-text font-heading text-b4 text-transparent md:text-b3">{item.label}</p>
                       <p className="font-heading text-b3 text-secondary-1000 md:text-b2">{item.title}</p>
                     </div>
                   </div>
@@ -286,18 +291,18 @@ function ShortCourseSessionCard({ session, state }: { session: (typeof shortCour
                 </div>
                 <hr className="border-secondary-200" />
                 <p className="bg-linear-to-r from-primary-900 to-secondary-900 bg-clip-text text-center font-body text-b3 text-transparent md:text-left md:text-b2">{session.topic ?? session.title}</p>
-                <div className="flex flex-col gap-2 font-ui text-s6 text-neutral-800 max-md:flex-row max-md:flex-wrap max-md:justify-center md:text-s5">
+                <div className="flex flex-col gap-2 font-ui text-b4 text-neutral-800 max-md:flex-row max-md:flex-wrap max-md:justify-center md:text-b3">
                   <p className="flex items-center gap-2"><Icon icon="mdi:calendar-clock" className="size-6 shrink-0 text-secondary-800 md:size-7" aria-hidden="true" />{session.date}</p>
                   <p className="flex items-center gap-2"><Icon icon="mdi:map-marker-outline" className="size-6 shrink-0 text-secondary-800 md:size-7" aria-hidden="true" />{session.location}</p>
                   <p className="flex items-center gap-2"><Icon icon="mdi:timer" className="size-6 shrink-0 text-secondary-800 md:size-7" aria-hidden="true" />{session.time}</p>
                 </div>
-                {session.curriculumUrl && <a href={session.curriculumUrl} target="_blank" rel="noopener noreferrer" className="w-fit font-ui text-s5 text-secondary-800 underline underline-offset-4 hover:text-secondary-1000">Lihat Kurikulum</a>}
+                {session.curriculumUrl && <a href={session.curriculumUrl} target="_blank" rel="noopener noreferrer" className="w-fit font-ui text-b3 text-secondary-800 underline underline-offset-4 hover:text-secondary-1000">Lihat Kurikulum</a>}
               </>
             )}
             <div className="flex gap-3 max-md:justify-center">
               <RegistrationAction state={state} className="flex-1" />
               {agenda.length > 0 && (
-                <button type="button" aria-pressed={isAgendaOpen} onClick={() => setShowAgenda((current) => !current)} className={`${action} flex-1 bg-secondary-100 text-secondary-1000 transition-colors hover:bg-secondary-200 active:bg-secondary-300`}>
+                <button type="button" aria-pressed={isAgendaOpen} onClick={() => setShowAgenda((current) => !current)} className={`${action} flex-1`}>
                   <Icon icon={isAgendaOpen ? "mdi:arrow-right" : "mdi:calendar-clock"} className="size-5 shrink-0" aria-hidden="true" />
                   {isAgendaOpen ? "Detail" : "Rundown"}
                 </button>
@@ -313,9 +318,11 @@ function ShortCourseSessionCard({ session, state }: { session: (typeof shortCour
 function ShortCourseSessions({ state }: { state: RegistrationState }) {
   const isPreview = shortCourseContent.sessions.length === 0;
   const sessions = isPreview ? shortCourseContent.previewSessions : shortCourseContent.sessions;
+  if (isPreview && process.env.NODE_ENV !== "development") return null;
 
   return (
-    <section aria-labelledby="short-course-sessions-title" className="w-full px-8 md:px-20">
+    <section aria-labelledby="short-course-sessions-title" className="site-container">
+      {isPreview && <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>}
       <h2 id="short-course-sessions-title" className="text-center font-heading text-h3 text-secondary-1000 md:text-h2">Course Sessions</h2>
       <div className="mt-12 flex flex-col gap-12">
         {sessions.map((session) => <ShortCourseSessionCard key={session.id} session={session} state={state} />)}
@@ -360,7 +367,7 @@ export function ShortCoursePage() {
   const state = getRegistrationState(event, data?.isDemo ?? true, now);
   // A sample timer is useful in development; it never changes registration state.
   const demoEvent = data?.isDemo ? event : isError && process.env.NODE_ENV === "development" ? mockEvents.find((item) => item.slug === "short-course") : null;
-  const demoDeadline = demoEvent && Number.isFinite(new Date(demoEvent.deadline).getTime()) ? new Date(demoEvent.deadline) : null;
+  const demoDeadline = process.env.NODE_ENV === "development" && demoEvent && Number.isFinite(new Date(demoEvent.deadline).getTime()) ? new Date(demoEvent.deadline) : null;
   const officialDeadline = event && !data?.isDemo && Number.isFinite(new Date(event.deadline).getTime()) ? event.deadline : null;
   const milestones = [...shortCourseContent.milestones];
   if (officialDeadline && !milestones.some((item) => item.id === "registration-close")) {
@@ -369,7 +376,7 @@ export function ShortCoursePage() {
   milestones.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <main className="relative flex min-h-screen w-full flex-col items-center gap-20 overflow-x-clip bg-neutral-100 pb-20 text-neutral-900 md:gap-40 md:pb-32">
+    <main id="main-content" tabIndex={-1} className="relative flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 pb-20 text-neutral-900 md:gap-24 md:pb-32">
       <ShortCourseHero state={state} title={!data?.isDemo && event ? event.name : shortCourseContent.title} now={now} demoDeadline={demoDeadline} />
       <AboutShortCourse />
       <ShortCourseBenefits />

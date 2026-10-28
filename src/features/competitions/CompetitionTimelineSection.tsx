@@ -142,6 +142,7 @@ function getProgressPercent(items: OverallTimelineItem[]) {
 }
 
 export function CompetitionTimelineSection() {
+  if (process.env.NODE_ENV !== "development") return <section id="timeline" className="site-container section-space"><h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2><p className="mt-4 text-center text-b3 text-neutral-800">Tanggal bersifat sementara - menunggu jadwal final dari panitia.</p></section>;
   const progressPercent = getProgressPercent(overallTimelineItems);
   // Bare number (bukan "X%") — formula lebar progress line (di bawah) bagi --tl-progress
   // dengan 100 untuk dapat fraksi unitless, supaya valid dikalikan ke nilai panjang
@@ -153,6 +154,7 @@ export function CompetitionTimelineSection() {
       id="timeline"
       className="relative z-10 mx-auto flex w-full max-w-[1637.5px] flex-col items-center px-6 md:px-20"
     >
+      <p className="font-micro text-b3 text-neutral-800">Preview</p>
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
 
       <div className="mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 no-scrollbar hover:cursor-grab active:cursor-grabbing md:rounded-[36px] md:p-10">

@@ -5,12 +5,12 @@ import styles from "./EventOverviewSponsors.module.css";
 
 export function EventOverviewCTA() {
   return (
-    <section id="register" className="bg-linear-to-r from-primary-200 via-tertiary-100 to-secondary-200 px-6 py-3xl md:px-12 md:py-4xl">
-      <div className="mx-auto flex max-w-[64rem] flex-col items-center gap-lg text-center">
+    <section id="register" className="bg-linear-to-r from-primary-200 via-tertiary-100 to-secondary-200 section-space">
+      <div className="site-container flex flex-col items-center gap-lg text-center">
         <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-800">Mulai jelajahi</p>
-        <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Temukan pengalamanmu di IOE 2027</h2>
+        <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Temukan pengalamanmu di IOE 2027</h2>
         <p className="max-w-[38rem] font-body text-b2 text-neutral-800">Pilih event yang sesuai minatmu, lalu lihat informasi dan pendaftarannya pada halaman detail.</p>
-        <a href="#events" className="inline-flex items-center gap-sm rounded-lg bg-secondary-1000 px-xl py-md font-ui text-b2 font-bold text-neutral-100 shadow-md transition-colors hover:bg-secondary-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800">Lihat Semua Event <Icon icon="mdi:arrow-right" className="size-5" /></a>
+        <a href="#events" className="ui-action ui-action-primary">Lihat Semua Event <Icon icon="mdi:arrow-right" className="size-5" /></a>
       </div>
     </section>
   );
@@ -18,10 +18,10 @@ export function EventOverviewCTA() {
 
 export function EventOverviewContact() {
   return (
-    <section id="contact" className="bg-neutral-100 px-6 py-3xl md:px-12 md:py-4xl">
-      <div className="relative z-10 mx-auto flex w-full max-w-[48rem] flex-col items-center justify-center py-lg text-center">
+    <section id="contact" className="bg-neutral-100 section-space">
+      <div className="site-container relative z-10 flex flex-col items-center justify-center py-lg text-center">
         <div data-contact-content className="flex w-full min-w-0 flex-col items-center justify-center gap-xs">
-          <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Ada pertanyaan?</h2>
+          <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Ada pertanyaan?</h2>
           <p className="max-w-[34rem] font-body text-b2 text-neutral-800">Hubungi panitia melalui kanal resmi untuk pertanyaan seputar rangkaian event.</p>
           <div data-contact-actions className="mt-5 flex w-full min-w-0 flex-col items-center justify-center gap-3 md:mt-xl md:flex-row md:flex-wrap md:gap-lg">
             {eventContacts.length > 0 ? eventContacts.map((contact) => (
@@ -40,6 +40,7 @@ export function EventOverviewContact() {
 }
 
 export function EventOverviewSponsors() {
+  if (eventSponsors.length === 0 && process.env.NODE_ENV !== "development") return null;
   const hasSponsors = eventSponsors.length > 0;
   const items = hasSponsors ? eventSponsors : Array.from({ length: 5 }, (_, index) => ({
     id: `pending-${index}`,
@@ -56,11 +57,12 @@ export function EventOverviewSponsors() {
   ));
 
   return (
-    <section id="sponsors" className="bg-neutral-200 px-6 py-3xl md:px-12 md:py-4xl">
-      <div className="mx-auto flex max-w-[80rem] flex-col items-center gap-lg text-center">
-        <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-600">Bersama mitra</p>
-        <h2 className="font-heading text-h3 text-secondary-1000 md:text-h2">Sponsor IOE 2027</h2>
+    <section id="sponsors" className="bg-neutral-200 section-space">
+      <div className="site-container flex flex-col items-center gap-lg text-center">
+        <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-800">Bersama mitra</p>
+        <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Sponsor IOE 2027</h2>
         {!hasSponsors && <p className="font-body text-b3 text-neutral-700">Logo sponsor resmi akan ditampilkan setelah dikonfirmasi panitia.</p>}
+        {!hasSponsors && <p className="font-micro text-b3 text-neutral-800">Preview</p>}
         <div className={`${styles.viewport} w-full rounded-[22px] bg-neutral-100 py-6 md:py-10`} aria-label={hasSponsors ? "Daftar sponsor IOE 2027" : "Logo sponsor menyusul"}>
           <div className={styles.track}>
             <div className={styles.group}>{logos(false)}</div>

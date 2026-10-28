@@ -106,10 +106,12 @@ export function ThemeToggle() {
   const group = themeGroup(isDark);
 
   return (
+    <div className="flex h-11 w-12 items-center md:w-14">
     <div
-      className="relative h-6 w-12 shrink-0 overflow-clip rounded-full transition-colors duration-200 md:h-7 md:w-14"
+      className="relative h-6 w-12 shrink-0 rounded-full transition-colors duration-200 md:h-7 md:w-14"
       style={{ backgroundColor: BG_COLOR[group], boxShadow: CONTAINER_SHADOW }}
     >
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-full" aria-hidden="true">
       <div className="theme-toggle-layer pointer-events-none absolute" aria-hidden style={{ ...RAY_SIZE, ...RAY_POS[mode] }}>
         <Image src="/theme-toggle/ray.svg" alt="" fill sizes="60px" />
       </div>
@@ -140,6 +142,7 @@ export function ThemeToggle() {
         />
       </div>
 
+      </div>
       <button
         type="button"
         role="switch"
@@ -150,9 +153,10 @@ export function ThemeToggle() {
         onMouseLeave={() => setIsHover(false)}
         onFocus={() => setIsHover(true)}
         onBlur={() => setIsHover(false)}
-        className="theme-toggle-layer absolute cursor-pointer overflow-hidden rounded-full"
-        style={{ ...BUTTON_SIZE, ...BUTTON_POS[mode], filter: BUTTON_DROP_SHADOW }}
-      >
+        className="absolute -inset-y-2.5 inset-x-0 z-10 cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
+      />
+      <div aria-hidden="true" className="theme-toggle-layer pointer-events-none absolute overflow-hidden rounded-full"
+        style={{ ...BUTTON_SIZE, ...BUTTON_POS[mode], filter: BUTTON_DROP_SHADOW }}>
         <div className="relative size-full">
           <Image src={isDark ? "/theme-toggle/moon-btn.svg" : "/theme-toggle/sun-btn.svg"} alt="" fill sizes="20px" />
           {isDark && (
@@ -161,7 +165,8 @@ export function ThemeToggle() {
             </div>
           )}
         </div>
-      </button>
+      </div>
+    </div>
     </div>
   );
 }

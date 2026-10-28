@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { CTA_GRADIENT } from "@/components/ui/Navbar";
+
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { useCompetitions } from "@/hooks/useCompetitions";
 
@@ -67,17 +67,16 @@ export function CompetitionHero() {
                 <div key={i} className="size-[72px] animate-pulse rounded-full bg-neutral-900 md:size-[112px]" />
               ))}
             </div>
-          ) : nearestDeadline ? (
-            <CountdownTimer targetDate={nearestDeadline} />
+          ) : nearestDeadline && process.env.NODE_ENV === "development" ? (
+            <div><p className="mb-2 text-center font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={nearestDeadline} /></div>
           ) : null}
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
-            <div className="flex items-center justify-center gap-4 md:gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
               <button
                 type="button"
                 onClick={() => router.push("#our-competition")}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
-                style={{ background: CTA_GRADIENT }}
+                className="ui-action ui-action-primary ui-action-sm"
               >
                 Lihat Semua Kompetisi
               </button>
@@ -85,7 +84,7 @@ export function CompetitionHero() {
               <button
                 type="button"
                 onClick={() => router.push("#timeline")}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="ui-action ui-action-secondary ui-action-sm"
               >
                 Lihat Timeline
               </button>

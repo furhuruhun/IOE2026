@@ -11,6 +11,7 @@ import { testimonials } from "./competitionsContent";
 export function CompetitionTestimonialCarousel() {
   const [active, setActive] = useState(0);
   const testimonial = testimonials[active];
+  if (process.env.NODE_ENV !== "development") return null;
 
   const goTo = (next: number) => {
     setActive(((next % testimonials.length) + testimonials.length) % testimonials.length);
@@ -18,6 +19,7 @@ export function CompetitionTestimonialCarousel() {
 
   return (
     <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
+      <p className="font-micro text-b3 text-neutral-800">Preview</p>
       <h2 className="text-h4 text-secondary-1000 md:text-h2">What They Said</h2>
 
       <div className="flex w-full max-w-[42rem] items-center gap-md">
@@ -30,7 +32,7 @@ export function CompetitionTestimonialCarousel() {
           <Icon icon="mdi:chevron-left" className="size-6" />
         </button>
 
-        <div className="flex flex-1 flex-col gap-sm rounded-3xl border border-neutral-300 bg-neutral-100 p-8 text-center">
+        <div className="flex min-w-0 flex-1 flex-col gap-sm wrap-anywhere rounded-3xl border border-neutral-300 bg-neutral-100 p-8 text-center">
           <p className="text-b2 text-neutral-700">&ldquo;{testimonial.quote}&rdquo;</p>
           <p className="font-ui text-b3 font-bold text-secondary-1000">{testimonial.name}</p>
           <p className="text-b4 text-neutral-500">{testimonial.role}</p>

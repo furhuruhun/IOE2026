@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
+import { buttonStyles } from "@/components/ui/Button";
 import { Accordion } from "@/components/ui/Accordion";
 import { eventContacts } from "@/features/events/eventOverviewContent";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
@@ -10,10 +11,10 @@ import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import { talkshowContent, talkshowFaqs } from "./talkshowContent";
 
-const shell = "relative z-10 mx-auto w-full max-w-[1440px] px-5 md:px-20";
-const action = "inline-flex min-h-14 min-w-0 items-center justify-center gap-2 rounded-2xl px-4 py-3 text-center font-ui text-b3 font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:text-b2";
-const primaryAction = `${action} bg-primary-300 text-secondary-1000 shadow-md hover:bg-primary-400 active:bg-primary-500`;
-const disabledAction = `${action} cursor-not-allowed border border-neutral-300 bg-neutral-200 text-neutral-800`;
+const shell = "site-container relative z-10";
+const action = buttonStyles("secondary");
+const primaryAction = buttonStyles("primary");
+const disabledAction = buttonStyles("primary");
 
 type RegistrationState = {
   available: boolean;
@@ -99,7 +100,7 @@ function TalkshowHero({ state }: { state: RegistrationState }) {
         </div>
         <div className="mt-8 grid w-full max-w-[29rem] grid-cols-1 gap-3 min-[380px]:grid-cols-[3fr_2fr] md:gap-6">
           <RegistrationAction state={state} className="w-full" />
-          <a href="#talkshow-details" className={`${action} border border-secondary-700 bg-neutral-100 text-secondary-1000 hover:bg-secondary-100 active:bg-secondary-200 w-full`}>
+          <a href="#talkshow-details" className={`${action} w-full`}>
             More Details
           </a>
         </div>
@@ -254,7 +255,7 @@ export function TalkshowPage() {
   const state = registrationState(event, data?.isDemo ?? true, now);
 
   return (
-    <main className="relative flex min-h-screen w-full flex-col items-center gap-[100px] overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-[120px]">
+    <main id="main-content" tabIndex={-1} className="relative flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-24">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-linear-to-b from-secondary-100/70 via-primary-100/30 to-transparent" />
       <TalkshowHero state={state} />
       <TalkshowDetails state={state} />

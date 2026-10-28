@@ -7,7 +7,7 @@ import { EventOverviewCTA, EventOverviewContact, EventOverviewSponsors } from "@
 // F-35–F-39: enam section referensi visual + sponsor sebagai section ketujuh.
 export default function EventOverviewPage() {
   return (
-    <main className="flex flex-1 flex-col">
+    <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col">
       <EventOverviewHero />
       <EventOverviewAbout />
       <EventOverviewActivities />

@@ -121,7 +121,7 @@ export function RegisterForm() {
           {...register("password")}
         />
         {strength && !errors.password && (
-          <p className="mt-1.5 text-b4 text-neutral-600">
+          <p className="mt-1.5 text-b4 text-neutral-700">
             Kekuatan password:{" "}
             <span className={`font-semibold ${PASSWORD_STRENGTH_STYLE[strength].className}`}>
               {PASSWORD_STRENGTH_STYLE[strength].label}
@@ -170,7 +170,7 @@ export function RegisterForm() {
 
       <p className="text-center text-b3 text-neutral-700">
         Sudah punya akun?{" "}
-        <Link href="/login" className="font-micro font-semibold text-secondary-600 hover:underline">
+        <Link href="/login" className="font-micro font-semibold text-secondary-800 hover:underline">
           Login di sini
         </Link>
       </p>

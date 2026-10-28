@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { buttonStyles } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { EVENT_DATE } from "@/utils/eventDate";
 import { heroSlides, type HeroSlide } from "./landingContent";
@@ -24,7 +25,6 @@ function nearestStep(current: number, target: number) {
 }
 
 function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean }) {
-  const router = useRouter();
   const titleStyle = { fontWeight: 600, fontSize: "clamp(22px, 3vw, 30px)" };
   return (
     <div
@@ -44,22 +44,11 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
       <p className="font-body text-neutral-500" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
         {slide.desc}
       </p>
-      {slide.showCountdown && <CountdownTimer targetDate={EVENT_DATE} />}
-      <button
-        type="button"
-        tabIndex={active ? 0 : -1}
-        onClick={(event) => { event.stopPropagation(); if (active) router.push(slide.cta.href); }}
-        className="font-body font-semibold transition-[transform,box-shadow] duration-[180ms] ease-out hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgb(from_var(--color-primary-600)_r_g_b_/_0.25)] focus-visible:outline-2 focus-visible:outline-offset-[3px]"
-        style={{
-          fontSize: "13px", color: "var(--color-tertiary-1000)",
-          background: "linear-gradient(90deg, var(--color-primary-600), var(--color-tertiary-400))",
-          border: "none", borderRadius: "999px", padding: "10px 22px",
-          cursor: active ? "pointer" : "inherit", outlineColor: "var(--color-tertiary-600)",
-          pointerEvents: active ? "auto" : "none",
-        }}
-      >
+      {slide.showCountdown && process.env.NODE_ENV === "development" && <div><p className="mb-2 font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={EVENT_DATE} /></div>}
+      <Link href={slide.cta.href} tabIndex={active ? 0 : -1}
+        className={buttonStyles("secondary", "sm")} style={{ pointerEvents: active ? "auto" : "none" }}>
         {slide.cta.label}
-      </button>
+      </Link>
     </div>
   );
 }
@@ -69,6 +58,7 @@ export function HeroCarousel() {
   const [geometry, setGeometry] = useState<{ viewportWidth: number; slotWidth: number } | null>(null);
   const [transitionEnabled, setTransitionEnabled] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -193,15 +183,15 @@ export function HeroCarousel() {
   };
 
   useEffect(() => {
-    if (paused || dragging || reducedMotion || !geometry) return;
+    if (paused || hovered || dragging || reducedMotion || !geometry) return;
     const timer = window.setInterval(() => {
       if (!document.hidden && !transitioningRef.current) move(1, false);
     }, AUTO_ROTATE_MS);
     return () => window.clearInterval(timer);
-  }, [paused, dragging, reducedMotion, geometry, move]);
+  }, [paused, hovered, dragging, reducedMotion, geometry, move]);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.target instanceof Element && event.target.closest("button")) return;
+    if (event.target instanceof Element && event.target.closest("button, a")) return;
     dragStartX.current = event.clientX;
     dragDeltaX.current = 0;
     setDragging(true);
@@ -233,8 +223,9 @@ export function HeroCarousel() {
 
   return (
     <section
-      className="relative mx-auto flex max-w-[1100px] flex-col items-center justify-center py-3xl"
+      className="relative mx-auto flex w-full flex-col items-center justify-center py-3xl"
       style={{ minHeight: "100dvh" }}
+      onFocusCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(true); }}
       aria-roledescription="carousel"
       aria-label="Hero Indonesia Ocean Expo 2027"
     >
@@ -248,10 +239,10 @@ export function HeroCarousel() {
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        className="relative w-screen touch-pan-y overflow-hidden outline-none select-none focus-visible:outline-2 focus-visible:outline-secondary-800"
-        style={{ left: "50%", marginLeft: "-50vw", height: "clamp(560px, 62vh, 700px)" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="relative w-full touch-pan-y overflow-hidden outline-none select-none focus-visible:outline-2 focus-visible:outline-secondary-800"
+        style={{ height: "clamp(560px, 62vh, 700px)" }}
       >
         <div
           className="hero-track flex h-full w-max"
@@ -294,7 +285,12 @@ export function HeroCarousel() {
           })}
         </div>
       </div>
-      <div className="mt-2xl flex flex-col items-center gap-2">
+      <nav aria-label="Jelajahi kegiatan IOE" className="site-container mt-8 flex flex-wrap justify-center gap-3">
+        <Link href="/competitions" className={buttonStyles("primary", "sm")}>Lihat Kompetisi</Link>
+        <Link href="/events" className={buttonStyles("primary", "sm")}>Lihat Event</Link>
+        <a href="#timeline" className={buttonStyles("text", "sm")}>Lihat Jadwal</a>
+      </nav>
+      <div className="mt-4 flex flex-col items-center gap-2">
         <div className="flex gap-2">
           {heroSlides.map((slide, index) => (
             <button
@@ -303,9 +299,9 @@ export function HeroCarousel() {
               onClick={() => goTo(index)}
               aria-label={`Ke slide ${index + 1}: ${slide.title}`}
               aria-current={index === active}
-              className="rounded-full transition-[width,background] duration-[260ms] ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
-              style={{ height: "8px", width: index === active ? "26px" : "8px", background: index === active ? "var(--color-tertiary-600)" : "var(--color-neutral-900)" }}
-            />
+              className="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
+            ><span aria-hidden="true" className="h-2 rounded-full transition-[width,background] motion-reduce:transition-none"
+              style={{ width: index === active ? "26px" : "8px", background: index === active ? "var(--color-secondary-800)" : "var(--color-neutral-700)" }} /></button>
           ))}
         </div>
         <p className="font-ui text-b4 text-neutral-700">{active + 1} dari {COUNT}</p>

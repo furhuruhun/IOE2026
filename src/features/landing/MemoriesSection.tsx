@@ -5,9 +5,11 @@ import { memories } from "./landingContent";
 // Tidak ada spec visual gallery di design_system_final.md, dan belum ada foto/video
 // dari klien (PRD §8) — dipakai grid tile placeholder, BUKAN gambar hasil karang sendiri.
 export function MemoriesSection() {
+  if (process.env.NODE_ENV !== "development") return null;
   return (
-    <section className="px-6 py-3xl md:px-12">
-      <div className="mx-auto max-w-5xl">
+    <section className="site-container section-space">
+      <div className="w-full">
+        <p className="text-center font-micro text-b3 text-neutral-800">Preview</p>
         <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Memories</h2>
         <p className="mt-2 text-center text-b2 text-neutral-700">Dokumentasi IOE di tahun-tahun sebelumnya.</p>
 

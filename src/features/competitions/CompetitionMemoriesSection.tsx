@@ -6,10 +6,12 @@ import { memories } from "@/features/landing/landingContent";
 // layout. Reuse data `memories` yang sama dengan landing (dokumentasi IOE tahun sebelumnya)
 // supaya tidak duplikasi placeholder yang identik dua kali di dua tempat.
 export function CompetitionMemoriesSection() {
+  if (process.env.NODE_ENV !== "development") return null;
   return (
     <section className="px-6 py-3xl md:px-12">
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Our Memories</h2>
+        <p className="font-micro text-b3 text-neutral-800">Preview</p>
+      <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Our Memories</h2>
         <p className="mt-2 text-center text-b2 text-neutral-700">
           Dokumentasi kompetisi IOE di tahun-tahun sebelumnya.
         </p>

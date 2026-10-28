@@ -31,7 +31,8 @@ export function RegistrationFoundationForm({ profile }: { profile: Profile }) {
 
   return (
     <form aria-label="Registration details" noValidate onSubmit={event => event.preventDefault()} className="flex min-w-0 flex-col gap-lg rounded-3xl border border-secondary-200 bg-neutral-100 p-lg md:p-xl">
-      <p className="font-body text-b3 text-neutral-700">Data dari My Profile dapat kamu ubah untuk pendaftaran ini. Perubahan di sini tidak mengubah profilmu.</p>
+      <p id={`${id}-submission`} role="note" className="rounded-xl border border-secondary-200 bg-secondary-100/40 p-md font-body text-b3 text-neutral-800">Pengiriman pendaftaran belum tersedia. Data pada form ini belum dikirim atau disimpan.</p>
+      <p className="font-body text-b3 text-neutral-800">Data dari My Profile dapat kamu ubah untuk pendaftaran ini. Perubahan di sini tidak mengubah profilmu.</p>
       <div className="grid min-w-0 gap-lg md:grid-cols-2">
         <Input id={`${id}-phone`} label="Phone Number (WhatsApp) *" type="tel" autoComplete="tel" variant="event" icon="mdi:phone" required {...register("phone")} />
         <Input id={`${id}-institution`} label="Institution / University *" autoComplete="organization" variant="event" icon="mdi:school" required {...register("institution")} />
@@ -41,7 +42,7 @@ export function RegistrationFoundationForm({ profile }: { profile: Profile }) {
 
       <div className="flex min-w-0 flex-col gap-sm">
         <label htmlFor={`${id}-cv`} className="font-body text-b3 font-bold text-secondary-1000">CV (Optional)</label>
-        <p id={`${id}-cv-help`} className="font-body text-b3 text-neutral-700">PDF only, maks 500 KB. File hanya dipilih di perangkat ini dan belum diunggah.</p>
+        <p id={`${id}-cv-help`} className="font-body text-b3 text-neutral-800">PDF only, maks 500 KB. File hanya dipilih di perangkat ini dan belum diunggah.</p>
         <input id={`${id}-cv`} name="cvFile" type="file" accept=".pdf,application/pdf" aria-invalid={Boolean(errors.cvFile)}
           aria-describedby={`${id}-cv-help${errors.cvFile ? ` ${id}-cv-error` : ""}`}
           className="block w-full min-w-0 rounded-xl border border-neutral-500 p-sm font-body text-b3 text-secondary-1000 file:mr-sm file:rounded-lg file:border-0 file:bg-secondary-100 file:px-md file:py-sm file:text-secondary-1000 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
@@ -61,7 +62,6 @@ export function RegistrationFoundationForm({ profile }: { profile: Profile }) {
         </div>}
       </div>
 
-      <p id={`${id}-submission`} className="font-body text-b3 text-neutral-700">Pengiriman pendaftaran belum tersedia. Data pada form ini belum dikirim atau disimpan.</p>
       <Button type="submit" disabled aria-describedby={`${id}-submission`} className="self-start">Submit Registration</Button>
     </form>
   );

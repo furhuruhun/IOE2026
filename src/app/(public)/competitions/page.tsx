@@ -13,7 +13,7 @@ import { CompetitionFAQSection } from "@/features/competitions/CompetitionFAQSec
 // ketidaksinkronan dengan PRD_IOE_2027_v4.md & ROUTES.md.
 export default function CompetitionOverviewPage() {
   return (
-    <main className="flex flex-1 flex-col">
+    <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col">
       <CompetitionHero />
       <CompetitionAboutSection />
       <CompetitionGrid />

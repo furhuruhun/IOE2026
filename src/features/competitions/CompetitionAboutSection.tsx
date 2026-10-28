@@ -22,6 +22,8 @@ export function CompetitionAboutSection() {
         </div>
       </div>
 
+      {process.env.NODE_ENV === "development" && <>
+      <p className="font-micro text-b3 text-neutral-800">Preview</p>
       <div className="flex flex-col items-center gap-2">
         <h3 className="text-h6 text-neutral-700 md:text-h5">Total Prize Pool</h3>
         <p
@@ -43,13 +45,14 @@ export function CompetitionAboutSection() {
           {sponsors.map((sponsor) => (
             <div
               key={sponsor}
-              className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-600"
+              className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-700"
             >
               {sponsor}
             </div>
           ))}
         </div>
       </div>
+      </>}
     </section>
   );
 }

@@ -14,7 +14,7 @@ const GRADIENT_TEXT = "linear-gradient(90deg, var(--color-primary-600), var(--co
 // dipakai placeholder ikon + tile netral, BUKAN gambar asing/hasil karang sendiri.
 export function AboutSection() {
   return (
-    <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
+    <section className="site-container section-space flex flex-col items-center gap-2xl">
       <div className="flex items-center gap-2 md:gap-4">
         <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary-1000 text-neutral-100 md:size-12">
           <Icon icon="mdi:waves" className="size-4 md:size-6" />
@@ -42,28 +42,30 @@ export function AboutSection() {
               </h3>
               <p className="text-b3 text-neutral-700 md:text-b2">{aboutDescription}</p>
 
-              <div className="mt-sm">
+              {process.env.NODE_ENV === "development" && <div className="mt-sm">
+                <p className="font-micro text-b3 text-neutral-800">Preview</p>
                 <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
                 <div className="mt-sm flex flex-wrap gap-sm">
                   {sponsors.map((sponsor) => (
                     <div
                       key={sponsor}
-                      className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-600"
+                      className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-800"
                     >
                       {sponsor}
                     </div>
                   ))}
                 </div>
-              </div>
+              </div>}
             </div>
           </div>
 
           {/* Card 2 — statistik target peserta (PRD §2.2 Business Metrics), infinite horizontal auto-scroll */}
-          <div className="rounded-3xl p-0.5" style={{ background: GRADIENT_BORDER }}>
+          {process.env.NODE_ENV === "development" && <div className="rounded-3xl p-0.5" style={{ background: GRADIENT_BORDER }}>
+            <p className="pt-4 text-center font-micro text-b3 text-neutral-800">Preview</p>
             <div className="overflow-x-clip rounded-[22px] bg-neutral-100 px-16 py-10">
               <div className="about-stats-track flex w-max gap-xl">
                 {[...aboutStats, ...aboutStats].map((stat, i) => (
-                  <div key={`${stat.label}-${i}`} className="flex shrink-0 flex-col items-center gap-sm text-center">
+                  <div key={`${stat.label}-${i}`} aria-hidden={i >= aboutStats.length ? true : undefined} data-stat-copy={i >= aboutStats.length || undefined} className="flex shrink-0 flex-col items-center gap-sm text-center">
                     <p
                       className="font-heading text-h5 font-bold md:text-h3"
                       style={{
@@ -80,7 +82,7 @@ export function AboutSection() {
                 ))}
               </div>
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     </section>

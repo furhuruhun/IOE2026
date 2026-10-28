@@ -12,7 +12,7 @@ import { useDashboardDetailStore } from '@/stores/useDashboardDetailStore';
 import { ProfileForm } from '@/features/profile/ProfileForm';
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
-import { Navbar, CTA_GRADIENT } from '@/components/ui/Navbar';
+import { Navbar } from '@/components/ui/Navbar';
 import { Footer } from '@/components/ui/Footer';
 import type { DashboardTab } from "@/features/dashboard/dashboardTabs";
 
@@ -34,20 +34,21 @@ export default function DashboardPage() {
   return (
     <div className="flex min-h-screen flex-col" style={{ background: 'radial-gradient(ellipse at 30% 25%, var(--color-primary-400), transparent 65%), radial-gradient(ellipse at 85% 75%, var(--color-secondary-200), transparent 65%), var(--color-neutral-100)' }}>
     <Navbar appearance="dashboard" />
-    <RadixTabs.Root className="flex-1 pt-20 md:pt-26" value={tab} onValueChange={(v) => { closeDetail(); setTab(v as DashboardTab); }}>
-      {tab === 'home' && !slug && <div className="mx-auto w-full max-w-[100rem] px-4 pt-6 pb-6 md:px-8 xl:px-16">
-        <Link href="/" aria-label="Back to homepage" className="inline-flex items-center gap-4 rounded-2xl px-5 py-3 font-ui text-b2 font-bold text-secondary-1000 focus-visible:outline-2 focus-visible:outline-secondary-600" style={{ background: CTA_GRADIENT }}><Icon icon="mdi:chevron-left" className="size-6" />Back</Link>
+    <RadixTabs.Root orientation="vertical" className="flex-1 pt-20 md:pt-26" value={tab} onValueChange={(v) => { closeDetail(); setTab(v as DashboardTab); }}>
+      {tab === 'home' && !slug && <div className="site-container pt-6 pb-6">
+        <Link href="/" aria-label="Back to homepage" className="ui-action ui-action-secondary"><Icon icon="mdi:chevron-left" className="size-6" />Back</Link>
       </div>}
-      <main style={tab === 'home' && !slug ? { paddingTop: 0 } : undefined} className="mx-auto grid w-full max-w-[100rem] grid-cols-1 gap-6 px-4 py-8 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8 md:px-8 md:py-12 xl:grid-cols-[14rem_minmax(0,1fr)] xl:px-16 xl:py-16">
-        <DashboardSidebar />
+      <main id="main-content" tabIndex={-1} style={tab === 'home' && !slug ? { paddingTop: 0 } : undefined} className="site-container grid grid-cols-1 gap-6 py-8 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-8 md:py-12 xl:grid-cols-[14rem_minmax(0,1fr)] xl:py-16">
+        <DashboardSidebar activeTab={tab} />
 
         <div className="min-w-0">
           <RadixTabs.Content value="home" className="flex flex-col gap-8">
             {slug ? <DashboardActivityDetail key={slug} slug={slug} /> : <>
+            <h1 className="sr-only">Dashboard</h1>
             <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
               <div className="flex min-w-0 flex-col gap-10">
-                <DashboardMyJourney />
                 <DashboardAssignments />
+                <DashboardMyJourney />
               </div>
               <aside className="min-w-0"><DashboardCalendar /></aside>
             </div>

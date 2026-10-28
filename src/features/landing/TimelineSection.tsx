@@ -7,11 +7,12 @@ import { timelineItems } from "./landingContent";
 // kosakata visual dokumen (dot bulat + garis penghubung), bukan spec 1:1.
 export function TimelineSection() {
   return (
-    <section id="timeline" className="bg-neutral-100 px-6 py-3xl md:px-12">
-      <div className="mx-auto max-w-5xl">
+    <section id="timeline" className="site-container section-space bg-neutral-100">
+      <div className="w-full">
         <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline IOE 2027</h2>
 
-        <ol className="mt-2xl flex flex-col gap-lg md:flex-row md:items-start md:justify-between md:gap-md">
+        {process.env.NODE_ENV === "development" && <p className="mt-2 text-center font-micro text-b3 text-neutral-800">Preview</p>}
+        {process.env.NODE_ENV === "development" && <ol className="mt-2xl flex flex-col gap-lg md:flex-row md:items-start md:justify-between md:gap-md">
           {timelineItems.map((item, i) => (
             <li key={item.label} className="flex flex-1 items-start gap-md md:flex-col md:items-center md:gap-sm md:text-center">
               <div className="flex flex-col items-center">
@@ -22,13 +23,13 @@ export function TimelineSection() {
               </div>
               <div className="flex flex-col md:mt-sm">
                 <span className="font-ui text-b3 font-bold text-secondary-1000">{item.date}</span>
-                <span className="text-b3 text-neutral-700">{item.label}</span>
+                <span className="text-b3 text-neutral-800">{item.label}</span>
               </div>
             </li>
           ))}
-        </ol>
+        </ol>}
 
-        <p className="mt-2xl text-center text-b4 text-neutral-500">
+        <p className="mt-2xl text-center text-b4 text-neutral-800">
           Tanggal bersifat sementara — menunggu jadwal final dari panitia.
         </p>
       </div>

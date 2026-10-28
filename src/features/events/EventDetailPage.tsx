@@ -43,33 +43,33 @@ export function EventDetailPage({ slug }: { slug: string }) {
       : "Informasi ketersediaan pendaftaran belum tersedia. Silakan cek kembali nanti.";
 
   return (
-    <main className="min-w-0 bg-neutral-100 [overflow-wrap:anywhere]">
-      <div className="mx-auto w-full max-w-[80rem] px-4 py-lg md:px-8">
+    <main id="main-content" tabIndex={-1} className="min-w-0 bg-neutral-100 [overflow-wrap:anywhere]">
+      <div className="site-container py-lg">
         <Link href="/events" className={BACK_LINK}>Kembali ke daftar event</Link>
       </div>
       {message && <Toast status="error" title={message} onDismiss={dismiss} />}
 
       {isPending ? (
-        <section role="status" aria-busy="true" aria-labelledby="event-loading" className="mx-auto flex max-w-[80rem] flex-col gap-lg px-4 py-3xl md:px-8">
+        <section role="status" aria-busy="true" aria-labelledby="event-loading" className="site-container section-space flex flex-col gap-lg">
           <h1 id="event-loading" className="font-heading text-h4 text-secondary-1000">Memuat detail event...</h1>
           <div aria-hidden="true" className="h-72 animate-pulse rounded-lg bg-secondary-100 motion-reduce:animate-none" />
         </section>
       ) : isError || !event ? (
-        <section className="mx-auto flex max-w-[80rem] flex-col items-start gap-lg px-4 py-3xl md:px-8">
+        <section className="site-container section-space flex flex-col items-start gap-lg">
           <h1 className="font-heading text-h4 text-secondary-1000">Detail event belum dapat dimuat</h1>
           <p role="status" className="font-body text-b2 text-neutral-700">Silakan coba lagi untuk melihat informasi event.</p>
           <Button disabled={isFetching} onClick={() => { setMessage(null); void refetch(); }}>{isFetching ? "Memuat..." : "Coba lagi"}</Button>
         </section>
       ) : (
         <>
-          <section aria-labelledby="event-title" className="bg-linear-to-br from-secondary-900 via-secondary-700 to-secondary-1000 px-4 py-3xl text-neutral-100 md:px-8 md:py-4xl">
-            <div className="mx-auto grid min-w-0 max-w-[80rem] items-center gap-2xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+          <section aria-labelledby="event-title" className="section-space bg-linear-to-br from-secondary-900 via-secondary-700 to-secondary-1000 text-neutral-100">
+            <div className="site-container grid min-w-0 items-center gap-2xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div className="flex min-w-0 flex-col items-start gap-lg">
                 <p className="font-ui text-b3 font-bold text-primary-100">Event IOE 2027</p>
                 <h1 id="event-title" className="max-w-full font-heading text-h3 md:text-h2 lg:text-h1">{event.name}</h1>
                 {data.isDemo && <p role="note" className="rounded-lg border border-neutral-100/40 px-md py-sm font-body text-b3">Data contoh pengembangan. Nama dan batas pendaftaran belum merupakan informasi resmi.</p>}
                 {registered && <p role="status" className="rounded-full bg-success-100 px-md py-sm font-ui text-b3 font-bold text-success-900">Sudah terdaftar</p>}
-                <a href="#registration" className="inline-flex min-h-12 items-center rounded-lg bg-primary-100 px-lg py-sm font-ui text-b3 font-bold text-secondary-1000 hover:bg-primary-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100">Informasi pendaftaran</a>
+                <a href="#registration" className="ui-action ui-action-primary ui-action-sm">Informasi pendaftaran</a>
               </div>
               <div className="flex min-w-0 flex-col items-center gap-lg text-center">
                 <h2 className="font-heading text-h5">Batas pendaftaran{data.isDemo ? " (contoh)" : ""}</h2>
@@ -79,7 +79,7 @@ export function EventDetailPage({ slug }: { slug: string }) {
             </div>
           </section>
 
-          <div className="mx-auto flex min-w-0 max-w-[80rem] flex-col gap-2xl px-4 py-3xl md:px-8 md:py-4xl">
+          <div className="site-container section-space flex min-w-0 flex-col gap-2xl">
             <section aria-labelledby="event-about" className="flex flex-col gap-md">
               <h2 id="event-about" className="font-heading text-h4 text-secondary-1000 md:text-h3">Tentang event</h2>
               <p className="font-body text-b2 text-neutral-700">Deskripsi resmi event belum tersedia.</p>

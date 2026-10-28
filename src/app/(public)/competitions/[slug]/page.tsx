@@ -31,7 +31,7 @@ export default async function CompetitionDetailsPage({
   const { slug } = await params;
 
   return (
-    <main className="wrap-anywhere flex min-w-0 flex-1 flex-col">
+    <main id="main-content" tabIndex={-1} className="wrap-anywhere flex min-w-0 flex-1 flex-col">
       <CompetitionDetailHero slug={slug} />
       <CompetitionDetailAboutSection slug={slug} />
       <CompetitionDetailTimelineSection slug={slug} />

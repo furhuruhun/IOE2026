@@ -86,7 +86,7 @@ export function RequirementCard({ item, competitionId }: { item: RequirementItem
     return () => { active = false; if (objectUrl) URL.revokeObjectURL(objectUrl); };
   }, [fileUrl]);
   const viewUrl = documentLink?.source === fileUrl ? documentLink?.url : fileUrl;
-  const statusStyle = item.status === 'accepted' ? 'bg-success-500 text-success-1000' : item.status === 'rejected' ? 'bg-error-400 text-error-1000' : 'bg-warning-400 text-warning-1000';
+  const statusStyle = item.status === 'accepted' ? 'bg-success-100 text-success-1000' : item.status === 'rejected' ? 'bg-error-400 text-error-1000' : 'bg-warning-400 text-warning-1000';
   const statusLabel = item.status === 'accepted' ? 'Accepted' : item.status === 'rejected' ? 'Rejected' : 'Pending';
   return (
     <Accordion.Item value={item.requirementId} className="rounded-xl bg-neutral-100 p-6 shadow-sm md:rounded-[36px]">
@@ -130,7 +130,7 @@ export function RequirementCard({ item, competitionId }: { item: RequirementItem
               <Icon icon="mdi:cloud-upload-outline" className="size-12 text-primary-600" />
               <button type="button" disabled={disabled} onClick={() => input.current?.click()} className="text-b3 text-secondary-1000 disabled:cursor-default">Tarik atau pilih file — bukti akan langsung terupload otomatis</button>
             </>}
-            <p className="text-b4 text-neutral-600">{item.acceptedFormats.join(', ').toUpperCase()}, maks 500KB</p>
+            <p className="text-b4 text-neutral-700">{item.acceptedFormats.join(', ').toUpperCase()}, maks 500KB</p>
             {errors.file && <p id={`${item.requirementId}-error`} role="alert" className="text-b3 text-error-1000">{errors.file.message}</p>}
           </div>
           {toast && <><Toast status="error" title={toast} onDismiss={() => setToast(null)} /><Button size="sm" variant="ghost" disabled={disabled} onClick={retry}>Coba lagi</Button></>}

@@ -102,7 +102,7 @@ export function TeamModal() {
                 Create or Join a Team
               </Dialog.Title>
               {competitionName && (
-                <Dialog.Description className="text-b3 text-neutral-700">
+                <Dialog.Description className="text-b3 text-neutral-800">
                   Register your team for {competitionName}.
                 </Dialog.Description>
               )}
@@ -133,7 +133,7 @@ export function TeamModal() {
                     aria-pressed={activeTab === tab.value}
                     onClick={() => setActiveTab(tab.value)}
                     className={`flex-1 rounded-full py-2 text-b3 font-bold transition-colors ${
-                      activeTab === tab.value ? "bg-neutral-100 text-secondary-1000 shadow-sm" : "text-neutral-600"
+                      activeTab === tab.value ? "bg-neutral-100 text-secondary-1000 shadow-sm" : "text-neutral-800"
                     }`}
                   >
                     {tab.label}

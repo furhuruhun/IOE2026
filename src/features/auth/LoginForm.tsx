@@ -86,7 +86,7 @@ export function LoginForm() {
 
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-neutral-300" />
-        <span className="text-b4 text-neutral-600">Atau</span>
+        <span className="text-b4 text-neutral-700">Atau</span>
         <div className="h-px flex-1 bg-neutral-300" />
       </div>
 
@@ -94,7 +94,7 @@ export function LoginForm() {
 
       <p className="text-center text-b3 text-neutral-700">
         Belum punya akun?{" "}
-        <Link href="/register" className="font-micro font-semibold text-secondary-600 hover:underline">
+        <Link href="/register" className="font-micro font-semibold text-secondary-800 hover:underline">
           Daftar di sini
         </Link>
       </p>

@@ -29,7 +29,7 @@ function SquarePenIcon() {
 export function EventOverviewHero() {
   const { data, isLoading, isError } = useEvents();
   const now = useCurrentTime();
-  const targetDeadline = data && now !== null ? nearestRegistrationDeadline(data.events, now) : null;
+  const targetDeadline = data && (!data.isDemo || process.env.NODE_ENV === "development") && now !== null ? nearestRegistrationDeadline(data.events, now) : null;
   const allExpired = targetDeadline !== null && now !== null && targetDeadline.getTime() <= now;
 
   return (
@@ -38,7 +38,7 @@ export function EventOverviewHero() {
       <div className="pointer-events-none absolute -right-20 bottom-0 size-72 rounded-full bg-tertiary-600/20 blur-3xl motion-safe:animate-glow-dim md:size-[30rem]" aria-hidden />
       <div className="pointer-events-none absolute inset-0 opacity-20" aria-hidden style={{ background: "radial-gradient(circle at 50% 50%, var(--color-secondary-600), transparent 55%)" }} />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[80rem] flex-col items-center justify-center gap-14 px-4 py-20 md:gap-16 md:px-8 lg:flex-row lg:gap-8 lg:px-12 lg:py-16 xl:gap-24 2xl:gap-32">
+      <div className="site-container relative z-10 flex flex-col items-center justify-center gap-14 py-20 md:gap-16 lg:flex-row lg:gap-8 lg:py-16 xl:gap-24 2xl:gap-32">
         <div data-testid="hero-branding" className={`${styles.brandEnter} flex w-full min-w-0 max-w-[35rem] flex-col items-center gap-lg text-center lg:w-auto lg:flex-[1_1_35rem]`}>
           <span className="rounded-full border border-primary-300/60 bg-primary-600/20 px-md py-sm font-ui text-b4 font-bold uppercase tracking-widest text-primary-100">
             Indonesia Ocean Expo 2027
@@ -66,11 +66,11 @@ export function EventOverviewHero() {
             <span>Lokasi diumumkan panitia</span>
           </div>
           <div className="grid w-full max-w-96 grid-cols-2 gap-3 lg:gap-4">
-            <a href="#whats-in" className="inline-flex min-h-12 w-full items-center justify-center gap-sm rounded-lg bg-linear-to-r from-primary-500 via-primary-600 to-secondary-600 px-sm py-sm font-ui text-b4 font-bold text-secondary-1000 shadow-md transition-opacity hover:opacity-90 active:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 md:px-md md:text-b3">
+            <a href="#whats-in" className="ui-action ui-action-primary ui-action-sm w-full">
               <SquarePenIcon />
               <span>Register Now</span>
             </a>
-            <a href="#about" className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-neutral-100/50 bg-neutral-100/10 px-sm py-sm font-ui text-b4 font-bold text-neutral-100 transition-colors hover:bg-neutral-100/20 active:bg-neutral-100/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 md:px-md md:text-b3">
+            <a href="#about" className="ui-action ui-action-secondary ui-action-sm w-full">
               Tentang Event
             </a>
           </div>

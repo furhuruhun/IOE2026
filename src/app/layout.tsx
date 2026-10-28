@@ -48,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>
+          <a href="#main-content" className="skip-link ui-action ui-action-secondary">Lewati ke konten utama</a>
           <IconRegistry />
           <SessionBootstrap />
           {children}

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { Icon } from "@iconify/react/offline";
-import { CTA_GRADIENT } from "@/components/ui/Navbar";
+
 import { useCompetition } from "@/hooks/useCompetitions";
 import { useIsLoggedIn } from "@/hooks/useAuth";
 import { ApiError } from "@/services/authService";
@@ -153,13 +153,12 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
           </div>
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
-            <div className="flex items-center justify-center gap-4 md:gap-6">
+            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
               <button
                 type="button"
                 onClick={handleRegisterClick}
                 disabled={isLoading}
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2 text-s6! font-ui text-secondary-1000 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 disabled:pointer-events-none disabled:opacity-50 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
-                style={{ background: CTA_GRADIENT }}
+                className="ui-action ui-action-primary ui-action-sm"
               >
                 Register
                 <Icon icon="mdi:pencil" className="size-5 md:size-6" />
@@ -167,7 +166,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
 
               <a
                 href="#about"
-                className="relative inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-white/20 px-4 py-2 text-s6! font-ui text-neutral-100 outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 transition-all after:absolute after:inset-0 after:rounded-xl after:opacity-0 after:transition-opacity hover:after:bg-black/10 hover:after:opacity-100 active:after:bg-black/20 active:after:opacity-100 md:rounded-2xl md:px-5 md:py-3 md:text-s5! md:after:rounded-2xl"
+                className="ui-action ui-action-secondary ui-action-sm"
               >
                 Explore More
                 <Icon icon="mdi:arrow-down" className="size-5 md:size-6" />

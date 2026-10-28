@@ -50,6 +50,7 @@ import { discordInviteUrl } from "./competitionsContent";
 // design_system_final.md TIDAK SINKRON dengan poin-poin di atas — perlu ditambahkan manual oleh
 // manusia. Lihat CHANGELOG [2026-09-03] "Redesign CompetitionDiscordCTA".
 export function CompetitionDiscordCTA() {
+  if (discordInviteUrl.includes("PLACEHOLDER")) return process.env.NODE_ENV === "development" ? <p className="site-container py-8 text-center font-micro text-b3 text-neutral-800">Preview - Discord</p> : null;
   return (
     <section
       className="w-full"

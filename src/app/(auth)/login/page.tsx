@@ -15,7 +15,7 @@ import { LoginForm } from "@/features/auth/LoginForm";
 // ROUTES/PRD/USER_FLOWS/API_CONTRACT).
 export default function LoginPage() {
   return (
-    <main className="relative flex flex-1 overflow-hidden">
+    <main id="main-content" tabIndex={-1} className="relative flex flex-1 overflow-hidden">
       <div className="flex flex-1 flex-col justify-center gap-8 px-6 py-16 md:w-1/2 md:flex-none md:px-16 lg:px-24">
         {/* max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom membayangi container scale
             bawaan Tailwind untuk key "sm", lihat CHANGELOG. */}

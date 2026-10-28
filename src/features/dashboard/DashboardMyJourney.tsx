@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Button } from '@/components/ui/Button';
-import { Toast } from '@/components/ui/Toast';
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
 import { useJourney } from "@/hooks/useDashboard";
@@ -15,7 +14,6 @@ export function DashboardMyJourney() {
   const { data, isLoading, isFetching, isError, error, refetch } = useJourney();
   const handleError = useErrorHandler();
   const [message, setMessage] = useState<string | null>(null);
-  const dismiss = useCallback(() => setMessage(null), []);
   useEffect(() => {
     if (error) handleError(error, { onToast: setMessage, redirectTo: '/login?redirect=%2Fdashboard' });
   }, [error, handleError]);
@@ -23,14 +21,13 @@ export function DashboardMyJourney() {
 
   return (
     <section className="flex w-full min-w-0 flex-col gap-4">
-      {message && <Toast status="error" title={message} onDismiss={dismiss} />}
       <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">My Journey</h2>
 
       {isError && <div role="status" className="flex min-w-0 flex-col items-start gap-3">
-          <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your competitions.</p>
+          <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your competitions.{message && <span className="mt-1 block">{message}</span>}</p>
           <Button size="sm" disabled={isFetching} onClick={() => { setMessage(null); void refetch(); }}>{isFetching ? 'Loading...' : 'Coba lagi'}</Button>
         </div>}
-      <div className="flex min-h-32 w-full flex-row items-center gap-2 overflow-hidden rounded-3xl bg-neutral-100 p-6 md:gap-4">
+      <div aria-busy={isFetching} className="flex min-h-32 w-full flex-row items-center gap-2 overflow-hidden rounded-3xl bg-neutral-100 p-6 md:gap-4">
         {/* Bagian 1 — Add Another (fixed, kiri). F-48: klik → redirect /competitions
             (USER_FLOWS_v2.md "Flow: Dashboard — Tambah Kompetisi ke My Journey"). */}
         <Link href="/competitions" className="flex shrink-0 flex-col items-center gap-2">
@@ -41,16 +38,17 @@ export function DashboardMyJourney() {
         </Link>
 
         {/* Bagian 2 — list logo kompetisi, scrollable horizontal, cursor-grab */}
-        <div className="no-scrollbar flex flex-1 cursor-grab select-none flex-row gap-2 overflow-x-auto md:gap-6">
+        <div role="region" aria-label="Your competitions" tabIndex={0} className="flex min-w-0 flex-1 flex-row gap-4 overflow-x-auto pb-2 focus-visible:outline-2 focus-visible:outline-secondary-800 md:gap-6">
           {isLoading && <span role="status" className="sr-only">Loading competitions...</span>}
           {isLoading &&
             [0, 1].map((i) => (
-              <div key={i} className="size-20 shrink-0 animate-pulse rounded-xl bg-neutral-300 md:size-25" aria-hidden />
+              <div key={i} className="size-20 shrink-0 animate-pulse motion-reduce:animate-none rounded-xl bg-neutral-300 md:size-25" aria-hidden />
             ))}
+          {!isLoading && !isError && items.length === 0 && <p role="status" className="text-b3 text-neutral-800">No competitions yet. Choose a competition to get started.</p>}
           {!isLoading && !isError &&
             items.map((item) => (
-              <Link key={item.competitionId} href={`/competitions/${item.slug}`} className="flex shrink-0 flex-col items-center gap-2">
-                <span className="max-w-18 truncate text-b3 font-bold text-neutral-800 md:max-w-20 md:text-b2">
+              <Link key={item.competitionId} href={`/competitions/${item.slug}`} className="flex w-32 shrink-0 flex-col items-center gap-2 md:w-44">
+                <span className="w-full wrap-anywhere text-center text-b3 font-bold text-neutral-800 md:text-b2">
                   {item.name}
                 </span>
                 <GradientBorderBox className="size-18 md:size-20">

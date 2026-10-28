@@ -81,25 +81,25 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
 
   if (isShortCourse) {
     return (
-      <div className="flex flex-col items-center gap-8 mb-8">
-        <span className="flex gap-2 items-center font-ui font-bold text-neutral-100 md:text-s5">
+      <div className="mx-auto mb-8 flex w-full max-w-[400px] flex-col items-center gap-4">
+        <span className="flex flex-wrap justify-center gap-2 text-center font-ui text-b3 font-bold text-neutral-100">
           <Icon icon="mdi:timer" className="size-5 shrink-0" aria-hidden="true" />
           {formatTargetLabel(targetDate)}
         </span>
-        <div className="flex items-center gap-3">
+        <div className="grid w-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-1 md:gap-3">
           {UNITS.map((unit, i) => (
             <Fragment key={unit.key}>
               {i > 0 && (
-                <div className="flex flex-col gap-5" aria-hidden="true">
+                <div className="flex flex-col gap-3" aria-hidden="true">
                   <span className="size-2 rounded-full bg-neutral-100" />
                   <span className="size-2 rounded-full bg-neutral-100" />
                 </div>
               )}
-              <div className="size-18 md:size-28 p-0.5 rounded-full bg-linear-to-br from-primary-300 via-secondary-600 to-tertiary-600 shadow-md">
-                <div className="size-17 md:size-27 rounded-full flex flex-col items-center justify-center bg-linear-to-b from-primary-500 to-primary-1000 text-neutral-100 md:gap-0.5">
-                  <span className="font-ui text-s6 md:text-s5">{unit.label}</span>
-                  <div className="h-px w-10 md:w-17.5 bg-neutral-100/70" aria-hidden="true" />
-                  <span className="font-heading text-h4 md:text-h3 tabular-nums" suppressHydrationWarning>{pad2(timeLeft[unit.key])}</span>
+              <div className="aspect-square w-full p-0.5 rounded-full bg-linear-to-br from-primary-300 via-secondary-600 to-tertiary-600 shadow-md">
+                <div className="size-full rounded-full flex flex-col items-center justify-center bg-linear-to-b from-primary-900 to-primary-1000 text-neutral-100 md:gap-0.5">
+                  <span className="font-ui text-b4">{unit.label}</span>
+                  <div className="h-px w-2/3 bg-neutral-100/70" aria-hidden="true" />
+                  <span className="font-heading text-[clamp(16px,5vw,32px)] leading-tight tabular-nums" suppressHydrationWarning>{pad2(timeLeft[unit.key])}</span>
                 </div>
               </div>
             </Fragment>
@@ -131,7 +131,7 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
               {/* Inner circle — final: primary-500 (terang) -> primary-1000 (gelap) */}
               <div
                 className="flex size-full flex-col items-center justify-center gap-0.5 rounded-full"
-                style={{ background: "linear-gradient(to bottom, var(--color-primary-500), var(--color-primary-1000))" }}
+                style={{ background: "linear-gradient(to bottom, var(--color-primary-900), var(--color-primary-1000))" }}
               >
                 <span className="font-ui text-b4 text-neutral-100">{unit.label}</span>
                 <span className={`h-px bg-neutral-100/40 ${isEventOverview ? "w-10 md:w-[70px]" : "w-4"}`} aria-hidden />

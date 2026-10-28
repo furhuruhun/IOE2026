@@ -76,7 +76,7 @@ export function TeamModalJoinView({ competitionId, onJoined, onSwitchToCreate, o
       <button
         type="button"
         onClick={() => setView("public-list")}
-        className="self-start font-micro text-b4 font-semibold text-secondary-600 hover:underline"
+        className="self-start font-micro text-b4 font-semibold text-secondary-800 hover:underline"
       >
         atau pilih dari tim yang membuka pendaftaran
       </button>

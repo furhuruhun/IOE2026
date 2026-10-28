@@ -22,7 +22,7 @@ export default function NotFound() {
   const router = useRouter();
 
   return (
-    <main className="relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden px-6 py-3xl text-center md:px-20">
+    <main id="main-content" tabIndex={-1} className="relative flex min-h-svh w-full flex-col items-center justify-center overflow-hidden px-6 py-3xl text-center md:px-20">
       {/* Background — placeholder pengganti art referensi (/ds/404-bg-*.webp), belum ada aset dari klien */}
       <div
         aria-hidden

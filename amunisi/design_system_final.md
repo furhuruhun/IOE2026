@@ -1409,3 +1409,40 @@ Saran penamaan konsisten dengan struktur Figma:
 --calendar-grid-border: ;
 --calendar-accent: ;
 ```
+
+## Unified UI pass ? 2026-10-28
+
+This implementation addendum supersedes the earlier per-page button geometry and spacing treatments for the shared actions and pages updated in this pass. It uses existing approved colors, fonts and spacing; it does not change event content or registration contracts.
+
+- **Content container:** `site-container`, max-width 1440px including gutters; horizontal padding 16px on mobile, 32px from 768px, 64px from 1280px. Narrow prose, dialogs, artwork and scrollable tracks retain their functional width limits. Full-width background sections wrap a container rather than constraining their background.
+- **Section rhythm:** `section-space`, 64px vertical padding on mobile and 96px from 768px. Detail pages using parent gaps use 64px/96px instead. Intentional hero spacing is retained.
+- **Actions:** shared `Button` and `ui-action` classes use the existing 16px radius, Montserrat semibold, minimum 44px hit area, consistent focus/disabled treatments and existing size padding. Primary retains an aquatic gradient and shadow, secondary uses Cyan/100 with Cyan/400 border, ghost is transparent with a border, destructive uses Error/100 with Error/400 border and Error/1000 text. Text actions use Inter and an underline. This replaces the shared button's individually generated organic radius and ambient animation with the already established rounded action geometry used elsewhere in the product.
+- **Contrast:** primary gradient's final stop is Secondary/300 so Secondary/1000 text exceeds 4.5:1 across the base gradient. Muted text formerly using Neutral/600 on light surfaces uses Neutral/700; text links formerly using Secondary/600 use Secondary/800. Countdown interiors use Primary/900?1000 behind Neutral/100 text. Accepted-document badges use Success/100 behind Success/1000 text.
+- **Type roles:** approved font families remain unchanged. Body b1/b2 line heights are 30px/24px for readable prose. Existing s6/s5/s3 aliases are replaced with equivalent b4/b3/b1 classes in touched components; aliases remain available for other components. No new type scale is introduced.
+- **Accessibility:** page mains provide one focusable skip destination. Password reveal is in the tab order. Menu, theme and hero pagination controls have at least 44px hit areas. The hero has no visible rotation control (removed at the owner?s request); entering it with keyboard focus pauses automatic rotation for the mounted carousel. Reduced-motion preferences disable automatic rotation.
+- **Short Course:** hero stays stacked below 1280px, uses reduced nested padding, and fits its countdown to available width. Four-digit hours fit at 320px. Explicitly provisional benefits, timeline and session layouts are labeled Preview; development countdowns are labeled Sample.
+- **Registration foundation:** the existing non-submission notice precedes the fields. Input and file selection behavior, disabled submission and API contracts are unchanged.
+
+
+## Track A accessibility addendum - 2026-10-28
+
+This addendum records the authorized technical remediation after the independent audit. Existing color tokens, fonts, assets, routes and event content are retained.
+
+- Mobile dashboard identity is compact. One responsive vertical tab list serves desktop and mobile, with selected section labels and focus restoration.
+- Calendar dates are read-only time elements with accessible full dates. Month controls retain their behavior. Scheduled dates use Secondary/800 with Neutral/100 foreground for readable contrast; outside-month dates remain readable and use normal font weight.
+- Registration notice and text on Neutral/200 surfaces use Neutral/800. Timeline provisional text also uses Neutral/800.
+- Toast backgrounds use Success/900, Error/800, Warning/900 and Secondary/900, with white text. Dismiss controls and documentation pagination hit areas are at least 44px. Error notifications persist until explicitly dismissed; other timed notifications suspend dismissal during pointer hover or keyboard focus.
+- Dashboard query feedback uses persistent local status/error messages and retry controls. This supersedes generic toast-only guidance for the affected read-only dashboard lists; mapped error messages and auth redirects are preserved.
+- Reduced-motion statistics show every original item in a wrapping grid. Decorative duplicates remain excluded from the accessibility tree; default animation and content are unchanged.
+
+See `TRACK_A_UI_REMEDIATION.md` for exact files, verification and deferred Product decisions.
+
+
+## Track B1 + B2 approved presentation - 2026-10-28
+
+- Landing discovery uses the shared primary actions for existing Competition/Event destinations outside the carousel, with schedule as a text action. Slide-specific actions are secondary. Hero identity and six-second autoplay remain; no visible pause control is restored. The persistent touch-pause concern remains unresolved.
+- Navbar omits the nonfunctional theme preview. Invalid social placeholders are inert labeled preview slots in development and absent in production. Assets/sample data are preserved.
+- Known sample-backed content uses the existing development environment for labeled Preview presentation. Production withholds known unconfirmed static statistics, milestone countdowns, sponsors, memories, testimonials and sample course content; existing isDemo and official/preview fields are reused where available. These guards do not establish editorial confirmation of every API response.
+- Preparation precedes Journey and is ordered only by valid deadline timestamps, stably, with missing/invalid deadlines last. Every returned status/item is retained. The calendar list is explicitly described as all registered schedules; date interaction stays informational.
+
+See TRACK_B1_B2_UX_INTEGRATION.md for verification, exact files and remaining publication/carousel dependencies. No new color tokens, assets, routes or API semantics are introduced.

@@ -44,7 +44,7 @@ export function TeamModalPublicTeamList({ competitionId, onBack, onJoined, onToa
       <button
         type="button"
         onClick={onBack}
-        className="flex items-center gap-1 self-start text-b3 font-semibold text-secondary-600 hover:underline"
+        className="flex items-center gap-1 self-start text-b3 font-semibold text-secondary-800 hover:underline"
       >
         <Icon icon="mdi:chevron-left" className="size-4" />
         Kembali
@@ -61,7 +61,7 @@ export function TeamModalPublicTeamList({ competitionId, onBack, onJoined, onToa
       )}
 
       {!isLoading && teams && teams.length === 0 && (
-        <p className="rounded-xl bg-neutral-200 p-4 text-center text-b3 text-neutral-700">
+        <p className="rounded-xl bg-neutral-200 p-4 text-center text-b3 text-neutral-800">
           Belum ada tim yang membuka pendaftaran publik.
         </p>
       )}
@@ -75,7 +75,7 @@ export function TeamModalPublicTeamList({ competitionId, onBack, onJoined, onToa
             >
               <div>
                 <p className="text-b3 font-bold text-secondary-1000">{team.teamName}</p>
-                <p className="text-b4 text-neutral-600">
+                <p className="text-b4 text-neutral-800">
                   {team.memberCount}/{team.maxMember} anggota
                 </p>
               </div>

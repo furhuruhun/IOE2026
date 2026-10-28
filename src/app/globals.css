@@ -1,5 +1,62 @@
 @import "tailwindcss";
 
+/* Shared layout and actions use the approved palette, spacing, and font roles. */
+@utility site-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: var(--spacing-md);
+  @media (min-width: 768px) { padding-inline: var(--spacing-xl); }
+  @media (min-width: 1280px) { padding-inline: var(--spacing-3xl); }
+}
+
+@utility section-space {
+  padding-block: var(--spacing-3xl);
+  @media (min-width: 768px) { padding-block: var(--spacing-4xl); }
+}
+
+@layer components {
+  .ui-action {
+    position: relative;
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-lg);
+    padding: 11px 27px;
+    font-family: var(--font-ui), sans-serif;
+    font-size: var(--text-b2);
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+    color: var(--color-secondary-1000);
+    cursor: pointer;
+    transition: box-shadow 180ms ease, filter 180ms ease;
+  }
+  .ui-action:focus-visible, .text-action:focus-visible {
+    outline: 2px solid var(--color-secondary-800);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 3px var(--color-neutral-100);
+  }
+  .ui-action-primary {
+    background: radial-gradient(circle at 30% 30%, var(--color-tertiary-500), var(--color-primary-300) 42%, var(--color-secondary-300) 80%);
+    box-shadow: 0 8px 20px rgba(20,110,95,.25);
+  }
+  .ui-action-secondary { background: var(--color-secondary-100); border-color: var(--color-secondary-400); }
+  .ui-action-ghost { background: transparent; border-color: var(--color-secondary-400); }
+  .ui-action-destructive { background: var(--color-error-100); border-color: var(--color-error-400); color: var(--color-error-1000); }
+  .ui-action-text, .text-action { color: var(--color-secondary-800); font-family: var(--font-micro), sans-serif; text-decoration: underline; text-underline-offset: 4px; }
+  .ui-action-sm { padding: 6px 12px; font-size: var(--text-b3); }
+  .ui-action-lg { padding: 18px 44px; font-size: var(--text-s4); font-weight: 700; }
+  .ui-action:hover:not(:disabled) { filter: brightness(.95); }
+  .ui-action:active:not(:disabled) { filter: brightness(.9); }
+  .ui-action:disabled { background: var(--color-neutral-200); border-color: var(--color-neutral-400); color: var(--color-neutral-800); box-shadow: none; cursor: not-allowed; }
+  .skip-link { position: fixed; top: 8px; left: 8px; z-index: 10003; transform: translateY(-200%); background: var(--color-neutral-100); }
+  .skip-link:focus { transform: translateY(0); }
+}
+
 /*
  * Design tokens — sumber: amunisi/design_system_final.md
  * SELALU pakai token semantic ini (bg-primary-600, text-neutral-900, dst) di komponen.
@@ -153,9 +210,9 @@
   --text-h6: 20px;
   --text-h6--line-height: 24px;
   --text-b1: 20px; /* Paragraph Large */
-  --text-b1--line-height: 24px;
+  --text-b1--line-height: 30px;
   --text-b2: 16px; /* Paragraph Medium */
-  --text-b2--line-height: 19px;
+  --text-b2--line-height: 24px;
   --text-b3: 14px; /* Paragraph Small */
   --text-b3--line-height: 17px;
   --text-b4: 12px; /* Paragraph Super Small */
@@ -257,6 +314,7 @@ h5,
 h6 {
   font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 /* CompetitionDetailHero glow blob — lihat komentar --animate-glow-dim di @theme block atas. */
@@ -319,7 +377,12 @@ h6 {
 @media (prefers-reduced-motion: reduce) {
   .about-stats-track {
     animation: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+    width: 100%;
   }
+  .about-stats-track [data-stat-copy] { display: none; }
+  .about-stats-track > div, .about-stats-track p { width: 100%; min-width: 0; }
 }
 
 /*

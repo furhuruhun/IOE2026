@@ -87,13 +87,13 @@ export function EventOverviewTimeline() {
   const { data, isLoading, isError } = useEvents();
   const scroller = useRef<HTMLDivElement>(null);
   const dragState = useRef<{ pointerId: number; startX: number; startScrollLeft: number } | null>(null);
-  const events = (data?.events ?? [])
+  const events = (data?.isDemo && process.env.NODE_ENV !== "development" ? [] : data?.events ?? [])
     .filter((event) => Number.isFinite(new Date(event.deadline).getTime()))
     .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
   const awardingFromApi = events.find((event) => event.slug === "awarding-ceremony" || event.name.trim().toLowerCase() === "awarding ceremony");
   const rundownEvents: RundownEvent[] = [
     ...events.filter((event) => event !== awardingFromApi),
-    awardingFromApi ?? AWARDING_CEREMONY_PLACEHOLDER,
+    ...(awardingFromApi ? [awardingFromApi] : process.env.NODE_ENV === "development" ? [AWARDING_CEREMONY_PLACEHOLDER] : []),
   ];
 
   const scroll = (direction: -1 | 1) => {
@@ -139,10 +139,10 @@ export function EventOverviewTimeline() {
   };
 
   return (
-    <section id="rundown" className="relative isolate flex w-full flex-col items-center overflow-hidden bg-secondary-1000 py-20 text-neutral-100 sm:py-28 lg:py-32">
+    <section id="rundown" className="relative isolate flex w-full flex-col items-center overflow-hidden bg-secondary-1000 section-space text-neutral-100">
       <RundownBackground />
       <div className="relative z-10 w-full">
-        <div className={`${styles.fadeIn} mx-auto flex max-w-[80rem] flex-col items-center gap-md px-4 text-center md:px-8`}>
+        <div className={`${styles.fadeIn} site-container flex flex-col items-center gap-md text-center`}>
           <h2 className="font-heading text-h4 font-bold text-neutral-100 md:text-h2 lg:text-h1">RUNDOWN</h2>
           <p className="max-w-[42rem] font-body text-b3 text-neutral-100/90 md:text-b2">Timeline batas pendaftaran seluruh event. Jadwal kegiatan per sesi belum tersedia dari panitia.</p>
           {(data?.isDemo || (!isLoading && !isError && events.length > 0 && !awardingFromApi)) && <p className="rounded-full border border-neutral-100/40 px-md py-xs font-ui text-b4 text-neutral-100">{data?.isDemo ? "Tanggal contoh untuk pengembangan" : "Tanggal Awarding Ceremony masih contoh"}</p>}

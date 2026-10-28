@@ -8,9 +8,9 @@ export function PlaceholderPage({
   note?: string;
 }) {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24 text-center">
+    <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col items-center justify-center gap-3 px-6 py-24 text-center">
       <h1 className="text-h3 md:text-h1 text-(--color-foreground)">{title}</h1>
-      {fId && <p className="text-b3 text-neutral-600">Terkait requirement: {fId}</p>}
+      {fId && <p className="text-b3 text-neutral-700">Terkait requirement: {fId}</p>}
       {/* max-w-[28rem] (bukan max-w-md) — --spacing-md kustom membayangi container scale
           bawaan Tailwind untuk key "md", lihat CHANGELOG. */}
       <p className="max-w-[28rem] text-b2 text-neutral-700">
