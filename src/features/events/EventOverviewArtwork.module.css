@@ -1,0 +1,126 @@
+.heroAboutShell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  background: var(--color-neutral-100);
+}
+
+.sharedHeroLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.heroArtwork {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max(100%, 1200px);
+  height: auto;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+.heroBranding h1,
+.heroBranding p,
+.heroBranding span {
+  color: var(--color-secondary-1000);
+}
+
+.heroInformation > h2 {
+  background: none;
+  color: var(--color-secondary-1000);
+}
+
+.heroInformation > p,
+.heroInformation > div > p,
+.heroInformation > div > span {
+  color: var(--color-secondary-1000);
+}
+
+.aboutLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.aboutLayer::after,
+.cardsLayer::before,
+.cardsLayer::after {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 5rem;
+  content: "";
+  pointer-events: none;
+}
+
+.aboutLayer::after,
+.cardsLayer::after {
+  bottom: 0;
+  background: linear-gradient(to bottom, transparent, var(--color-neutral-100));
+}
+
+.aboutArtwork {
+  position: absolute;
+  top: -5rem;
+  left: 50%;
+  width: max(100%, 900px);
+  height: auto;
+  opacity: 0.72;
+  transform: translateX(-50%);
+  user-select: none;
+}
+
+.cardsLayer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 0;
+  overflow: hidden;
+  width: 100vw;
+  background: var(--color-neutral-100);
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.cardsLayer::before {
+  top: 0;
+  z-index: 1;
+  background: linear-gradient(to top, transparent, var(--color-neutral-100));
+}
+
+.cardsLayer::after {
+  z-index: 1;
+}
+
+.highlightArtwork {
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.45;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .aboutArtwork {
+    top: -10rem;
+    width: max(100%, 1100px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .aboutArtwork {
+    top: -12rem;
+  }
+}
+
+:global(html[data-theme="dark"]) .aboutArtwork,
+:global(html[data-theme="dark"]) .highlightArtwork {
+  opacity: 0.38;
+}

@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react/offline";
 import Image from "next/image";
 import { aboutDescription } from "@/features/landing/landingContent";
 import { eventDocumentation } from "@/features/events/eventOverviewContent";
+import artwork from "./EventOverviewArtwork.module.css";
 
 export function EventOverviewAbout() {
   const [active, setActive] = useState(0);
@@ -26,8 +27,11 @@ export function EventOverviewAbout() {
   };
 
   return (
-    <section id="about" className="overflow-hidden bg-neutral-100 section-space">
-      <div className="site-container flex flex-col gap-2xl">
+    <section id="about" className="relative section-space">
+      <div className={artwork.aboutLayer} aria-hidden="true">
+        <Image src="/images/events/desktop-about-ioe-aquatic.svg" alt="" width={1440} height={1080} draggable={false} className={artwork.aboutArtwork} />
+      </div>
+      <div className="site-container relative z-10 flex flex-col gap-2xl">
         <div className="grid gap-xl lg:grid-cols-[1fr_1.4fr] lg:items-start">
           <div>
             <p className="mb-sm font-ui text-b4 font-bold uppercase tracking-widest text-secondary-800">Tentang rangkaian</p>

@@ -109,7 +109,7 @@ function CompetitionCardMobile({
 
           <div className="flex min-h-0 w-full flex-1 flex-col justify-center px-12">
             {blurb && (
-              <Image src={blurb.imageUrl} alt={competition.name} width={192} height={169} unoptimized className="h-auto w-full object-contain" />
+              <Image src={blurb.imageUrl} alt={competition.name} width={192} height={169} sizes="184px" className="h-auto w-full object-contain" />
             )}
           </div>
 
@@ -133,7 +133,7 @@ function CompetitionCardDesktop({ competition, blurb }: CompetitionCardData) {
       >
         <div className="flex w-full items-center gap-10 p-8">
           {blurb && (
-            <Image width={192} height={169} unoptimized
+            <Image width={192} height={169} sizes="(max-width: 1023px) 163px, 192px"
               src={blurb.imageUrl}
               alt={competition.name}
               className="h-[169px] w-[192px] shrink-0 object-contain drop-shadow-[0_2.544px_2.544px_#2e0002] md:max-lg:h-[144px] md:max-lg:w-[163px]"

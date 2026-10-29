@@ -19,7 +19,6 @@ export function CompetitionTestimonialCarousel() {
 
   return (
     <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
-      <p className="font-micro text-b3 text-neutral-800">Preview</p>
       <h2 className="text-h4 text-secondary-1000 md:text-h2">What They Said</h2>
 
       <div className="flex w-full max-w-[42rem] items-center gap-md">

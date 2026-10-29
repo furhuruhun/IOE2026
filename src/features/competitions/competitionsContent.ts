@@ -1,3 +1,5 @@
+import { competitionLogos } from "./competitionLogos";
+
 // Konten statis untuk /competitions (Competition Overview) yang TIDAK tersedia dari
 // CompetitionSummary (API_CONTRACT.md §CompetitionSummary — cuma {id, slug, name, deadline,
 // isRegisteredByUser}). Sama seperti landingContent.ts, PLACEHOLDER kecuali ditandai
@@ -18,11 +20,7 @@ export const totalPrizePool = "Rp 50.000.000";
 export interface CompetitionBlurb {
   slug: string;
   description: string;
-  // PLACEHOLDER — CompetitionSummary (API_CONTRACT.md) tidak punya field gambar sama
-  // sekali, dan file asset-nya SENGAJA belum ada di /public/competitions/ (menunggu drop
-  // dari klien/panitia). <img> akan tampil broken sampai file asli diisi. Dicatat sbg gap
-  // API_CONTRACT.md di CHANGELOG — perlu direview manusia apakah field ini harusnya
-  // datang dari BE.
+  // Gambar lokal per kompetisi; CompetitionSummary belum menyediakan field gambar.
   imageUrl: string;
 }
 
@@ -33,19 +31,19 @@ export const competitionBlurbs: CompetitionBlurb[] = [
     slug: "business-case-competition",
     description:
       "Uji kemampuan analisis bisnis dan strategi digitalmu dengan menyelesaikan studi kasus nyata seputar ekonomi dan industri maritim.",
-    imageUrl: "/competitions/business-case-competition.png",
+    imageUrl: competitionLogos["business-case-competition"],
   },
   {
     slug: "paper-poster-competition",
     description:
       "Tuangkan gagasan ilmiahmu dalam bentuk karya tulis atau poster inovatif seputar keberlanjutan ekosistem maritim Indonesia.",
-    imageUrl: "/competitions/paper-poster-competition.png",
+    imageUrl: competitionLogos["paper-poster-competition"],
   },
   {
     slug: "design-competition",
     description:
       "Rancang solusi visual/desain kreatif yang menjawab tantangan energi, ekonomi, dan inovasi digital di sektor kelautan.",
-    imageUrl: "/competitions/design-competition.png",
+    imageUrl: competitionLogos["design-competition"],
   },
 ];
 

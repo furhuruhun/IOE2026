@@ -5,15 +5,14 @@ import { CompetitionDetailFunFactSection } from "@/features/competitions/Competi
 import { CompetitionDetailGainsSection } from "@/features/competitions/CompetitionDetailGainsSection";
 import { CompetitionDetailPrizeSection } from "@/features/competitions/CompetitionDetailPrizeSection";
 import { CompetitionDetailJoinTeamCTA } from "@/features/competitions/CompetitionDetailJoinTeamCTA";
-import { CompetitionDiscordCTA } from "@/features/competitions/CompetitionDiscordCTA";
 import { CompetitionDetailOtherCompetitionsCarousel } from "@/features/competitions/CompetitionDetailOtherCompetitionsCarousel";
 import { CompetitionDetailFAQSection } from "@/features/competitions/CompetitionDetailFAQSection";
 import { CompetitionDetailContactSection } from "@/features/competitions/CompetitionDetailContactSection";
 import { TeamModal } from "@/features/competitions/TeamModal";
 
 // Route: /competitions/[slug] — Competition Details. Public. ROUTES.md.
-// 11 section: F-12 (Hero), F-13 (About+Countdown), F-14 (Timeline), Fun Fact*, F-15
-// (What You'll Gain), Total Prize*, Join a Team CTA*, Discord CTA*, Other Competitions*,
+// 10 section: F-12 (Hero), F-13 (About+Countdown), F-14 (Timeline), Fun Fact*, F-15
+// (What You'll Gain), Total Prize*, Join a Team CTA*, Other Competitions*,
 // F-17 (FAQ), Contact*. Section bertanda * adalah perluasan scope di luar PRD F-12–F-21,
 // mengikuti referensi layout yang diberikan user (keputusan eksplisit, sama kategori dengan
 // perluasan scope /competitions overview) — lihat CHANGELOG.md untuk detail gap dokumen.
@@ -39,7 +38,6 @@ export default async function CompetitionDetailsPage({
       <CompetitionDetailGainsSection slug={slug} />
       <CompetitionDetailPrizeSection slug={slug} />
       <CompetitionDetailJoinTeamCTA slug={slug} />
-      <CompetitionDiscordCTA />
       <CompetitionDetailOtherCompetitionsCarousel slug={slug} />
       <CompetitionDetailFAQSection slug={slug} />
       <CompetitionDetailContactSection />

@@ -6,6 +6,7 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import styles from "./EventOverviewHero.module.css";
+import artwork from "./EventOverviewArtwork.module.css";
 
 function nearestRegistrationDeadline(events: EventSummary[], now: number): Date | null {
   const validDeadlines = events
@@ -33,13 +34,10 @@ export function EventOverviewHero() {
   const allExpired = targetDeadline !== null && now !== null && targetDeadline.getTime() <= now;
 
   return (
-    <section id="hero" data-testid="event-overview-hero" className="relative isolate flex min-h-[calc(100svh-3.5rem)] w-full items-center justify-center overflow-hidden bg-secondary-1000 text-neutral-100 md:min-h-[calc(100svh-5rem)]">
-      <div className="pointer-events-none absolute -left-24 top-0 size-80 rounded-full bg-primary-600/30 blur-3xl motion-safe:animate-glow-dim md:size-[32rem]" aria-hidden />
-      <div className="pointer-events-none absolute -right-20 bottom-0 size-72 rounded-full bg-tertiary-600/20 blur-3xl motion-safe:animate-glow-dim md:size-[30rem]" aria-hidden />
-      <div className="pointer-events-none absolute inset-0 opacity-20" aria-hidden style={{ background: "radial-gradient(circle at 50% 50%, var(--color-secondary-600), transparent 55%)" }} />
+    <section id="hero" data-testid="event-overview-hero" className="relative flex min-h-[calc(100svh-3.5rem)] w-full items-center justify-center text-secondary-1000 md:min-h-[calc(100svh-5rem)]">
 
       <div className="site-container relative z-10 flex flex-col items-center justify-center gap-14 py-20 md:gap-16 lg:flex-row lg:gap-8 lg:py-16 xl:gap-24 2xl:gap-32">
-        <div data-testid="hero-branding" className={`${styles.brandEnter} flex w-full min-w-0 max-w-[35rem] flex-col items-center gap-lg text-center lg:w-auto lg:flex-[1_1_35rem]`}>
+        <div data-testid="hero-branding" className={`${styles.brandEnter} ${artwork.heroBranding} flex w-full min-w-0 max-w-[35rem] flex-col items-center gap-lg text-center lg:w-auto lg:flex-[1_1_35rem]`}>
           <span className="rounded-full border border-primary-300/60 bg-primary-600/20 px-md py-sm font-ui text-b4 font-bold uppercase tracking-widest text-primary-100">
             Indonesia Ocean Expo 2027
           </span>
@@ -49,7 +47,7 @@ export function EventOverviewHero() {
           </p>
         </div>
 
-        <div data-testid="hero-information" className={`${styles.enter} flex w-full max-w-[25rem] flex-col items-center gap-5 text-center lg:w-[25rem] lg:shrink-0`}>
+        <div data-testid="hero-information" className={`${styles.enter} ${artwork.heroInformation} flex w-full max-w-[25rem] flex-col items-center gap-5 text-center lg:w-[25rem] lg:shrink-0`}>
           <h2 className={`${styles.headingGradient} font-ui text-b2 font-bold uppercase tracking-wide md:text-b1`}>
             Pendaftaran berakhir dalam:
           </h2>

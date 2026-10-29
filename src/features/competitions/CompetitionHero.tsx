@@ -45,20 +45,20 @@ export function CompetitionHero() {
   return (
     <section
       className="relative w-full overflow-hidden pt-8 pb-16 md:max-lg:pb-10 md:pt-16 lg:pt-[95px]"
-      style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
+      style={{
+        backgroundImage: "url('/images/competitions/hero_section.png')",
+        backgroundPosition: "center top",
+        backgroundSize: "cover",
+      }}
     >
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
-        <div className="animate-glow-dim motion-reduce:animate-none size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
-      </div>
-
       <div className="relative z-10 mx-auto flex w-full max-w-360 flex-col items-center justify-center gap-12 px-4 md:px-8 lg:flex-row xl:px-23">
-        <div className="flex w-full flex-col items-center gap-8 text-center lg:mt-11 lg:w-133.75 lg:flex-none">
-          <div className="flex flex-col items-center">
-            <span className="mb-3 font-ui text-b4 uppercase tracking-widest text-primary-600 md:text-b3">
+        <div className="flex w-full min-w-0 flex-col items-center gap-8 text-center lg:mt-11 lg:w-133.75 lg:flex-none">
+          <div className="flex w-full min-w-0 flex-col items-center">
+            <span className="mb-3 font-ui text-b4 uppercase tracking-widest text-secondary-1000 md:text-b3 [[data-theme=dark]_&]:text-secondary-100">
               Indonesia Ocean Expo 2027
             </span>
 
-            <h1 className="font-heading text-h3 text-neutral-100 md:text-h1">Competition Overview</h1>
+            <h1 className="font-heading text-h3 text-secondary-1000 md:text-h1 [[data-theme=dark]_&]:text-secondary-100">Competition Overview</h1>
           </div>
 
           {isLoading ? (
@@ -68,15 +68,15 @@ export function CompetitionHero() {
               ))}
             </div>
           ) : nearestDeadline && process.env.NODE_ENV === "development" ? (
-            <div><p className="mb-2 text-center font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={nearestDeadline} /></div>
+            <div className="[&_p]:!text-secondary-1000 [[data-theme=dark]_&]:[&_p]:!text-secondary-100"><p className="mb-2 text-center font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={nearestDeadline} /></div>
           ) : null}
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
-            <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+            <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-4 md:gap-6">
               <button
                 type="button"
                 onClick={() => router.push("#our-competition")}
-                className="ui-action ui-action-primary ui-action-sm"
+                className="ui-action ui-action-primary ui-action-sm rounded-xl px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5 [[data-theme=dark]_&]:text-secondary-100"
               >
                 Lihat Semua Kompetisi
               </button>
@@ -84,7 +84,7 @@ export function CompetitionHero() {
               <button
                 type="button"
                 onClick={() => router.push("#timeline")}
-                className="ui-action ui-action-secondary ui-action-sm"
+                className="ui-action ui-action-secondary ui-action-sm rounded-xl border-transparent bg-secondary-1000/8 px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5 [[data-theme=dark]_&]:text-secondary-100"
               >
                 Lihat Timeline
               </button>

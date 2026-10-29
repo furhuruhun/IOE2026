@@ -38,7 +38,6 @@ export function CompetitionDetailAboutSection({ slug }: CompetitionDetailAboutSe
       )}
 
       {process.env.NODE_ENV === "development" && <div className="flex flex-col items-center gap-sm">
-        <p className="font-micro text-b3 text-neutral-800">Preview</p>
         <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
         <div className="flex flex-wrap justify-center gap-sm">
           {sponsors.map((sponsor) => (

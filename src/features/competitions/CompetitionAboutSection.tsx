@@ -1,9 +1,7 @@
-import { sponsors } from "@/features/landing/landingContent";
+import Image from "next/image";
 import { aboutDescription, totalPrizePool } from "./competitionsContent";
+import { CompetitionSponsorMarquee } from "./CompetitionSponsorMarquee";
 
-// Gradient pattern sama seperti landing AboutSection.tsx (§Gradient border via padding).
-const GRADIENT_BORDER =
-  "linear-gradient(135deg, color-mix(in oklch, var(--color-primary-600) 55%, white) 0%, var(--color-secondary-600) 55%, var(--color-tertiary-600) 100%)";
 const GRADIENT_TEXT = "linear-gradient(90deg, var(--color-primary-600), var(--color-secondary-600), var(--color-tertiary-600))";
 
 // F-23 (About) + F-26 (Sponsor — digabung ke dalam About, pola sama dgn landing
@@ -13,46 +11,52 @@ const GRADIENT_TEXT = "linear-gradient(90deg, var(--color-primary-600), var(--co
 // klien (sama seperti landing, PRD §8) — section ini sengaja tanpa gambar maskot.
 export function CompetitionAboutSection() {
   return (
-    <section id="about" className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
-      <h2 className="text-h4 text-secondary-1000 md:text-h2">Tentang Competition Overview</h2>
+    <section id="about" className="relative isolate w-full overflow-hidden py-16">
+      <Image
+        src="/images/competitions/ellipse_our_aquatic_ioe.svg"
+        alt=""
+        aria-hidden="true"
+        width={1440}
+        height={737}
+        className="pointer-events-none absolute bottom-0 left-0 z-0 h-auto w-full max-w-none"
+      />
+      <Image
+        src="/images/competitions/decoration_aquatic_ioe.svg"
+        alt=""
+        aria-hidden="true"
+        width={1440}
+        height={1033}
+        className="pointer-events-none absolute left-0 top-0 z-0 h-auto w-full max-w-none opacity-60 md:-top-16 md:max-lg:top-12"
+      />
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center px-4 md:px-8 xl:px-[92px]">
+        <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Tentang Competition Overview</h2>
 
-      <div className="w-full max-w-[48rem] rounded-3xl p-0.5" style={{ background: GRADIENT_BORDER }}>
-        <div className="flex flex-col gap-sm rounded-[22px] bg-neutral-100 px-8 py-5 md:px-16 md:py-10">
-          <p className="text-b3 text-neutral-700 md:text-b2">{aboutDescription}</p>
-        </div>
-      </div>
-
-      {process.env.NODE_ENV === "development" && <>
-      <p className="font-micro text-b3 text-neutral-800">Preview</p>
-      <div className="flex flex-col items-center gap-2">
-        <h3 className="text-h6 text-neutral-700 md:text-h5">Total Prize Pool</h3>
-        <p
-          className="font-heading text-h4 font-bold md:text-h2"
-          style={{
-            backgroundImage: GRADIENT_TEXT,
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
-          {totalPrizePool}
+        <p className="mt-4 w-full max-w-[1200px] text-center font-body text-[18px] leading-[1.5] font-semibold text-neutral-700 md:max-lg:max-w-[740px] md:text-b1 lg:text-h5 lg:leading-[1.5]">
+          {aboutDescription}
         </p>
-      </div>
 
-      <div className="flex flex-col items-center gap-sm">
-        <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
-        <div className="flex flex-wrap justify-center gap-sm">
-          {sponsors.map((sponsor) => (
-            <div
-              key={sponsor}
-              className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-700"
+        {process.env.NODE_ENV === "development" && <>
+          <div className="mt-32 flex w-full flex-col items-center gap-4 text-center md:mt-48 md:max-lg:mt-28">
+            <h3 className="font-heading text-h4 text-secondary-1000 md:text-h2 [[data-theme=dark]_&]:text-secondary-100">Total Prize Pool</h3>
+            <p
+              className="w-full max-w-full text-center font-heading text-[clamp(2rem,9vw,2.5rem)] font-bold md:text-h2 lg:text-h1 [[data-theme=dark]_&]:drop-shadow-[0_1px_1px_var(--color-secondary-100)]"
+              style={{
+                backgroundImage: GRADIENT_TEXT,
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                color: "transparent",
+              }}
             >
-              {sponsor}
-            </div>
-          ))}
-        </div>
+              {totalPrizePool}
+            </p>
+          </div>
+
+          <div className="mt-16 flex w-full min-w-0 flex-col items-center gap-4 md:gap-6 md:max-lg:mt-10">
+            <h4 className="text-b3 font-semibold text-secondary-1000 [[data-theme=dark]_&]:text-secondary-100">Didukung oleh</h4>
+            <CompetitionSponsorMarquee />
+          </div>
+        </>}
       </div>
-      </>}
     </section>
   );
 }

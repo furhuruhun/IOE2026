@@ -11,6 +11,7 @@ import { ApiError } from "@/services/authService";
 import type { EventSummary } from "@/types/event";
 import { formatWibDate } from "@/utils/formatDate";
 import styles from "./EventOverviewActivities.module.css";
+import artwork from "./EventOverviewArtwork.module.css";
 
 const palettes = {
   mint: {
@@ -112,32 +113,28 @@ export function EventOverviewActivities() {
   return (
     <section id="events" className="relative isolate w-full overflow-hidden bg-neutral-100 section-space">
       <span id="whats-in" className="absolute top-0" aria-hidden="true" />
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute inset-0 bg-linear-to-b from-primary-100/35 via-neutral-100 to-secondary-100/35" />
-        <div className="absolute -left-24 top-16 size-72 rounded-full bg-primary-300/30 blur-3xl lg:hidden" />
-        <div className="absolute -right-32 top-1/2 size-80 rounded-full bg-secondary-300/25 blur-3xl lg:hidden" />
-        <div className="absolute -left-48 top-16 hidden size-[38rem] rounded-full bg-tertiary-400/30 blur-3xl lg:block" />
-        <div className="absolute -right-40 top-1/3 hidden size-[42rem] rounded-full bg-secondary-300/25 blur-3xl lg:block" />
-        <svg className="absolute inset-x-0 top-0 h-48 w-full text-primary-300/15 lg:h-80" viewBox="0 0 1440 320" preserveAspectRatio="none" focusable="false">
-          <path fill="currentColor" d="M0 155C250 45 410 280 750 160S1210 30 1440 120V0H0Z" />
-        </svg>
-      </div>
       <div className="relative z-10 site-container flex flex-col gap-3xl lg:gap-4xl">
         <div className="flex flex-col items-center gap-md text-center">
           <p className="font-ui text-b3 font-bold uppercase tracking-widest text-secondary-800">What&apos;s in IOE</p>
           <h2 className="max-w-[48rem] font-heading text-h4 text-secondary-1000 md:text-h3 lg:text-h2">
             Temukan Event untukmu <span className={styles.gradientText}>di IOE 2027</span>
           </h2>
-          <p className="max-w-[42rem] font-body text-b2 leading-relaxed text-neutral-900">Jelajahi rangkaian kegiatan IOE. Rincian setiap event akan tersedia setelah diumumkan panitia.</p>
-          <p className="rounded-lg border border-warning-300 bg-warning-100 px-md py-sm font-body text-b3 text-warning-900">Deskripsi dan ilustrasi kartu masih contoh dan harus diganti dengan materi resmi.</p>
         </div>
 
         <div className="flex flex-col gap-xl lg:gap-2xl">
-          {data?.isDemo && <p className="rounded-lg border border-warning-300 bg-warning-100 p-md text-center font-body text-b3 text-warning-900">Daftar event dan tanggal berikut adalah data contoh pengembangan.</p>}
           {isLoading && <div className="grid gap-lg" aria-label="Memuat daftar event">{[0, 1, 2].map((index) => <div key={index} className="h-72 animate-pulse rounded-[30px] bg-neutral-200 motion-reduce:animate-none" />)}</div>}
           {isError && <div className="flex flex-col items-center gap-md rounded-lg border border-error-300 bg-error-100 p-xl text-center"><p className="font-body text-b2 text-error-900">{errorMessage}</p><button type="button" onClick={() => void refetch()} className="min-h-12 rounded-lg bg-error-900 px-lg py-sm font-ui text-b3 font-bold text-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error-900">Coba lagi</button></div>}
           {!isLoading && !isError && data?.events.length === 0 && <p className="rounded-lg border border-secondary-200 bg-secondary-100 p-xl text-center font-body text-b2 text-secondary-1000">Belum ada event yang diumumkan. Silakan cek kembali nanti.</p>}
-          {!isLoading && !isError && data && data.events.length > 0 && <div className="flex flex-col gap-xl lg:gap-2xl">{data.events.map((event, index) => <EventCard key={event.id} event={event} index={index} isDemo={data.isDemo} now={now} />)}</div>}
+          {!isLoading && !isError && data && data.events.length > 0 && (
+            <div className="relative isolate">
+              <div className={artwork.cardsLayer} aria-hidden="true">
+                <Image src="/images/events/desktop-highlight-ioe-aquatic.svg" alt="" fill sizes="100vw" draggable={false} className={artwork.highlightArtwork} />
+              </div>
+              <div className="relative z-10 flex flex-col gap-xl lg:gap-2xl">
+                {data.events.map((event, index) => <EventCard key={event.id} event={event} index={index} isDemo={data.isDemo} now={now} />)}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

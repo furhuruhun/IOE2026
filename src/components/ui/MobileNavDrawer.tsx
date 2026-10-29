@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -89,9 +90,10 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
                           <Link
                             href={child.href}
                             onClick={close}
-                            className="block py-2 text-sm text-neutral-800 transition-colors hover:text-secondary-1000"
+                            className="flex min-h-11 items-center gap-2 py-2 text-sm text-neutral-800 transition-colors hover:text-secondary-1000"
                           >
-                            {child.label}
+                            {child.imageSrc && <Image src={child.imageSrc} alt="" width={28} height={28} sizes="28px" className="size-7 shrink-0 object-contain" />}
+                            <span className="min-w-0">{child.label}</span>
                           </Link>
                         </li>
                       ))}
