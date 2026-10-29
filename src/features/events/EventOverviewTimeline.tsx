@@ -74,7 +74,7 @@ function RundownItem({ event, variant }: { event: RundownEvent; variant: "start"
         <RundownTitleShape variant={variant} />
         <h3 className="relative z-10 break-words font-heading text-b3 font-bold leading-tight text-neutral-100 lg:text-h6">{event.name}</h3>
       </div>
-      <p className="font-body text-b4 text-secondary-1000 lg:text-b3">Batas pendaftaran · {formatWibDate(event.deadline)}{event.isPlaceholder && <span className="sr-only"> (tanggal contoh)</span>}</p>
+      <p className="font-body text-b4 text-secondary-1000 lg:text-b3">Batas pendaftaran · {formatWibDate(event.deadline)}{event.isPlaceholder && <span> (Preview - tanggal contoh)</span>}</p>
       <div className="max-w-full rounded-full bg-linear-to-r from-tertiary-500 via-primary-400 to-secondary-500 p-0.5 shadow-md">
         <div className="rounded-full bg-neutral-100 px-lg py-xs font-ui text-b3 font-bold whitespace-nowrap text-secondary-1000 lg:px-2xl lg:py-sm lg:text-h6">
           <time dateTime={event.deadline}>{time} WIB</time>

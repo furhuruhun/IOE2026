@@ -1446,3 +1446,27 @@ See `TRACK_A_UI_REMEDIATION.md` for exact files, verification and deferred Produ
 - Preparation precedes Journey and is ordered only by valid deadline timestamps, stably, with missing/invalid deadlines last. Every returned status/item is retained. The calendar list is explicitly described as all registered schedules; date interaction stays informational.
 
 See TRACK_B1_B2_UX_INTEGRATION.md for verification, exact files and remaining publication/carousel dependencies. No new color tokens, assets, routes or API semantics are introduced.
+
+## HEAD regression correction - 2026-10-29
+
+The functional Navbar theme switch introduced after Track B1/B2 supersedes the
+earlier theme-preview omission. It retains native button keyboard activation,
+an accessible switch state, saved preference and system-theme fallback.
+
+- Shared primary actions use `--action-primary-background` and
+  `--action-primary-foreground` in dark mode. Secondary actions receive an opaque
+  dark surface. Button, link and submit controls share these rules; disabled
+  controls retain their existing treatment. Light-mode action styling is unchanged.
+- Fixed dark surfaces use `--inverse-background`, `--inverse-foreground` and
+  `--inverse-muted`, rather than reversible surface tokens. Informational toasts
+  retain the original dark Secondary/900 background via `--toast-info-background`
+  because their text stays white. Field errors use `--field-error-foreground`;
+  muted dark-mode text and input placeholders use the existing Neutral/600 value.
+  These roles reuse existing palette values, without new colors or dependencies.
+- Development sample statistics, sponsors, prizes, memories, testimonials and
+  milestones have nearby visible Preview labels. The existing production guards
+  remain. The development-only Awarding Ceremony date is visibly marked too.
+- Configured Events backend failures remain errors, including in development.
+  Marked demo data remains available only in development with no configured backend.
+
+See `FE_HEAD_REGRESSION_VERIFICATION.md` for the actual checks and limitations.

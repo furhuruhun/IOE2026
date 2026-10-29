@@ -17,6 +17,7 @@ export function CompetitionDetailFunFactSection({ slug }: CompetitionDetailFunFa
 
   return (
     <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
+      <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
       <h2 className="text-h4 text-secondary-1000 md:text-h2">Fun Fact</h2>
       <div className="grid w-full max-w-[56rem] grid-cols-1 gap-md sm:grid-cols-3">
         {funFacts.map((fact) => (

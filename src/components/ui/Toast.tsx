@@ -46,6 +46,7 @@ export function Toast({ status, title, message, onDismiss, duration = 5000 }: To
       onMouseLeave={() => setHovered(false)}
       onFocusCapture={() => setFocused(true)}
       onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setFocused(false); }}
+      style={status === "info" ? { background: "var(--toast-info-background)" } : undefined}
       className={`relative overflow-hidden rounded-[14px] px-[18px] py-4 pb-5 text-white shadow-xl backdrop-blur-md ${styles.bg}`}
     >
       <div className="flex min-w-0 items-start gap-3">

@@ -10,6 +10,7 @@ export function CompetitionMemoriesSection() {
   return (
     <section className="px-6 py-3xl md:px-12">
       <div className="mx-auto max-w-5xl">
+        <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Our Memories</h2>
         <div className="mt-2xl grid grid-cols-2 gap-md md:grid-cols-4">
           {memories.map((memory) => (

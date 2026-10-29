@@ -76,7 +76,7 @@ export function CompetitionHero() {
               <button
                 type="button"
                 onClick={() => router.push("#our-competition")}
-                className="ui-action ui-action-primary ui-action-sm rounded-xl px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5 [[data-theme=dark]_&]:text-secondary-100"
+                className="ui-action ui-action-primary ui-action-sm rounded-xl px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
                 Lihat Semua Kompetisi
               </button>
@@ -84,7 +84,7 @@ export function CompetitionHero() {
               <button
                 type="button"
                 onClick={() => router.push("#timeline")}
-                className="ui-action ui-action-secondary ui-action-sm rounded-xl border-transparent bg-secondary-1000/8 px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5 [[data-theme=dark]_&]:text-secondary-100"
+                className="ui-action ui-action-secondary ui-action-sm rounded-xl border-transparent bg-secondary-1000/8 px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
                 Lihat Timeline
               </button>

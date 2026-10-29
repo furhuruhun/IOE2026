@@ -82,7 +82,7 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
   if (isShortCourse) {
     return (
       <div className="mx-auto mb-8 flex w-full max-w-[400px] flex-col items-center gap-4">
-        <span className="flex flex-wrap justify-center gap-2 text-center font-ui text-b3 font-bold text-neutral-100">
+        <span className="countdown-date-label flex flex-wrap justify-center gap-2 text-center font-ui text-b3 font-bold text-neutral-100">
           <Icon icon="mdi:timer" className="size-5 shrink-0" aria-hidden="true" />
           {formatTargetLabel(targetDate)}
         </span>
@@ -111,7 +111,7 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
 
   return (
     <div className="flex flex-col items-center gap-sm">
-      <p className="flex items-center gap-1.5 font-ui text-b4 font-bold text-neutral-100 md:text-b3">
+      <p className="countdown-date-label flex items-center gap-1.5 font-ui text-b4 font-bold text-neutral-100 md:text-b3">
         <Icon icon="mdi:timer" className="size-4 md:size-5" />
         {formatTargetLabel(targetDate)}
       </p>

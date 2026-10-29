@@ -43,6 +43,7 @@ export function AboutSection() {
               <p className="text-b3 text-neutral-700 md:text-b2">{aboutDescription}</p>
 
               {process.env.NODE_ENV === "development" && <div className="mt-sm">
+                <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
                 <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
                 <div className="mt-sm flex flex-wrap gap-sm">
                   {sponsors.map((sponsor) => (
@@ -61,6 +62,7 @@ export function AboutSection() {
           {/* Card 2 — statistik target peserta (PRD §2.2 Business Metrics), infinite horizontal auto-scroll */}
           {process.env.NODE_ENV === "development" && <div className="rounded-3xl p-0.5" style={{ background: GRADIENT_BORDER }}>
             <div className="overflow-x-clip rounded-[22px] bg-neutral-100 px-16 py-10">
+              <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
               <div className="about-stats-track flex w-max gap-xl">
                 {[...aboutStats, ...aboutStats].map((stat, i) => (
                   <div key={`${stat.label}-${i}`} aria-hidden={i >= aboutStats.length ? true : undefined} data-stat-copy={i >= aboutStats.length || undefined} className="flex shrink-0 flex-col items-center gap-sm text-center">

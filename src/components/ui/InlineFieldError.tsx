@@ -12,8 +12,8 @@ interface InlineFieldErrorProps {
 // "Tambahkan link/CTA 'Login di sini' di pesan yang sama").
 export function InlineFieldError({ message, id, action }: InlineFieldErrorProps) {
   return (
-    <p id={id} className="mt-1.5 flex items-center gap-1.5 text-b3 text-error-600 md:text-b2" role="alert">
-      <Icon icon="mdi:alert" className="size-6 shrink-0 text-error-600" />
+    <p id={id} className="mt-1.5 flex items-center gap-1.5 text-b3 text-[color:var(--field-error-foreground)] md:text-b2" role="alert">
+      <Icon icon="mdi:alert" className="size-6 shrink-0" />
       <span>
         {message}
         {action && (

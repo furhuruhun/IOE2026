@@ -12,6 +12,28 @@
 
 ## Unreleased
 
+### [2026-10-29] Fix frontend regressions after pull and verify HEAD
+
+- **Tipe:** Fix
+- **Scope:** Shared dark-mode contrast, theme regression checks, provisional-content labeling and Events backend error handling at starting HEAD `bb90e3b` on `main`.
+- **Ringkasan:** Corrected shared dark-mode action and inverse-surface contrast using existing palette values while preserving light-theme colors and layout. Updated obsolete theme/countdown assertions, restored nearby visible Preview labels without changing production guards, and prevented configured Events backend failures from becoming successful demo responses. Marked demo data remains available in development without a configured backend.
+- **File diubah:**
+  - `src/app/globals.css` - shared dark action, inverse-surface, informational-toast and field-error roles; readable muted text/placeholders and context-aware countdown date labels.
+  - `src/components/ui/{CountdownTimer,InlineFieldError,TiltedCard,Toast}.tsx` - apply readable shared foreground/background roles across themes.
+  - `src/features/landing/{AboutSection,HeroCarousel,MemoriesSection,TimelineSection}.tsx` - restore sample labels, retain inverse hero readability and remove unused imports for the deliberately removed countdown.
+  - `src/features/competitions/{CompetitionAboutSection,CompetitionDetailAboutSection,CompetitionDetailFunFactSection,CompetitionDetailHero,CompetitionDetailPrizeSection,CompetitionHero,CompetitionMemoriesSection,CompetitionTestimonialCarousel,CompetitionTimelineSection}.tsx` - restore sample labels and correct hero/action foregrounds without changing production guards.
+  - `src/features/events/{EventOverviewActivities,EventOverviewTimeline}.tsx` - preserve readable retry text and visibly identify the development-only Awarding Ceremony sample date.
+  - `src/lib/eventProxy.ts` - return mapped 502 errors for configured backend connection/JSON failures; preserve upstream status/body, 401 cookie clearing, private/no-store caching and unconfigured demo boundaries.
+  - `scripts/check-public-content.mjs` and `scripts/check-ui.mjs` - verify theme-switch semantics, keyboard activation, persistence/fallbacks, Preview labels, production guards, populated competition pages, Events failure/retry and rendered AA contrast, including gradients and interaction states.
+  - `scripts/check-event-proxy.mjs` (new) - exercise configured/unconfigured development/production, connection/JSON failures, upstream statuses, auth forwarding, cookie clearing, cache headers and demo provenance.
+  - `amunisi/design_system_final.md` and `amunisi/FE_HEAD_REGRESSION_VERIFICATION.md` (new) - document shared contrast roles, complete file manifest, reproducible checks, evidence and remaining issues.
+  - `amunisi/CHANGELOG.md` - record this remediation and verification pass.
+- **Verifikasi:** TypeScript, frontend ESLint (one existing RegisterForm compiler warning), production build, development/production content checks, proxy regressions, deadline sorting and `git diff --check` passed. Broad browser coverage completed 120 mode/theme/route/viewport cases: 40 development cases per theme and 20 production cases per theme. Dark matrices passed measured AA thresholds; light matrices retain a nonzero exit for unchanged carousel body-copy contrast at 4.15-4.36:1. Final focused heading/countdown checks passed on the final production build at 320/1440px in both themes, plus development at 390px. Real local HTTP integration passed 14 configured-upstream cases and both unconfigured production endpoints returned 503 without demo data. Full commands, screenshots and limitations are recorded in `amunisi/FE_HEAD_REGRESSION_VERIFICATION.md`.
+- **Terkait requirement:** Post-pull frontend regression remediation, shared WCAG AA text contrast, functional theme behavior, provisional-content clarity and truthful Events backend failures; existing routes and response contracts retained.
+- **Breaking change:** Tidak - configured backend failures intentionally remain errors in development; unconfigured development demo functionality is preserved.
+- **Belum selesai / follow-up:** Existing light-carousel contrast, 40 backend lint errors/five total warnings and the missing decorative `/images/events/desktop-about-ioe-aquatic.svg` remain documented. Real Workers connectivity, authentication, persistence, submissions and deployment were not validated; independent competition mock fallbacks remain unchanged. Measured checks do not establish site-wide accessibility certification. Starting/resulting HEAD remains `bb90e3bd596834d4136bf080a3316431656bb9d1`; fixes remain uncommitted. Ready for code review with these disclosed limitations.
+
+
 ### [2026-10-28 21:05] Track B1/B2 public clarity and dashboard presentation
 
 - **Tipe:** Fix

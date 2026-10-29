@@ -16,7 +16,8 @@ function demoResponse(slug?: string) {
 }
 
 // Public reads may carry participant identity. Never cache personalized responses.
-// In development, use clearly marked demo data only when the backend cannot be reached.
+// Demo data is only for development without a configured backend. A configured
+// backend failure must remain an error so connectivity failures are visible.
 export async function eventProxy(slug?: string) {
   const token = await getTokenFromCookies();
   const headers = { "Cache-Control": "private, no-store" };
@@ -27,7 +28,6 @@ export async function eventProxy(slug?: string) {
       if (status === 401) response.cookies.set(COOKIE_NAME, "", CLEAR_AUTH_COOKIE_OPTIONS);
       return response;
     } catch {
-      if (process.env.NODE_ENV === "development") return demoResponse(slug);
       return failure("SERVER_ERROR", 502);
     }
   }

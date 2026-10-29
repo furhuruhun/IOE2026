@@ -19,6 +19,7 @@ export function CompetitionDetailPrizeSection({ slug }: CompetitionDetailPrizeSe
 
   return (
     <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 text-center md:px-20">
+      <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
       <h2 className="text-h4 text-secondary-1000 md:text-h2">
         Total <span className="text-primary-600">Prize Pool</span>
       </h2>

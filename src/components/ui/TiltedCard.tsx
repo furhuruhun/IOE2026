@@ -179,11 +179,11 @@ export function TiltedCard({ items }: TiltedCardProps) {
               }}
             />
 
-            <h3 className="relative z-10 w-full wrap-anywhere font-heading text-h6 leading-tight text-neutral-100 lg:text-h5">
+            <h3 className="relative z-10 w-full wrap-anywhere font-heading text-h6 leading-tight text-[color:var(--inverse-foreground)] lg:text-h5">
               {item.title}
             </h3>
             <div className="relative z-10 flex min-h-24 items-center justify-center">
-              <Icon icon={item.icon} className="size-20 shrink-0 text-neutral-100 lg:size-28" />
+              <Icon icon={item.icon} className="size-20 shrink-0 text-[color:var(--inverse-foreground)] lg:size-28" />
             </div>
             <span
               className="relative z-10 w-full wrap-anywhere text-center font-body text-b3 leading-relaxed sm:text-b2"

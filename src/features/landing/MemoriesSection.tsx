@@ -9,6 +9,7 @@ export function MemoriesSection() {
   return (
     <section className="site-container section-space">
       <div className="w-full">
+        <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
         <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Memories</h2>
         <div className="mt-2xl grid grid-cols-2 gap-md md:grid-cols-4">
           {memories.map((memory) => (

@@ -156,6 +156,7 @@ export function CompetitionTimelineSection() {
     >
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
 
+      <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
       <div className="mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 no-scrollbar hover:cursor-grab active:cursor-grabbing md:rounded-[36px] md:p-10">
         <div className="relative w-fit">
           <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />

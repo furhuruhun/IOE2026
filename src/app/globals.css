@@ -306,8 +306,16 @@ body {
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Navbar roles are composed only from the existing IOE palette. */
+/* Shared contrast roles reuse the existing IOE palette. Inverse surfaces stay
+   dark in both themes; their foregrounds must not follow palette inversion. */
 :root {
+  --action-primary-background: radial-gradient(circle at 30% 30%, var(--color-tertiary-500), var(--color-primary-300) 42%, var(--color-secondary-300) 80%);
+  --action-primary-foreground: var(--color-secondary-1000);
+  --inverse-foreground: #f8f8f9;
+  --inverse-muted: #a6a5a5;
+  --inverse-background: linear-gradient(180deg, #393c3c, #154b54 120%);
+  --toast-info-background: #135661;
+  --field-error-foreground: var(--color-error-600);
   --navbar-cta-gradient: radial-gradient(circle at 30% 30%, var(--color-tertiary-500) 0%, var(--color-primary-300) 42%, var(--color-secondary-400) 80%), linear-gradient(90deg, var(--color-success-800) 0%, var(--color-tertiary-500) 33%, var(--color-primary-300) 68%, var(--color-secondary-400) 100%);
   --navbar-switch-gradient: linear-gradient(110deg, var(--color-primary-600), var(--color-secondary-600));
   --navbar-switch-track: var(--color-neutral-100);
@@ -317,6 +325,10 @@ body {
 
 /* Dark values reuse the approved IOE palette in reverse tonal order. */
 html[data-theme="dark"] {
+  --inverse-muted: #d6d6d5;
+  --field-error-foreground: var(--color-error-200);
+  --action-primary-background: linear-gradient(110deg, var(--color-primary-100), var(--color-secondary-100));
+  --action-primary-foreground: var(--color-neutral-1000);
   --color-primary-100: #2c5f53;
   --color-primary-200: #306f61;
   --color-primary-300: #347f6e;
@@ -351,7 +363,8 @@ html[data-theme="dark"] {
   --color-neutral-200: #3e3e3e;
   --color-neutral-300: #5f5f5f;
   --color-neutral-400: #717171;
-  --color-neutral-500: #898989;
+  /* Muted text and input placeholders still need 4.5:1 on the dark surface. */
+  --color-neutral-500: #a6a5a5;
   --color-neutral-600: #a6a5a5;
   --color-neutral-700: #c0c0c0;
   --color-neutral-800: #d6d6d5;
@@ -359,6 +372,20 @@ html[data-theme="dark"] {
   --color-neutral-1000: #f8f8f9;
   --navbar-cta-gradient: linear-gradient(110deg, var(--color-primary-100), var(--color-secondary-100));
   --navbar-cta-text: var(--color-neutral-1000);
+}
+
+/* Shared roles cover Button, link actions and submit controls in every feature.
+   Keep disabled styling and the navbar's existing light-theme treatment. */
+html[data-theme="dark"] .ui-action-primary:not(:disabled) {
+  background: var(--action-primary-background);
+  color: var(--action-primary-foreground);
+}
+html[data-theme="dark"] .ui-action-secondary:not(:disabled) {
+  background: var(--color-secondary-100);
+  color: var(--color-secondary-1000);
+}
+html[data-theme="dark"] .countdown-date-label {
+  color: inherit;
 }
 
 .navbar-cta {

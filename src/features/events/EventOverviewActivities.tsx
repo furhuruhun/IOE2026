@@ -123,7 +123,7 @@ export function EventOverviewActivities() {
 
         <div className="flex flex-col gap-xl lg:gap-2xl">
           {isLoading && <div className="grid gap-lg" aria-label="Memuat daftar event">{[0, 1, 2].map((index) => <div key={index} className="h-72 animate-pulse rounded-[30px] bg-neutral-200 motion-reduce:animate-none" />)}</div>}
-          {isError && <div className="flex flex-col items-center gap-md rounded-lg border border-error-300 bg-error-100 p-xl text-center"><p className="font-body text-b2 text-error-900">{errorMessage}</p><button type="button" onClick={() => void refetch()} className="min-h-12 rounded-lg bg-error-900 px-lg py-sm font-ui text-b3 font-bold text-neutral-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error-900">Coba lagi</button></div>}
+          {isError && <div className="flex flex-col items-center gap-md rounded-lg border border-error-300 bg-error-100 p-xl text-center"><p className="font-body text-b2 text-error-900">{errorMessage}</p><button type="button" onClick={() => void refetch()} className="min-h-12 rounded-lg bg-error-900 px-lg py-sm font-ui text-b3 font-bold text-[color:var(--inverse-foreground)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-error-900">Coba lagi</button></div>}
           {!isLoading && !isError && data?.events.length === 0 && <p className="rounded-lg border border-secondary-200 bg-secondary-100 p-xl text-center font-body text-b2 text-secondary-1000">Belum ada event yang diumumkan. Silakan cek kembali nanti.</p>}
           {!isLoading && !isError && data && data.events.length > 0 && (
             <div className="relative isolate">

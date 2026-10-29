@@ -125,7 +125,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
   return (
     <section
       className="relative w-full overflow-hidden pt-8 pb-16 md:max-lg:pb-10 md:pt-16 lg:pt-[95px]"
-      style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
+      style={{ background: "var(--inverse-background)" }}
     >
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 flex justify-center">
         <div className="animate-glow-dim motion-reduce:animate-none size-[420px] rounded-full bg-primary-600/30 blur-3xl md:size-[600px]" />
@@ -148,7 +148,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
             {isLoading || !competition ? (
               <div className="h-12 w-64 animate-pulse rounded-lg bg-neutral-900 md:h-16 md:w-96" aria-hidden />
             ) : (
-              <h1 className="max-w-full wrap-anywhere text-center font-heading text-h3 text-neutral-100 md:text-h1">{competition.name}</h1>
+              <h1 className="max-w-full wrap-anywhere text-center font-heading text-h3 text-[color:var(--inverse-foreground)] md:text-h1">{competition.name}</h1>
             )}
           </div>
 

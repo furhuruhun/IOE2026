@@ -37,7 +37,8 @@ export function CompetitionAboutSection() {
 
         {process.env.NODE_ENV === "development" && <>
           <div className="mt-32 flex w-full flex-col items-center gap-4 text-center md:mt-48 md:max-lg:mt-28">
-            <h3 className="font-heading text-h4 text-secondary-1000 md:text-h2 [[data-theme=dark]_&]:text-secondary-100">Total Prize Pool</h3>
+            <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
+            <h3 className="font-heading text-h4 text-secondary-1000 md:text-h2">Total Prize Pool</h3>
             <p
               className="w-full max-w-full text-center font-heading text-[clamp(2rem,9vw,2.5rem)] font-bold md:text-h2 lg:text-h1 [[data-theme=dark]_&]:drop-shadow-[0_1px_1px_var(--color-secondary-100)]"
               style={{
@@ -52,7 +53,8 @@ export function CompetitionAboutSection() {
           </div>
 
           <div className="mt-16 flex w-full min-w-0 flex-col items-center gap-4 md:gap-6 md:max-lg:mt-10">
-            <h4 className="text-b3 font-semibold text-secondary-1000 [[data-theme=dark]_&]:text-secondary-100">Didukung oleh</h4>
+            <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
+            <h4 className="text-b3 font-semibold text-secondary-1000">Didukung oleh</h4>
             <CompetitionSponsorMarquee />
           </div>
         </>}

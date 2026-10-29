@@ -3,8 +3,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import Link from "next/link";
 import { buttonStyles } from "@/components/ui/Button";
-import { CountdownTimer } from "@/components/ui/CountdownTimer";
-import { EVENT_DATE } from "@/utils/eventDate";
 import { heroSlides, type HeroSlide } from "./landingContent";
 
 const COUNT = heroSlides.length;
@@ -31,7 +29,7 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
       className="hero-slide-sonar relative flex h-full w-full flex-col items-center justify-center overflow-hidden text-center"
       style={{
         borderRadius: "calc(clamp(14px, 2vw, 20px) - 1px)",
-        background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)",
+        background: "var(--inverse-background)",
         padding: "clamp(18px, 4vw, 36px) clamp(18px, 5vw, 40px)",
         gap: "clamp(8px, 1.6vw, 14px)",
       }}
@@ -39,9 +37,9 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
       <span className="font-ui uppercase text-primary-600" style={{ fontSize: "11px", letterSpacing: "0.16em" }}>
         {slide.eyebrow}
       </span>
-      {active ? <h1 className="font-heading text-neutral-100" style={titleStyle}>{slide.title}</h1>
-        : <h2 className="font-heading text-neutral-100" style={titleStyle}>{slide.title}</h2>}
-      <p className="font-body text-neutral-500" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
+      {active ? <h1 className="font-heading text-[color:var(--inverse-foreground)]" style={titleStyle}>{slide.title}</h1>
+        : <h2 className="font-heading text-[color:var(--inverse-foreground)]" style={titleStyle}>{slide.title}</h2>}
+      <p className="font-body text-[color:var(--inverse-muted)]" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
         {slide.desc}
       </p>
       <Link href={slide.cta.href} tabIndex={active ? 0 : -1}
