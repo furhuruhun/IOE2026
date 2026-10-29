@@ -1,0 +1,88 @@
+.surface {
+  isolation: isolate;
+}
+
+.decoration {
+  opacity: .24;
+}
+
+.decorationLeft {
+  mask-image: linear-gradient(to right, #000 40%, transparent);
+}
+
+.decorationRight {
+  mask-image: linear-gradient(to left, #000 40%, transparent);
+}
+
+.desktopLight.decorationRight,
+.desktopDark.decorationRight {
+  mask-image: linear-gradient(to right, #000 40%, transparent);
+}
+
+.desktopLight,
+.desktopDark,
+.mobileDark {
+  display: none;
+}
+
+.mobileLight {
+  display: block;
+}
+
+:global(html[data-theme="dark"]) .decoration {
+  opacity: .16;
+}
+
+:global(html[data-theme="dark"]) .mobileLight {
+  display: none;
+}
+
+:global(html[data-theme="dark"]) .mobileDark {
+  display: block;
+}
+
+:global(html[data-theme="dark"]) .surface {
+  background: linear-gradient(110deg, var(--color-tertiary-600), var(--color-primary-600), var(--color-secondary-600));
+  box-shadow: none;
+}
+
+:global(html[data-theme="dark"]) .surface::before {
+  position: absolute;
+  z-index: 0;
+  inset: 2px;
+  border-radius: 14px;
+  background: var(--color-neutral-100);
+  content: "";
+  pointer-events: none;
+}
+
+:global(html[data-theme="dark"]) .label {
+  background: linear-gradient(90deg, var(--color-tertiary-600), var(--color-primary-600), var(--color-secondary-800));
+  background-clip: text;
+  color: transparent;
+}
+
+@media (min-width: 768px) {
+  :global(html[data-theme="dark"]) .surface::before {
+    border-radius: 18px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mobileLight,
+  :global(html[data-theme="dark"]) .mobileDark {
+    display: none;
+  }
+
+  .desktopLight {
+    display: block;
+  }
+
+  :global(html[data-theme="dark"]) .desktopLight {
+    display: none;
+  }
+
+  :global(html[data-theme="dark"]) .desktopDark {
+    display: block;
+  }
+}

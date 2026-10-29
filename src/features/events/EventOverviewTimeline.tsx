@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useId, useRef, type KeyboardEvent, type PointerEvent } from "react";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
@@ -30,14 +31,14 @@ const DEFAULT_TITLE_PATH = "M36 2H332C351 2 366 17 366 36S351 70 332 70H36C17 70
 function RundownBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div className="absolute inset-0 bg-linear-to-br from-secondary-900 via-secondary-700 to-secondary-1000" />
-      <div className="absolute -left-28 top-4 size-72 rounded-full bg-primary-300/25 blur-3xl lg:hidden" />
-      <div className="absolute -right-32 bottom-0 size-80 rounded-full bg-secondary-300/25 blur-3xl lg:hidden" />
-      <div className="absolute -left-32 top-0 hidden size-[38rem] rounded-full bg-primary-400/20 blur-3xl lg:block" />
-      <div className="absolute -right-24 -bottom-44 hidden size-[44rem] rounded-full bg-secondary-300/25 blur-3xl lg:block" />
-      <svg className="absolute bottom-0 h-32 w-full text-secondary-300/10 lg:h-56" viewBox="0 0 1440 220" preserveAspectRatio="none" focusable="false">
-        <path fill="currentColor" d="M0 110C220 30 380 190 650 125S1110 20 1440 115V220H0Z" />
-      </svg>
+      <Image
+        src="/images/events/desktop-rundown-ioe-aquatic.svg"
+        alt=""
+        fill
+        sizes="100vw"
+        draggable={false}
+        className={styles.backgroundImage}
+      />
     </div>
   );
 }
@@ -73,7 +74,7 @@ function RundownItem({ event, variant }: { event: RundownEvent; variant: "start"
         <RundownTitleShape variant={variant} />
         <h3 className="relative z-10 break-words font-heading text-b3 font-bold leading-tight text-neutral-100 lg:text-h6">{event.name}</h3>
       </div>
-      <p className="font-body text-b4 text-neutral-100/85 lg:text-b3">Batas pendaftaran · {formatWibDate(event.deadline)}{event.isPlaceholder && <span className="sr-only"> (tanggal contoh)</span>}</p>
+      <p className="font-body text-b4 text-secondary-1000 lg:text-b3">Batas pendaftaran · {formatWibDate(event.deadline)}{event.isPlaceholder && <span className="sr-only"> (tanggal contoh)</span>}</p>
       <div className="max-w-full rounded-full bg-linear-to-r from-tertiary-500 via-primary-400 to-secondary-500 p-0.5 shadow-md">
         <div className="rounded-full bg-neutral-100 px-lg py-xs font-ui text-b3 font-bold whitespace-nowrap text-secondary-1000 lg:px-2xl lg:py-sm lg:text-h6">
           <time dateTime={event.deadline}>{time} WIB</time>
@@ -139,20 +140,18 @@ export function EventOverviewTimeline() {
   };
 
   return (
-    <section id="rundown" className="relative isolate flex w-full flex-col items-center overflow-hidden bg-secondary-1000 section-space text-neutral-100">
+    <section id="rundown" className="relative isolate flex w-full flex-col items-center overflow-hidden bg-neutral-100 section-space text-secondary-1000">
       <RundownBackground />
       <div className="relative z-10 w-full">
         <div className={`${styles.fadeIn} site-container flex flex-col items-center gap-md text-center`}>
-          <h2 className="font-heading text-h4 font-bold text-neutral-100 md:text-h2 lg:text-h1">RUNDOWN</h2>
-          <p className="max-w-[42rem] font-body text-b3 text-neutral-100/90 md:text-b2">Timeline batas pendaftaran seluruh event. Jadwal kegiatan per sesi belum tersedia dari panitia.</p>
-          {(data?.isDemo || (!isLoading && !isError && events.length > 0 && !awardingFromApi)) && <p className="rounded-full border border-neutral-100/40 px-md py-xs font-ui text-b4 text-neutral-100">{data?.isDemo ? "Tanggal contoh untuk pengembangan" : "Tanggal Awarding Ceremony masih contoh"}</p>}
+          <h2 className="font-heading text-h4 font-bold text-secondary-1000 md:text-h2 lg:text-h1">RUNDOWN</h2>
         </div>
 
-        {isLoading && <div className="mx-auto mt-2xl h-36 w-[min(90%,80rem)] animate-pulse rounded-lg bg-neutral-100/10 motion-reduce:animate-none" aria-label="Memuat timeline" />}
-        {!isLoading && (isError || events.length === 0) && <p className="mx-auto mt-2xl max-w-[42rem] rounded-lg border border-neutral-100/30 p-xl text-center font-body text-b2">{isError ? "Timeline belum dapat dimuat." : "Jadwal event akan diumumkan segera."}</p>}
+        {isLoading && <div className="mx-auto mt-2xl h-36 w-[min(90%,80rem)] animate-pulse rounded-lg bg-neutral-200 motion-reduce:animate-none" aria-label="Memuat timeline" />}
+        {!isLoading && (isError || events.length === 0) && <p className="mx-auto mt-2xl max-w-[42rem] rounded-lg border border-secondary-300 p-xl text-center font-body text-b2">{isError ? "Timeline belum dapat dimuat." : "Jadwal event akan diumumkan segera."}</p>}
 
         {!isLoading && !isError && events.length > 0 && (
-          <div ref={scroller} role="region" aria-label="Timeline batas pendaftaran event, geser untuk melihat item lainnya" tabIndex={0} onKeyDown={handleKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointerDrag} onPointerCancel={finishPointerDrag} onLostPointerCapture={finishPointerDrag} className={`${styles.slideUp} ${styles.scrollRegion} relative mt-3xl w-full cursor-grab snap-x snap-proximity scroll-px-4 overflow-x-auto px-4 pb-lg active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-100 lg:scroll-px-8 lg:px-8`}>
+          <div ref={scroller} role="region" aria-label="Timeline batas pendaftaran event, geser untuk melihat item lainnya" tabIndex={0} onKeyDown={handleKeyDown} onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={finishPointerDrag} onPointerCancel={finishPointerDrag} onLostPointerCapture={finishPointerDrag} className={`${styles.slideUp} ${styles.scrollRegion} relative mt-3xl w-full cursor-grab snap-x snap-proximity scroll-px-4 overflow-x-auto px-4 pb-lg active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 lg:scroll-px-8 lg:px-8`}>
             <div className="flex w-max min-w-full items-stretch justify-center gap-sm">
               {rundownEvents.map((event, index) => <RundownItem key={event.id} event={event} variant={index === rundownEvents.length - 1 ? "end" : index === 0 ? "start" : "default"} />)}
             </div>

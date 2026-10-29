@@ -1,3 +1,14 @@
+.backgroundImage {
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.55;
+  mask-image: linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+}
+
+:global(html[data-theme="dark"]) .backgroundImage {
+  opacity: 0.4;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

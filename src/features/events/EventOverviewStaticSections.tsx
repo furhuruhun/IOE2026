@@ -1,6 +1,8 @@
 import { Icon } from "@iconify/react/offline";
-import { eventContacts } from "@/features/events/eventOverviewContent";
+import Image from "next/image";
+import { eventOverviewContactActions } from "@/features/events/eventOverviewContent";
 import { eventSponsors } from "@/features/events/eventSponsors";
+import contactStyles from "./EventOverviewContact.module.css";
 import styles from "./EventOverviewSponsors.module.css";
 
 export function EventOverviewCTA() {
@@ -17,21 +19,37 @@ export function EventOverviewCTA() {
 }
 
 export function EventOverviewContact() {
+  const decorationSrc = "/images/competitions/decoration_aquatic_ioe.svg";
+
   return (
-    <section id="contact" className="bg-neutral-100 section-space">
-      <div className="site-container relative z-10 flex flex-col items-center justify-center py-lg text-center">
-        <div data-contact-content className="flex w-full min-w-0 flex-col items-center justify-center gap-xs">
-          <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Ada pertanyaan?</h2>
-          <p className="max-w-[34rem] font-body text-b2 text-neutral-800">Hubungi panitia melalui kanal resmi untuk pertanyaan seputar rangkaian event.</p>
-          <div data-contact-actions className="mt-5 flex w-full min-w-0 flex-col items-center justify-center gap-3 md:mt-xl md:flex-row md:flex-wrap md:gap-lg">
-            {eventContacts.length > 0 ? eventContacts.map((contact) => (
-              <a key={contact.id} href={contact.url} target="_blank" rel="noopener noreferrer" aria-label={`Hubungi ${contact.name} melalui ${contact.platform}`} className="inline-flex min-h-12 w-full min-w-0 items-center justify-center gap-sm rounded-lg border border-secondary-700 bg-transparent px-md py-sm font-ui text-b3 font-bold text-secondary-900 transition-colors hover:bg-secondary-100 active:bg-secondary-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:w-auto md:basis-[calc(50%-12px)] md:grow">
-                <Icon icon={contact.icon} aria-hidden="true" className="size-5 shrink-0" />
-                <span className="min-w-0 break-words text-center">{contact.contactLabel}</span>
-              </a>
-            )) : (
-              <span data-contact-pending className="inline-flex max-w-full items-center justify-center rounded-full bg-secondary-100 px-lg py-sm font-ui text-b3 font-bold text-secondary-900">Kontak resmi menyusul</span>
-            )}
+    <section id="contact" aria-labelledby="events-contact-title" className="section-space w-full bg-neutral-100">
+      <div className="site-container">
+        <div data-contact-card className="h-85 w-full overflow-hidden rounded-[36px] border-2 border-secondary-700 bg-linear-to-b from-tertiary-100/70 via-neutral-100 to-secondary-100/70 md:rounded-[40px]">
+          <div className="relative h-full overflow-hidden">
+            <div className="relative z-10 mx-auto my-auto flex h-full w-full max-w-[768px] flex-col items-center justify-center p-7 text-center">
+              <div data-contact-content className="mx-auto my-auto flex w-full flex-col items-center justify-center gap-1">
+                <h2 id="events-contact-title" className="font-heading text-h4 font-medium text-secondary-1000 md:text-h3">Contact Person</h2>
+                <p className="font-body text-b2 font-normal text-neutral-800 md:text-b1">Ada pertanyaan seputar rangkaian event? Hubungi kami melalui LINE.</p>
+                <div data-contact-actions className="mt-5 flex w-full items-center justify-center gap-3 max-md:flex-col md:mt-8 md:gap-6">
+                  {eventOverviewContactActions.map((action) => (
+                    <a key={action.id} href={action.href} target="_blank" rel="noopener noreferrer" aria-label={`Hubungi ${action.name} melalui LINE (buka di tab baru)`} className={`${contactStyles.surface} relative inline-block w-full cursor-pointer whitespace-nowrap rounded-xl bg-transparent px-4 py-2 p-0! font-ui text-s6 font-bold text-secondary-1000 ring-2 ring-secondary-900 outline-none transition-all hover:bg-secondary-100/20 active:bg-secondary-300/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-800 md:rounded-2xl md:px-5 md:py-3 md:text-s5`}>
+                      <span className={`${contactStyles.label} relative z-10 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 md:rounded-2xl md:px-5 md:py-3`}>
+                        <Icon icon="mdi:account-circle-outline" className="size-5 shrink-0 text-secondary-1000 md:size-6" aria-hidden="true" />
+                        <span>{action.label}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.desktopLight} ${contactStyles.decoration} ${contactStyles.decorationLeft} pointer-events-none absolute left-0 top-0 h-full w-auto`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.desktopLight} ${contactStyles.decoration} ${contactStyles.decorationRight} pointer-events-none absolute right-0 top-0 h-full w-auto -scale-x-100`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.mobileLight} ${contactStyles.decoration} ${contactStyles.decorationLeft} pointer-events-none absolute left-0 top-0 h-full w-auto`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.mobileLight} ${contactStyles.decoration} ${contactStyles.decorationRight} pointer-events-none absolute right-0 top-0 h-full w-auto`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.desktopDark} ${contactStyles.decoration} ${contactStyles.decorationLeft} pointer-events-none absolute left-0 top-0 h-full w-auto`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.desktopDark} ${contactStyles.decoration} ${contactStyles.decorationRight} pointer-events-none absolute right-0 top-0 h-full w-auto -scale-x-100`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.mobileDark} ${contactStyles.decoration} ${contactStyles.decorationLeft} pointer-events-none absolute left-0 top-0 h-full w-auto`} />
+            <Image src={decorationSrc} alt="" aria-hidden="true" width={1440} height={1033} className={`${contactStyles.mobileDark} ${contactStyles.decoration} ${contactStyles.decorationRight} pointer-events-none absolute right-0 top-0 h-full w-auto`} />
           </div>
         </div>
       </div>
