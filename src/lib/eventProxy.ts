@@ -16,9 +16,11 @@ function demoResponse(slug?: string) {
 }
 
 // Public reads may carry participant identity. Never cache personalized responses.
-// Demo data is only for development without a configured backend. A configured
-// backend failure must remain an error so connectivity failures are visible.
+// During local development, event pages use the existing demo fixtures even
+// when a backend URL is configured. Production reads continue through Workers.
 export async function eventProxy(slug?: string) {
+  if (process.env.NODE_ENV === "development") return demoResponse(slug);
+
   const token = await getTokenFromCookies();
   const headers = { "Cache-Control": "private, no-store" };
   if (process.env.WORKERS_API_URL) {
@@ -31,6 +33,5 @@ export async function eventProxy(slug?: string) {
       return failure("SERVER_ERROR", 502);
     }
   }
-  if (process.env.NODE_ENV !== "development") return failure("SERVER_ERROR", 503);
-  return demoResponse(slug);
+  return failure("SERVER_ERROR", 503);
 }

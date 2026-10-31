@@ -10,6 +10,7 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import { talkshowContent, talkshowFaqs } from "./talkshowContent";
+import styles from "./TalkshowDetails.module.css";
 
 const shell = "site-container relative z-10";
 const action = buttonStyles("secondary");
@@ -115,34 +116,41 @@ function TalkshowHero({ state }: { state: RegistrationState }) {
 
 function ScheduleItem({ icon, label, value, className = "" }: { icon: string; label: string; value: string; className?: string }) {
   return (
-    <div className={`flex min-w-0 flex-col items-center gap-1 text-center lg:items-start lg:text-left ${className}`}>
-      <div className="flex items-center gap-2 font-ui text-b4 font-bold uppercase tracking-wide text-secondary-800">
-        <Icon icon={icon} className="size-5 shrink-0" aria-hidden="true" />{label}
-      </div>
-      <p className="min-w-0 break-words font-body text-b3 text-neutral-900 md:text-b2">{value}</p>
+    <div className={`flex min-w-0 items-center justify-center gap-3 text-b3 md:text-b2 lg:justify-start ${className}`}>
+      <Icon icon={icon} className="size-5 shrink-0 text-secondary-800" aria-hidden="true" />
+      <span className="min-w-0 break-words text-neutral-900"><span className="sr-only">{label}: </span>{value}</span>
     </div>
   );
 }
 
+const detailsActionClass = `${styles.registrationAction} relative inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border-0 px-4 py-2 font-ui text-s6 transition-all md:rounded-2xl md:px-5 md:py-3 md:text-s5`;
+
+function DetailsRegistrationAction({ state }: { state: RegistrationState }) {
+  const content = <><Icon icon="mdi:door-open" className="size-6 shrink-0" aria-hidden="true" /><span>{state.label}</span></>;
+  if (state.available) {
+    return <Link href={talkshowContent.registrationHref} className={detailsActionClass}>{content}</Link>;
+  }
+  return <button type="button" disabled title={state.note} className={detailsActionClass}>{content}</button>;
+}
+
 function TalkshowDetails({ state }: { state: RegistrationState }) {
   return (
-    <section id="talkshow-details" aria-labelledby="talkshow-details-title" className={`${shell} scroll-mt-24 md:scroll-mt-28`}>
-      <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
-        <div className="flex w-full min-w-0 flex-col items-center justify-center gap-10 lg:basis-[calc(33.333%-1rem)] lg:items-start">
-          <h2 id="talkshow-details-title" className="font-heading text-h3 text-secondary-1000 md:text-h2">Our Talks</h2>
-          <OceanVisual compact />
-        </div>
-        <div className="flex w-full min-w-0 flex-col gap-6 lg:basis-[calc(66.667%-1rem)] lg:items-start">
-          <h3 className="w-full text-center font-heading text-h4 text-secondary-1000 md:text-h3 lg:text-left">Our Venue and Schedule</h3>
-          <div className="grid w-full grid-cols-2 items-center gap-4 rounded-2xl border border-secondary-300 bg-neutral-100 px-6 py-5 shadow-sm lg:flex lg:justify-between lg:gap-4 lg:px-12">
-            <ScheduleItem icon="mdi:calendar-clock" label="Tanggal" value={talkshowContent.sessionDate ?? "Menyusul"} />
-            <ScheduleItem icon="mdi:timer" label="Waktu" value={talkshowContent.sessionTime ?? "Menyusul"} />
-            <ScheduleItem icon="mdi:map-marker-outline" label="Lokasi" value={talkshowContent.venue ?? "Menyusul"} className="col-span-2 lg:max-w-[40%]" />
+    <section id="talkshow-details" aria-labelledby="talkshow-details-title" className="relative z-10 flex w-full scroll-mt-24 flex-col items-center justify-between gap-8 px-5 md:scroll-mt-28 md:px-20 lg:flex-row">
+      <div className="flex w-full min-w-0 shrink-0 flex-col justify-center gap-10 lg:w-1/3">
+        <h2 id="talkshow-details-title" className={`${styles.heading} text-center font-heading text-h3 text-secondary-1000 md:text-h1 lg:text-start`}>Our Talks</h2>
+      </div>
+      <div className="w-full min-w-0 lg:w-2/3">
+        <div className="flex w-full flex-col gap-6 lg:ml-auto lg:max-w-189">
+          <h3 className={`${styles.scheduleHeading} text-center text-s4 text-secondary-1000 md:text-h5 lg:text-start lg:text-h4`}>Our Venue and Schedule</h3>
+          <div className={`${styles.scheduleSurface} relative block w-full cursor-pointer rounded-2xl p-px font-ui text-s6 md:text-s5`}>
+            <div className="relative z-10 grid w-full grid-cols-2 items-center gap-2 rounded-full bg-transparent px-6 py-4 transition-colors lg:flex lg:justify-between lg:gap-4 lg:px-12">
+              <ScheduleItem icon="mdi:calendar-range" label="Tanggal" value={talkshowContent.sessionDate ?? "Menyusul"} />
+              <ScheduleItem icon="mdi:timer-outline" label="Waktu" value={talkshowContent.sessionTime ?? "Menyusul"} />
+              <ScheduleItem icon="mdi:map-marker" label="Lokasi" value={talkshowContent.venue ?? "Menyusul"} className="col-span-2 lg:col-span-1" />
+            </div>
           </div>
-          <p className="w-full text-center font-body text-b3 leading-relaxed text-neutral-800 md:text-b2 lg:text-left lg:text-b1">
-            {talkshowContent.description} Informasi agenda dan tempat akan diperbarui setelah tersedia dari panitia.
-          </p>
-          <RegistrationAction state={state} className="w-full" />
+          <p className="text-center font-body text-b3 text-neutral-800 md:text-b2 lg:text-start lg:text-b1">{talkshowContent.description}</p>
+          <div className="relative"><DetailsRegistrationAction state={state} /></div>
         </div>
       </div>
     </section>
@@ -150,35 +158,25 @@ function TalkshowDetails({ state }: { state: RegistrationState }) {
 }
 
 function TalkshowSpeakers() {
-  const speakers = talkshowContent.speakers;
   return (
-    <section aria-labelledby="talkshow-speakers-title" className={`${shell} relative`}>
-      <div aria-hidden="true" className="pointer-events-none absolute -left-20 top-0 -z-10 size-72 rounded-full bg-secondary-200/40 blur-3xl" />
-      <div className="flex w-full flex-col gap-8">
-        <h2 id="talkshow-speakers-title" className="text-center font-heading text-h3 text-secondary-1000 md:text-h2 lg:text-left">Our Speakers</h2>
-        {speakers.length > 0 ? (
-          <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-8">
-            {speakers.map((speaker) => (
-              <article key={speaker.id} className="flex min-w-0 flex-1 flex-col items-center gap-6 rounded-3xl border border-secondary-300 bg-neutral-100 px-6 py-8 text-center shadow-sm md:gap-8 md:rounded-[36px] lg:px-10 xl:py-12">
-                {speaker.portraitSrc ? (
-                  <Image src={speaker.portraitSrc} alt={`Potret ${speaker.name}`} width={200} height={200} className="h-auto w-full max-w-[200px] object-contain" />
-                ) : (
-                  <div aria-hidden="true" className="flex size-48 items-center justify-center rounded-full bg-secondary-100"><Icon icon="mdi:account-group-outline" className="size-20 text-secondary-800" /></div>
-                )}
-                <div className="min-w-0">
-                  <h3 className="break-words font-heading text-h5 text-secondary-1000 md:text-h4">{speaker.name}</h3>
-                  <p className="mt-2 break-words font-body text-b2 text-neutral-800">{speaker.role}</p>
+    <section aria-labelledby="talkshow-speakers-title" className="relative z-50 flex w-full items-center justify-between px-5 md:px-20 xl:px-20">
+      <div className="relative z-50 flex w-full flex-col justify-center gap-8">
+        <h2 id="talkshow-speakers-title" className="text-center font-heading text-h3 text-secondary-1000 md:text-left md:text-h1">Our Speakers</h2>
+        <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-8">
+          {talkshowContent.speakers.map((person, index) => (
+            <article key={`${person.role}-${index}`} className="min-w-0 flex-1 rounded-[24px] border border-secondary-300 bg-transparent px-6 py-8 md:rounded-[36px] lg:px-8 xl:px-11 xl:py-11">
+              <div className="flex flex-col gap-6 md:gap-8">
+                <div>
+                  <Image src={person.image ?? "/images/events/speaker-placeholder.svg"} alt={person.image ? person.name : `Foto ${person.role === "narrator" ? "narator" : "pembicara"} belum tersedia`} width={200} height={200} className="mx-auto h-auto w-full max-w-[200px] object-contain" />
                 </div>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <div className="flex min-h-64 w-full flex-col items-center justify-center gap-4 rounded-3xl border border-secondary-300 bg-secondary-100/60 px-6 py-10 text-center md:rounded-[36px]">
-            <div aria-hidden="true" className="flex size-24 items-center justify-center rounded-full bg-primary-200"><Icon icon="mdi:account-group-outline" className="size-12 text-secondary-1000" /></div>
-            <p className="font-heading text-h5 text-secondary-1000">Pembicara akan diumumkan</p>
-            <p className="max-w-[34rem] font-body text-b2 text-neutral-800">Nama, peran, dan foto pembicara resmi belum tersedia.</p>
-          </div>
-        )}
+                <div className="text-center">
+                  <h3 className="font-heading text-h5 text-secondary-1000 md:text-h4">{person.name}</h3>
+                  <span className="font-body text-s5 text-neutral-800 md:text-s4">{person.affiliation}</span>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -186,19 +184,16 @@ function TalkshowSpeakers() {
 
 function TalkshowRegistrationRecall({ state }: { state: RegistrationState }) {
   return (
-    <section aria-labelledby="talkshow-recall-title" className={shell}>
-      <div className="relative isolate overflow-hidden rounded-[36px] bg-secondary-1000 text-neutral-100">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-24 size-80 rounded-full bg-primary-600/35 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-20 left-1/3 size-64 rounded-full bg-secondary-600/50 blur-3xl" />
-        <div className="relative z-10 flex flex-col items-center justify-between gap-8 p-6 py-8 text-center md:px-20 md:py-16 lg:flex-row lg:text-left">
-          <div className="flex min-w-0 flex-col items-center gap-5 lg:max-w-[55%] lg:items-start">
-            <h2 id="talkshow-recall-title" className="font-heading text-h4 md:text-h3">{state.available ? "Sudah siap mengikuti Talkshow IOE 2027?" : "Sampai jumpa di Talkshow IOE 2027"}</h2>
-            <p className="font-body text-b2 text-neutral-200">{state.available ? "Daftarkan dirimu melalui formulir resmi Talkshow." : state.note}</p>
-            <RegistrationAction state={state} className="w-full max-w-[20rem]" />
+    <section aria-labelledby="talkshow-recall-title" className="relative z-10 w-full px-5 md:px-8 xl:px-20">
+      <div className={`${styles.recallBanner} relative isolate mx-auto w-full max-w-[1440px] overflow-hidden rounded-[36px] bg-secondary-100 text-secondary-1000`}>
+        <Image src="/images/events/ioe-talk-recall-bg-aquatic.svg" alt="" aria-hidden="true" width={1280} height={535} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[60%_center] md:object-center" />
+        <div className="relative z-10 flex flex-col items-center justify-between gap-8 px-4 py-8 text-center sm:flex-row sm:text-left md:gap-12 md:px-10 md:py-16 lg:px-14 xl:px-20">
+          <div className="flex w-full min-w-0 flex-col items-center gap-4 sm:max-w-[464px] sm:flex-1 sm:items-start">
+            <h2 id="talkshow-recall-title" className="font-heading text-h4 md:text-h3 lg:text-h2">{state.available ? "Sudah siap mengikuti Talkshow IOE 2027?" : "Sampai jumpa di Talkshow IOE 2027"}</h2>
+            <p className="font-body text-b2">{state.available ? "Daftarkan dirimu melalui formulir resmi Talkshow." : state.note}</p>
+            <RegistrationAction state={state} className="w-full max-w-[20rem] rounded-xl px-4 py-2 md:rounded-2xl md:px-5 md:py-3" />
           </div>
-          <div aria-hidden="true" className="flex size-36 shrink-0 items-center justify-center rounded-full border border-primary-300/60 bg-primary-300/20 md:size-48">
-            <Icon icon="mdi:forum-outline" className="size-20 text-primary-100 md:size-28" />
-          </div>
+          <OceanVisual compact />
         </div>
       </div>
     </section>
@@ -255,8 +250,9 @@ export function TalkshowPage() {
   const state = registrationState(event, data?.isDemo ?? true, now);
 
   return (
-    <main id="main-content" tabIndex={-1} className="relative flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-24">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[720px] bg-linear-to-b from-secondary-100/70 via-primary-100/30 to-transparent" />
+    <main id="main-content" tabIndex={-1} className="relative isolate flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-24">
+      <Image src="/images/events/ioe-talk-background-flow-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1251} className="pointer-events-none absolute left-1/2 top-[8%] z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain md:top-0 md:w-full" />
+      <Image src="/images/events/ioe-talk-photograph-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1952} className="pointer-events-none absolute left-1/2 top-[15%] z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain md:w-full" />
       <TalkshowHero state={state} />
       <TalkshowDetails state={state} />
       <TalkshowSpeakers />
