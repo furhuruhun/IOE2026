@@ -29,7 +29,7 @@ export function EventOverviewAbout() {
   return (
     <section id="about" className="relative section-space">
       <div className={artwork.aboutLayer} aria-hidden="true">
-        <Image src="/images/events/desktop-about-ioe-aquatic.svg" alt="" width={1440} height={1080} draggable={false} className={artwork.aboutArtwork} />
+        <Image src="/images/events/desktop-whatsIn-ioe-aquatic.svg" alt="" width={1440} height={1080} draggable={false} className={artwork.aboutArtwork} />
       </div>
       <div className="site-container relative z-10 flex flex-col gap-2xl">
         <div className="grid gap-xl lg:grid-cols-[1fr_1.4fr] lg:items-start">
@@ -41,7 +41,6 @@ export function EventOverviewAbout() {
         </div>
 
         {count > 0 && <div className="rounded-lg border border-secondary-200 bg-secondary-100 p-lg md:p-xl">
-          {process.env.NODE_ENV === "development" && !documentation.some(item => item.imageSrc) && <p className="mb-2 font-micro text-b3 text-neutral-800">Preview</p>}
           <div className="mb-lg flex flex-wrap items-end justify-between gap-md">
             <div>
               <h3 className="font-heading text-h5 text-secondary-1000 md:text-h4">Dokumentasi sebelumnya</h3>

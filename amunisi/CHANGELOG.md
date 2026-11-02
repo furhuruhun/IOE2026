@@ -12,6 +12,46 @@
 
 ## Unreleased
 
+### [2026-11-02] Correct Events About artwork filename
+
+- **Tipe:** Fix
+- **Scope:** `src/features/events/EventOverviewAbout.tsx`.
+- **Ringkasan:** Replaced missing `desktop-about-ioe-aquatic.svg` with the existing, previously unused `desktop-whatsIn-ioe-aquatic.svg`. The asset's 1440×1080 dimensions match the existing component. No artwork, styling or layout was replaced or generated.
+- **Verifikasi:** Direct SVG and Next Image optimizer both returned 200 `image/svg+xml`; targeted ESLint and `git diff --check` passed.
+- **Terkait requirement:** Resolve null image-type errors by matching the supplied asset filenames.
+- **Breaking change:** Tidak.
+
+### [2026-11-02] Improve timeline scroll discovery and refresh regression checks
+
+- **Tipe:** UI improvement / verification
+- **Scope:** Competition timeline, landing carousel, Events proxy regression and verification notes.
+- **Ringkasan:** Replaced the timeline's hidden scrollbar with a thin native scrollbar. Carousel body copy uses the existing inverse foreground for stronger contrast. Updated proxy assertions to the deliberately demo-only development behavior, retaining configured production error/status/auth/cache checks. Added browser assertions for real mouse dragging, keyboard scrolling, horizontal wheel and native touch swipe.
+- **Verifikasi:** TypeScript, targeted ESLint, development/production rendered content checks, Events proxy regression and `git diff --check` passed. Focused Edge browser checks passed light/dark at 320/1440px for landing and competition overview, including drag, keyboard, horizontal wheel, emulated touch and measured contrast. Both theme commands exited zero. Artifacts remain under `.next/ui-review/`.
+- **Terkait requirement:** Follow through on recommended timeline discovery/verification, carousel contrast and current-state reporting improvements.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Official competition schedule is unavailable in the current timeline data; placeholder and QA-only milestones remain withheld from production. No production build or deployment performed.
+
+### [2026-11-02] Enable mouse dragging within competition timeline
+
+- **Tipe:** Fix
+- **Scope:** `CompetitionTimelineSection.tsx` and `scripts/check-public-content.mjs`.
+- **Ringkasan:** Added mouse pointer dragging with pointer capture and cancellation cleanup. Prevented the timeline content wrapper from shrinking; retained native touch/touchpad scrolling. Made the scroll region keyboard focusable with an accessible label and focus outline.
+- **Verifikasi:** Development rendered-content checks passed, including drag displacement, pointer release/cancellation/capture loss and native touch preservation. Targeted ESLint and `git diff --check` passed. Browser interaction was not manually verified.
+- **Terkait requirement:** Make competition timeline scroll inside its container as implied by the existing grab cursor.
+- **Breaking change:** Tidak; existing production content guard remains.
+- **Belum selesai / follow-up:** None within this change; timeline remains development-only under the existing content guard.
+
+### [2026-11-02] Remove visible preview and sample-data notices
+
+- **Tipe:** UI cleanup
+- **Scope:** Landing, competition, Events, Short Course and footer display.
+- **Ringkasan:** Removed visible Preview labels, sample-data disclaimers, sample-date suffixes and editorial replacement instructions at the user's request. Retained existing content, development/production guards, demo metadata and registration availability behavior. Placeholder Discord CTA now renders nothing.
+- **File diubah:** Affected UI components in `src/features` and `src/components/ui/Footer.tsx`; `scripts/check-public-content.mjs` and `scripts/check-ui.mjs` now expect notices to be absent.
+- **Verifikasi:** Development and production rendered-content checks passed; frontend/scripts ESLint passed with zero errors and one existing RegisterForm warning; `git diff --check` passed. Browser matrix was not rerun.
+- **Terkait requirement:** Remove comments such as “Preview - data contoh, belum dikonfirmasi panitia...” from the website display.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Existing unrelated proxy regression and historical verification limitations remain outside this display cleanup.
+
 ### [2026-10-29] Fix frontend regressions after pull and verify HEAD
 
 - **Tipe:** Fix

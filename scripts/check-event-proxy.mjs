@@ -39,17 +39,18 @@ try {
       for (const slug of [undefined, "talkshow"]) {
         const response = await eventProxy(slug);
         const body = await response.json();
-        const demo = !configured && mode === "development";
-        assert.equal(response.status, configured ? 502 : demo ? 200 : 503, `${mode}, configured=${configured}, slug=${slug}`);
+        const demo = mode === "development";
+        assert.equal(response.status, demo ? 200 : configured ? 502 : 503, `${mode}, configured=${configured}, slug=${slug}`);
         assert.equal(body.success, demo);
         assert.equal(response.headers.get("X-IOE-Demo-Data"), demo ? "true" : null);
         assert.equal(response.headers.get("Cache-Control"), "private, no-store");
         if (!demo) assert.equal(body.error.code, "SERVER_ERROR");
         else assert.ok(slug ? body.data.slug === slug : Array.isArray(body.data));
       }
-      if (!configured) {
-        assert.equal(requests.length, 0, "unconfigured mode makes no upstream request");
+      if (!configured || mode === "development") {
+        assert.equal(requests.length, 0, "development demos and unconfigured production make no upstream request");
         if (mode === "development") assert.equal((await eventProxy("missing")).status, 404);
+        console.log(`PASS ${mode}, configured=${configured}: demo boundary, missing slug and no upstream request`);
         continue;
       }
       assert.equal(requests[1][0], "https://upstream.invalid/events/talkshow");

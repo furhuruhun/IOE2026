@@ -68,7 +68,7 @@ export function CompetitionHero() {
               ))}
             </div>
           ) : nearestDeadline && process.env.NODE_ENV === "development" ? (
-            <div className="[&_p]:!text-secondary-1000 [[data-theme=dark]_&]:[&_p]:!text-secondary-100"><p className="mb-2 text-center font-micro text-b3 text-neutral-100">Preview</p><CountdownTimer targetDate={nearestDeadline} /></div>
+            <div className="[&_p]:!text-secondary-1000 [[data-theme=dark]_&]:[&_p]:!text-secondary-100"><CountdownTimer targetDate={nearestDeadline} /></div>
           ) : null}
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">

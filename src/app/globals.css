@@ -681,6 +681,11 @@ h6 {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.competition-timeline-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-secondary-900) transparent;
+}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

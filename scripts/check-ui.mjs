@@ -109,7 +109,7 @@ async function waitFor(expression, message) {
   assert.fail(message);
 }
 async function press(key) {
-  const keyCode = { Enter: 13, Escape: 27, Tab: 9, ArrowDown: 40, " ": 32 }[key];
+  const keyCode = { Enter: 13, Escape: 27, Tab: 9, ArrowLeft: 37, ArrowRight: 39, ArrowDown: 40, " ": 32 }[key];
   const code = key === " " ? "Space" : key;
   await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode: keyCode, text: key === "Enter" ? "\r" : key === " " ? " " : undefined });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: keyCode });
@@ -289,7 +289,7 @@ try {
       await assertRenderedContrast('.ui-action, .navbar-cta');
       if (path === "/") {
         await assertRenderedContrast('.hero-slide-sonar h1, .hero-slide-sonar p');
-        assert.equal(await evaluate("[...document.querySelectorAll('#timeline p')].some(e=>e.textContent.includes('Preview'))"),!production,"milestone Preview label follows production guard");
+        assert.equal(await evaluate("[...document.querySelectorAll('#timeline p')].some(e=>e.textContent.includes('Preview'))"),false,"no milestone Preview notice");
         assert.equal(await evaluate("document.querySelectorAll('.about-stats-track').length"),production ? 0 : 1,"statistics production guard");
       }
       if (path === "/") {
@@ -327,10 +327,34 @@ try {
         const dots = await evaluate("[...document.querySelectorAll('button[aria-label^=\"Tampilkan dokumentasi\"]')].map(b=>({w:b.getBoundingClientRect().width,h:b.getBoundingClientRect().height}))");
         if (production) assert.equal(dots.length,0,"production omits documentation without real images");
         else assert.ok(dots.length > 0 && dots.every(r=>r.w>=44 && r.h>=44), "documentation targets");
-        assert.equal(await evaluate("document.querySelector('main').textContent.includes('Preview - tanggal contoh')"),!production,"sample awarding date has a visible development label and is withheld from production");
+        assert.equal(await evaluate("document.querySelector('main').textContent.includes('Preview - tanggal contoh')"),false,"no sample awarding date notice");
       }
       if (path.startsWith('/competitions')) {
-        assert.equal(await evaluate("document.querySelector('main').textContent.includes('Preview - data contoh')"),!production,"competition sample labels and production guards");
+        assert.equal(await evaluate("document.querySelector('main').textContent.includes('Preview - data contoh')"),false,"no competition sample notices");
+      }
+      if (path === '/competitions' && !production) {
+        const selector = '.competition-timeline-scroll';
+        await evaluate(`document.querySelector('${selector}').scrollIntoView({block:'center'})`);
+        const box = await evaluate(`(() => { const e=document.querySelector('${selector}'); e.scrollLeft=0; const r=e.getBoundingClientRect(); return {x:r.left+r.width/2,y:r.top+r.height/2,overflow:e.scrollWidth>e.clientWidth,scrollbar:getComputedStyle(e).scrollbarWidth}; })()`);
+        assert.ok(box.overflow, 'timeline content overflows inside the container');
+        assert.equal(box.scrollbar, 'thin', 'timeline has a visible thin scrollbar');
+        await send('Input.dispatchMouseEvent', {type:'mouseMoved',x:box.x,y:box.y});
+        await send('Input.dispatchMouseEvent', {type:'mousePressed',button:'left',buttons:1,clickCount:1,x:box.x,y:box.y});
+        await send('Input.dispatchMouseEvent', {type:'mouseMoved',button:'left',buttons:1,x:box.x-80,y:box.y});
+        await send('Input.dispatchMouseEvent', {type:'mouseReleased',button:'left',clickCount:1,x:box.x-80,y:box.y});
+        assert.ok(await evaluate(`document.querySelector('${selector}').scrollLeft >= 70`), 'real mouse drag scrolls timeline');
+        await evaluate(`document.querySelector('${selector}').scrollLeft=0; document.querySelector('${selector}').focus()`);
+        await press('ArrowRight');
+        await waitFor(`document.querySelector('${selector}').scrollLeft>0`, 'keyboard scrolls timeline');
+        await evaluate(`document.querySelector('${selector}').scrollLeft=0`);
+        await send('Input.dispatchMouseEvent', {type:'mouseWheel',x:box.x,y:box.y,deltaX:100,deltaY:0});
+        await waitFor(`document.querySelector('${selector}').scrollLeft>0`, 'horizontal wheel/trackpad scrolls timeline');
+        await evaluate(`document.querySelector('${selector}').scrollLeft=0`);
+        await send('Emulation.setTouchEmulationEnabled', {enabled:true,maxTouchPoints:1});
+        await send('Input.synthesizeScrollGesture', {x:box.x,y:box.y,xDistance:-100,yDistance:0,gestureSourceType:'touch'});
+        await waitFor(`document.querySelector('${selector}').scrollLeft>0`, 'native touch swipe scrolls timeline');
+        await send('Emulation.setTouchEmulationEnabled', {enabled:false});
+        await evaluate('window.scrollTo(0,0)');
       }
       if (path.startsWith('/competitions/')) {
         await assertRenderedContrast('main h1');

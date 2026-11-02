@@ -67,12 +67,11 @@ export function EventDetailPage({ slug }: { slug: string }) {
               <div className="flex min-w-0 flex-col items-start gap-lg">
                 <p className="font-ui text-b3 font-bold text-primary-100">Event IOE 2027</p>
                 <h1 id="event-title" className="max-w-full font-heading text-h3 md:text-h2 lg:text-h1">{event.name}</h1>
-                {data.isDemo && <p role="note" className="rounded-lg border border-neutral-100/40 px-md py-sm font-body text-b3">Data contoh pengembangan. Nama dan batas pendaftaran belum merupakan informasi resmi.</p>}
                 {registered && <p role="status" className="rounded-full bg-success-100 px-md py-sm font-ui text-b3 font-bold text-success-900">Sudah terdaftar</p>}
                 <a href="#registration" className="ui-action ui-action-primary ui-action-sm">Informasi pendaftaran</a>
               </div>
               <div className="flex min-w-0 flex-col items-center gap-lg text-center">
-                <h2 className="font-heading text-h5">Batas pendaftaran{data.isDemo ? " (contoh)" : ""}</h2>
+                <h2 className="font-heading text-h5">Batas pendaftaran</h2>
                 {hasDeadline && now !== null ? <CountdownTimer key={event.deadline} targetDate={deadline!} variant="eventOverview" /> : <p className="font-body text-b3">{hasDeadline ? "Memuat countdown..." : "Batas pendaftaran belum tersedia."}</p>}
                 <p className="font-body text-b3 text-neutral-200">Batas pendaftaran bukan tanggal pelaksanaan event.</p>
               </div>
@@ -109,7 +108,7 @@ export function EventDetailPage({ slug }: { slug: string }) {
 
             <section id="registration" aria-labelledby="event-registration" className="flex scroll-mt-28 flex-col items-start gap-lg rounded-lg border border-secondary-300 bg-secondary-100 p-lg md:p-xl">
               <h2 id="event-registration" className="font-heading text-h4 text-secondary-1000 md:text-h3">Pendaftaran</h2>
-              {hasDeadline && <p className="font-body text-b3 text-neutral-700">Batas pendaftaran{data.isDemo ? " (contoh)" : ""}: <time dateTime={event.deadline}>{formatWibDate(event.deadline)} WIB</time></p>}
+              {hasDeadline && <p className="font-body text-b3 text-neutral-700">Batas pendaftaran: <time dateTime={event.deadline}>{formatWibDate(event.deadline)} WIB</time></p>}
               <p id="registration-availability" role="status" className="font-body text-b2 text-neutral-800">{registrationMessage}</p>
               {/* No read contract establishes open/full availability. Keep the CTA
                   disabled until that boundary and the registration form are ready. */}

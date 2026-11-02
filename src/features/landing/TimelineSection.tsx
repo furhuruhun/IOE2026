@@ -60,7 +60,6 @@ export function TimelineSection() {
       <div className="mx-auto max-w-[1000px]">
         <TimelineHeader />
         {process.env.NODE_ENV === "development" && <>
-        <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
         <ol className={`${styles.timeline} mt-lg`}>
           {timelineItems.map((item, index) => {
             const side = index % 2 === 0 ? "left" : "right";

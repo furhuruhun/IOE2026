@@ -38,7 +38,6 @@ export function RegistrationFoundationPage({ slug }: { slug: string }) {
         <Link href="/events" className={LINK_CLASS}>Daftar event</Link>
       </nav>
       <h1 className="font-heading text-h4 text-secondary-1000 md:text-h3">{event.data ? `${event.data.event.name} — Registration` : "Event Registration"}</h1>
-      {event.data?.isDemo && <p role="note" className="font-body text-b3 text-neutral-700">Informasi event menggunakan data contoh pengembangan.</p>}
       {message && <Toast status="error" title={message} onDismiss={dismiss} />}
 
       {event.isPending && <div role="status" className="flex flex-col gap-sm">

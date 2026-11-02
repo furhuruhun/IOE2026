@@ -1,4 +1,6 @@
-import type { CSSProperties } from "react";
+"use client";
+
+import { useRef, type CSSProperties } from "react";
 import { CTA_GRADIENT } from "@/components/ui/Navbar";
 import { overallTimelineItems, type OverallTimelineItem } from "./competitionsContent";
 
@@ -142,6 +144,7 @@ function getProgressPercent(items: OverallTimelineItem[]) {
 }
 
 export function CompetitionTimelineSection() {
+  const drag = useRef<{ x: number; scrollLeft: number } | null>(null);
   if (process.env.NODE_ENV !== "development") return <section id="timeline" className="site-container section-space"><h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2><p className="mt-4 text-center text-b3 text-neutral-800">Tanggal bersifat sementara - menunggu jadwal final dari panitia.</p></section>;
   const progressPercent = getProgressPercent(overallTimelineItems);
   // Bare number (bukan "X%") — formula lebar progress line (di bawah) bagi --tl-progress
@@ -156,9 +159,26 @@ export function CompetitionTimelineSection() {
     >
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
 
-      <p className="font-micro text-b3 text-neutral-800">Preview - data contoh, belum dikonfirmasi panitia.</p>
-      <div className="mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 no-scrollbar hover:cursor-grab active:cursor-grabbing md:rounded-[36px] md:p-10">
-        <div className="relative w-fit">
+      <div
+        role="region"
+        aria-label="Timeline kompetisi, geser untuk melihat jadwal lainnya"
+        tabIndex={0}
+        className="competition-timeline-scroll mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 hover:cursor-grab active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-900 md:rounded-[36px] md:p-10"
+        onPointerDown={(event) => {
+          if (event.pointerType !== "mouse" || event.button !== 0) return;
+          event.preventDefault();
+          drag.current = { x: event.clientX, scrollLeft: event.currentTarget.scrollLeft };
+          event.currentTarget.setPointerCapture(event.pointerId);
+        }}
+        onPointerMove={(event) => {
+          if (!drag.current) return;
+          event.currentTarget.scrollLeft = drag.current.scrollLeft + drag.current.x - event.clientX;
+        }}
+        onPointerUp={() => { drag.current = null; }}
+        onPointerCancel={() => { drag.current = null; }}
+        onLostPointerCapture={() => { drag.current = null; }}
+      >
+        <div className="relative w-fit shrink-0">
           <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />
           <div
             className="absolute left-0 top-1/2 h-1 w-[calc((var(--tl-progress)_/_100)_*_100%)] -translate-y-1/2 rounded-full bg-secondary-500 md:h-2"

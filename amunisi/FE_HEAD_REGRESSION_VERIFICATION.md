@@ -1,5 +1,42 @@
 # FE HEAD regression verification
 
+## Current-state update — 2026-11-02
+
+The October 29 report below is historical evidence, not a current HEAD sign-off.
+Its changes were committed after `bb90e3b`; subsequent Talkshow work at `cd1dd76`
+intentionally made development Events responses always use marked demo data.
+The proxy regression check now verifies that behavior with and without a configured
+backend, while retaining production upstream/error/auth/cache checks.
+
+Current local changes remove visible Preview/sample-data notices at the user's
+request, retain production content guards, and enable mouse dragging plus a thin
+scrollbar and keyboard focus for the competition overview timeline. Carousel
+description text now uses the existing inverse foreground role to improve contrast.
+The available overall competition timeline is still placeholder data, including
+two QA-only milestones; it has not been promoted to official production content.
+
+Development and production rendered-content checks, proxy checks, and targeted
+ESLint passed. Current browser verification results are recorded in the task
+response and ignored `.next/ui-review/` artifacts. No new production build,
+real backend integration, full browser matrix or deployment sign-off is claimed.
+The Events artwork reference was subsequently corrected to the existing
+`desktop-whatsIn-ioe-aquatic.svg` (1440×1080), replacing the nonexistent
+`desktop-about-ioe-aquatic.svg`. Direct and Next Image optimizer requests both
+returned 200 `image/svg+xml`; targeted lint passed. Historical backend lint
+issues remain separate.
+
+Focused browser checks use `UI_PATHS=/,/competitions`, `UI_WIDTHS=320,1440`
+against local development in isolated headless Edge. Light and dark modes passed both
+widths, including real pointer drag, ArrowRight, horizontal wheel, emulated touch
+swipe, shared component contrast and the existing per-width interaction checks.
+Touch gestures explicitly enable touch emulation for a consistent desktop test.
+TypeScript `--noEmit` also passed on these local changes.
+Both focused theme commands exited zero with no measured contrast failures or
+browser JavaScript exceptions. This includes the formerly failing light carousel
+copy at the two tested widths. It does not replace the historical full matrix.
+
+## Historical verification — 2026-10-29
+
 Date: 2026-10-29, Asia/Jakarta.
 
 ## Starting state and scope

@@ -72,7 +72,6 @@ export function EventOverviewHero() {
               Tentang Event
             </a>
           </div>
-          {data?.isDemo && <p className="font-micro text-b4 text-neutral-300">Tanggal di halaman ini adalah data contoh untuk pengembangan.</p>}
         </div>
       </div>
     </section>

@@ -80,7 +80,6 @@ export function EventOverviewSponsors() {
         <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-800">Bersama mitra</p>
         <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Sponsor IOE 2027</h2>
         {!hasSponsors && <p className="font-body text-b3 text-neutral-700">Logo sponsor resmi akan ditampilkan setelah dikonfirmasi panitia.</p>}
-        {!hasSponsors && <p className="font-micro text-b3 text-neutral-800">Preview</p>}
         <div className={`${styles.viewport} w-full rounded-[22px] bg-neutral-100 py-6 md:py-10`} aria-label={hasSponsors ? "Daftar sponsor IOE 2027" : "Logo sponsor menyusul"}>
           <div className={styles.track}>
             <div className={styles.group}>{logos(false)}</div>

@@ -63,7 +63,7 @@ function EventIllustration({ name, content }: { name: string; content: EventActi
   );
 }
 
-function EventCard({ event, index, isDemo, now }: { event: EventSummary; index: number; isDemo: boolean; now: number | null }) {
+function EventCard({ event, index, now }: { event: EventSummary; index: number; now: number | null }) {
   const content = getEventActivityContent(event.slug);
   const palette = palettes[content.palette];
   const deadline = new Date(event.deadline);
@@ -84,11 +84,9 @@ function EventCard({ event, index, isDemo, now }: { event: EventSummary; index: 
           </div>
           <h3 className={`${styles.gradientText} break-words font-heading text-h5 font-bold md:text-h4 lg:text-h3`}>{event.name}</h3>
           <p className="max-w-[36rem] font-body text-b2 leading-relaxed text-neutral-900 md:text-b1">{content.description}</p>
-          <p className="font-body text-b4 text-neutral-700">Deskripsi dan ilustrasi contoh — ganti dengan materi resmi panitia.</p>
           <p className="flex flex-wrap items-center justify-center gap-sm font-ui text-b3 font-bold text-secondary-800 lg:justify-start">
             <Icon icon="mdi:calendar-clock" className="size-5" aria-hidden="true" />
             {hasDeadline ? `Batas pendaftaran: ${formatWibDate(event.deadline)}` : "Jadwal pendaftaran menyusul"}
-            {isDemo && <span className="font-normal text-neutral-700">(tanggal contoh)</span>}
           </p>
           {content.detailStatus === "available" ? (
             <Link href={`/events/${encodeURIComponent(event.slug)}`} className="ui-action ui-action-primary ui-action-sm mt-sm">
@@ -131,7 +129,7 @@ export function EventOverviewActivities() {
                 <Image src="/images/events/desktop-highlight-ioe-aquatic.svg" alt="" fill sizes="100vw" draggable={false} className={artwork.highlightArtwork} />
               </div>
               <div className="relative z-10 flex flex-col gap-xl lg:gap-2xl">
-                {data.events.map((event, index) => <EventCard key={event.id} event={event} index={index} isDemo={data.isDemo} now={now} />)}
+                {data.events.map((event, index) => <EventCard key={event.id} event={event} index={index} now={now} />)}
               </div>
             </div>
           )}

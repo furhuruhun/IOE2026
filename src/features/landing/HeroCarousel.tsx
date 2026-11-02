@@ -39,7 +39,7 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
       </span>
       {active ? <h1 className="font-heading text-[color:var(--inverse-foreground)]" style={titleStyle}>{slide.title}</h1>
         : <h2 className="font-heading text-[color:var(--inverse-foreground)]" style={titleStyle}>{slide.title}</h2>}
-      <p className="font-body text-[color:var(--inverse-muted)]" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
+      <p className="font-body text-[color:var(--inverse-foreground)]" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
         {slide.desc}
       </p>
       <Link href={slide.cta.href} tabIndex={active ? 0 : -1}

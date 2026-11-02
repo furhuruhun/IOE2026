@@ -51,22 +51,47 @@ assert.equal(timeline.includes("Milestone 01"), preview);
 assert.equal(shortCourse.includes("Real-Case Project Exposure"), preview);
 assert.equal(shortCourse.includes("15 Agustus 2026"), preview);
 assert.equal(shortCourse.includes("Pembicara seminar menyusul"), preview);
-assert.equal((about.match(/Preview/g) ?? []).length, preview ? 2 : 0, "sponsors and statistics each have a nearby Preview label");
-assert.equal(timeline.includes("Preview"), preview, "sample milestones are visibly labeled only in development");
-if (preview) assert.ok(footer.includes("Preview") && shortCourse.includes("Preview"));
+assert.equal((about.match(/Preview/g) ?? []).length, 0, "sponsor and statistic notices removed");
+assert.equal(timeline.includes("Preview"), false, "sample milestones have no preview notice");
+assert.ok(!footer.includes("Preview") && !shortCourse.includes("Preview"), "no visible preview notices");
 for (const [file,name] of [["features/landing/MemoriesSection.tsx","MemoriesSection"],["features/competitions/CompetitionMemoriesSection.tsx","CompetitionMemoriesSection"],["features/competitions/CompetitionTestimonialCarousel.tsx","CompetitionTestimonialCarousel"]]) {
   const markup = render(file,name);
   assert.equal(markup.length > 0,preview, `${name} preview-only`);
-  assert.equal(markup.includes("Preview"),preview, `${name} samples visibly labeled`);
+  assert.equal(markup.includes("Preview"),false, `${name} sample notices removed`);
 }
 assert.equal(render("features/competitions/CompetitionDetailPrizeSection.tsx","CompetitionDetailPrizeSection",{slug:"business-case-competition"}).length > 0,preview,"unconfirmed competition prize widget is preview-only");
 const competitionAbout = render("features/competitions/CompetitionAboutSection.tsx","CompetitionAboutSection");
 assert.equal(competitionAbout.includes("Rp 50.000.000"),preview);
-assert.equal((competitionAbout.match(/Preview/g) ?? []).length,preview ? 2 : 0,"prizes and sponsors each visibly labeled");
+assert.equal((competitionAbout.match(/Preview/g) ?? []).length,0,"prize and sponsor notices removed");
 for (const [file,name] of [["CompetitionDetailFunFactSection","CompetitionDetailFunFactSection"],["CompetitionDetailPrizeSection","CompetitionDetailPrizeSection"],["CompetitionDetailAboutSection","CompetitionDetailAboutSection"],["CompetitionTimelineSection","CompetitionTimelineSection"]]) {
-  assert.equal(render(`features/competitions/${file}.tsx`,name,{slug:"business-case-competition"}).includes("Preview"),preview,`${name}: labeled development samples, no production samples`);
+  assert.equal(render(`features/competitions/${file}.tsx`,name,{slug:"business-case-competition"}).includes("Preview"),false,`${name}: no preview notices in either mode`);
 }
 assert.ok(!render("features/competitions/CompetitionDiscordCTA.tsx","CompetitionDiscordCTA").includes('href="https://discord.gg/PLACEHOLDER"'));
+if (preview) {
+  const originalUseRef = React.useRef;
+  React.useRef = () => ({ current: null });
+  try {
+    const { CompetitionTimelineSection } = load(path.join(root, "features/competitions/CompetitionTimelineSection.tsx"));
+    const container = CompetitionTimelineSection().props.children.find(child => child?.props?.onPointerDown);
+    const target = { scrollLeft: 100, setPointerCapture: () => {} };
+    const event = { pointerType: "mouse", button: 0, pointerId: 1, clientX: 300, currentTarget: target, preventDefault: () => {} };
+    container.props.onPointerDown(event);
+    container.props.onPointerMove({ ...event, clientX: 220 });
+    assert.equal(target.scrollLeft, 180, "mouse drag scrolls timeline within its container");
+    for (const end of ["onPointerUp", "onPointerCancel", "onLostPointerCapture"]) {
+      container.props.onPointerDown(event);
+      container.props[end]();
+      container.props.onPointerMove({ ...event, clientX: 100 });
+      assert.equal(target.scrollLeft, 180, `${end} stops dragging`);
+    }
+    container.props.onPointerDown({ ...event, pointerType: "touch" });
+    container.props.onPointerMove({ ...event, clientX: 100 });
+    assert.equal(target.scrollLeft, 180, "touch keeps native scrolling");
+    assert.equal(container.props.tabIndex, 0, "scroll container is keyboard accessible");
+  } finally {
+    React.useRef = originalUseRef;
+  }
+}
 // Render the real shared components for browser checks against the app's real CSS.
 const fixtures = ["primary","secondary","ghost","destructive","text"].map(variant => render("components/ui/Button.tsx","Button",{variant,children:`${variant} action`}));
 fixtures.push(render("components/ui/Button.tsx","Button",{disabled:true,children:"Disabled action"}));

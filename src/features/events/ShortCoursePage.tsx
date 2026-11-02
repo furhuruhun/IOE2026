@@ -126,7 +126,6 @@ function ShortCourseBenefits() {
   ];
   return (
     <section aria-labelledby="short-course-benefits-title" className="site-container">
-      <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>
       <h2 id="short-course-benefits-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">What Will You Gain?</h2>
       {benefits.length > 0 ? (
         <div className="grid w-full grid-cols-2 gap-4 md:flex md:justify-center md:gap-0">
@@ -184,7 +183,6 @@ function ShortCourseTimeline({ milestones, now }: { milestones: ShortCourseMiles
 
   return (
     <section aria-labelledby="short-course-timeline-title" className="site-container">
-      {isPreview && <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>}
       <h2 id="short-course-timeline-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">Our Timeline</h2>
       <div
         ref={scroller}
@@ -322,7 +320,6 @@ function ShortCourseSessions({ state }: { state: RegistrationState }) {
 
   return (
     <section aria-labelledby="short-course-sessions-title" className="site-container">
-      {isPreview && <p className="mb-2 text-center font-micro text-b3 text-neutral-700">Preview</p>}
       <h2 id="short-course-sessions-title" className="text-center font-heading text-h3 text-secondary-1000 md:text-h2">Course Sessions</h2>
       <div className="mt-12 flex flex-col gap-12">
         {sessions.map((session) => <ShortCourseSessionCard key={session.id} session={session} state={state} />)}
