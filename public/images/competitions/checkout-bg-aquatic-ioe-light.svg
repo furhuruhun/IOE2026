@@ -1,0 +1,10 @@
+<svg width="1440" height="427" viewBox="0 0 1440 427" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1496 426.754C1273.6 385.76 1018.12 359.547 740.207 359.547C453.144 359.547 182.271 385.05 -56 424.947V1.80664C182.271 41.7036 453.144 67.208 740.207 67.208C1018.12 67.208 1273.6 40.9943 1496 0V426.754Z" fill="url(#ioe_light_aqua_gradient)" fill-opacity="0.66"/>
+<defs>
+<linearGradient id="ioe_light_aqua_gradient" x1="720" y1="-11.4531" x2="720" y2="437.547" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#62D7EF"/>
+<stop offset="0.5" stop-color="#8EE7EB"/>
+<stop offset="1" stop-color="#D1F8F3"/>
+</linearGradient>
+</defs>
+</svg>

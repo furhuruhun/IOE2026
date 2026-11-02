@@ -5,9 +5,7 @@ import { CTA_GRADIENT } from "@/components/ui/Navbar";
 import { overallTimelineItems, type OverallTimelineItem } from "./competitionsContent";
 
 // F-25 — timeline keseluruhan kompetisi. Horizontal Zig-Zag Timeline (scroll-x, node
-// atas/bawah berselang-seling) dari spec literal user, BUKAN pola dot+garis vertikal lama
-// (yang masih dipakai di CompetitionDetailTimelineSection.tsx — tidak disentuh, di luar
-// scope task ini).
+// atas/bawah berselang-seling). The track is also reused by competition detail pages.
 //
 // Token spec yang tidak ada di design_system_final.md/globals.css — resolusi dikonfirmasi
 // ke user dulu (AskUserQuestion, CLAUDE.md §Aturan Kerja #1/#6) sebelum ngoding:
@@ -143,14 +141,72 @@ function getProgressPercent(items: OverallTimelineItem[]) {
   return (activeIndex / (items.length - 1)) * 100;
 }
 
-export function CompetitionTimelineSection() {
+export function CompetitionTimelineTrack({ items, ariaLabel }: { items: OverallTimelineItem[]; ariaLabel: string }) {
   const drag = useRef<{ x: number; scrollLeft: number } | null>(null);
-  if (process.env.NODE_ENV !== "development") return <section id="timeline" className="site-container section-space"><h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2><p className="mt-4 text-center text-b3 text-neutral-800">Tanggal bersifat sementara - menunggu jadwal final dari panitia.</p></section>;
-  const progressPercent = getProgressPercent(overallTimelineItems);
+  const progressPercent = getProgressPercent(items);
   // Bare number (bukan "X%") — formula lebar progress line (di bawah) bagi --tl-progress
   // dengan 100 untuk dapat fraksi unitless, supaya valid dikalikan ke nilai panjang
   // (100% - Nrem) di calc() CSS (mengalikan dua nilai berdimensi/% langsung invalid di calc()).
   const progressStyle = { "--tl-progress": `${progressPercent}` } as CSSProperties;
+
+  return (
+    <div
+      role="region"
+      aria-label={ariaLabel}
+      tabIndex={0}
+      className="competition-timeline-scroll mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 hover:cursor-grab active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-900 md:rounded-[36px] md:p-10"
+      onPointerDown={(event) => {
+        if (event.pointerType !== "mouse" || event.button !== 0) return;
+        event.preventDefault();
+        drag.current = { x: event.clientX, scrollLeft: event.currentTarget.scrollLeft };
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={(event) => {
+        if (!drag.current) return;
+        event.currentTarget.scrollLeft = drag.current.scrollLeft + drag.current.x - event.clientX;
+      }}
+      onPointerUp={() => { drag.current = null; }}
+      onPointerCancel={() => { drag.current = null; }}
+      onLostPointerCapture={() => { drag.current = null; }}
+    >
+      <div className="relative w-fit shrink-0">
+        <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />
+        <div
+          className="absolute left-0 top-1/2 h-1 w-[calc((var(--tl-progress)_/_100)_*_100%)] -translate-y-1/2 rounded-full bg-secondary-500 md:h-2"
+          style={progressStyle}
+        />
+
+        <div className="relative z-10 flex gap-3 md:gap-6">
+          {items.map((item, i) => {
+            const onTop = i % 2 === 0;
+            return (
+              <div key={`${item.label}-${item.date}`} className="grid w-fit grid-rows-[1fr_auto_1fr] gap-5 md:gap-8">
+                {onTop ? (
+                  <>
+                    <TimelineCard item={item} onTop />
+                    <TimelineNode status={item.status} />
+                    <div className="flex-1" />
+                  </>
+                ) : (
+                  <>
+                    <div className="order-1 flex-1" />
+                    <div className="order-2">
+                      <TimelineNode status={item.status} />
+                    </div>
+                    <TimelineCard item={item} onTop={false} />
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function CompetitionTimelineSection() {
+  if (process.env.NODE_ENV !== "development") return <section id="timeline" className="site-container section-space"><h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2><p className="mt-4 text-center text-b3 text-neutral-800">Tanggal bersifat sementara - menunggu jadwal final dari panitia.</p></section>;
 
   return (
     <section
@@ -158,59 +214,10 @@ export function CompetitionTimelineSection() {
       className="relative z-10 mx-auto flex w-full max-w-[1637.5px] flex-col items-center px-6 md:px-20"
     >
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
-
-      <div
-        role="region"
-        aria-label="Timeline kompetisi, geser untuk melihat jadwal lainnya"
-        tabIndex={0}
-        className="competition-timeline-scroll mt-xl flex w-full overflow-x-auto rounded-3xl border border-secondary-900 bg-white/24 p-5 hover:cursor-grab active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-900 md:rounded-[36px] md:p-10"
-        onPointerDown={(event) => {
-          if (event.pointerType !== "mouse" || event.button !== 0) return;
-          event.preventDefault();
-          drag.current = { x: event.clientX, scrollLeft: event.currentTarget.scrollLeft };
-          event.currentTarget.setPointerCapture(event.pointerId);
-        }}
-        onPointerMove={(event) => {
-          if (!drag.current) return;
-          event.currentTarget.scrollLeft = drag.current.scrollLeft + drag.current.x - event.clientX;
-        }}
-        onPointerUp={() => { drag.current = null; }}
-        onPointerCancel={() => { drag.current = null; }}
-        onLostPointerCapture={() => { drag.current = null; }}
-      >
-        <div className="relative w-fit shrink-0">
-          <div className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />
-          <div
-            className="absolute left-0 top-1/2 h-1 w-[calc((var(--tl-progress)_/_100)_*_100%)] -translate-y-1/2 rounded-full bg-secondary-500 md:h-2"
-            style={progressStyle}
-          />
-
-          <div className="relative z-10 flex gap-3 md:gap-6">
-            {overallTimelineItems.map((item, i) => {
-              const onTop = i % 2 === 0;
-              return (
-                <div key={item.label} className="grid w-fit grid-rows-[1fr_auto_1fr] gap-5 md:gap-8">
-                  {onTop ? (
-                    <>
-                      <TimelineCard item={item} onTop />
-                      <TimelineNode status={item.status} />
-                      <div className="flex-1" />
-                    </>
-                  ) : (
-                    <>
-                      <div className="order-1 flex-1" />
-                      <div className="order-2">
-                        <TimelineNode status={item.status} />
-                      </div>
-                      <TimelineCard item={item} onTop={false} />
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
+      <CompetitionTimelineTrack
+        items={overallTimelineItems}
+        ariaLabel="Timeline kompetisi, geser untuk melihat jadwal lainnya"
+      />
     </section>
   );
 }

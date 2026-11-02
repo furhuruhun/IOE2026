@@ -2,12 +2,14 @@
 
 import { useEffect } from "react";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Icon } from "@iconify/react/offline";
 
 import { useCompetition } from "@/hooks/useCompetitions";
 import { useIsLoggedIn } from "@/hooks/useAuth";
 import { ApiError } from "@/services/authService";
 import { useTeamModalStore } from "@/stores/useTeamModalStore";
+import { competitionLogos } from "./competitionLogos";
 import { useRegisterGuard } from "./useRegisterGuard";
 
 interface CompetitionDetailHeroProps {
@@ -27,6 +29,9 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
   const isLoggedIn = useIsLoggedIn();
   const openModal = useTeamModalStore((s) => s.open);
   const { data: competition, isLoading, isError, error } = useCompetition(slug);
+  const logoSrc = (competitionLogos as Record<string, string>)[slug];
+  const logoWidth = slug === "design-competition" ? 1305 : 1489;
+  const logoHeight = slug === "design-competition" ? 1206 : 1056;
   const handleRegisterClick = useRegisterGuard({
     competitionId: competition?.id,
     slug,
@@ -60,7 +65,8 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
     <section
       className="relative w-full overflow-hidden pt-8 pb-16 md:max-lg:pb-10 md:pt-16 lg:pt-[95px]"
       style={{
-        backgroundImage: "url('/images/competitions/hero_section.png')",
+        backgroundImage:
+          "linear-gradient(to bottom, transparent 40%, var(--color-background) 100%), url('/images/competitions/hero_section.png')",
         backgroundPosition: "center top",
         backgroundSize: "cover",
       }}
@@ -72,12 +78,24 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
               Indonesia Ocean Expo 2027
             </span>
 
-            <div
-              aria-hidden
-              className="mb-3 flex w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-300 via-secondary-300 to-tertiary-300 shadow-lg md:max-lg:w-22 md:w-26 aspect-square"
-            >
-              <Icon icon="mdi:trophy" className="size-8 text-secondary-1000 md:max-lg:size-9 md:size-11" />
-            </div>
+            {logoSrc ? (
+              <Image
+                src={logoSrc}
+                alt=""
+                width={logoWidth}
+                height={logoHeight}
+                sizes="(min-width: 768px) 128px, 96px"
+                loading="eager"
+                className="mb-3 h-auto w-24 object-contain md:w-32"
+              />
+            ) : (
+              <div
+                aria-hidden
+                className="mb-3 flex w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-300 via-secondary-300 to-tertiary-300 shadow-lg md:max-lg:w-22 md:w-26 aspect-square"
+              >
+                <Icon icon="mdi:trophy" className="size-8 text-secondary-1000 md:max-lg:size-9 md:size-11" />
+              </div>
+            )}
 
             {isLoading || !competition ? (
               <div className="h-12 w-64 animate-pulse rounded-lg bg-neutral-900 md:h-16 md:w-96" aria-hidden />

@@ -7,7 +7,7 @@ import { CompetitionDetailPrizeSection } from "@/features/competitions/Competiti
 import { CompetitionDetailJoinTeamCTA } from "@/features/competitions/CompetitionDetailJoinTeamCTA";
 import { CompetitionDetailOtherCompetitionsCarousel } from "@/features/competitions/CompetitionDetailOtherCompetitionsCarousel";
 import { CompetitionDetailFAQSection } from "@/features/competitions/CompetitionDetailFAQSection";
-import { CompetitionDetailContactSection } from "@/features/competitions/CompetitionDetailContactSection";
+import { EventOverviewContact } from "@/features/events/EventOverviewStaticSections";
 import { TeamModal } from "@/features/competitions/TeamModal";
 
 // Route: /competitions/[slug] — Competition Details. Public. ROUTES.md.
@@ -40,7 +40,7 @@ export default async function CompetitionDetailsPage({
       <CompetitionDetailJoinTeamCTA slug={slug} />
       <CompetitionDetailOtherCompetitionsCarousel slug={slug} />
       <CompetitionDetailFAQSection slug={slug} />
-      <CompetitionDetailContactSection />
+      <EventOverviewContact />
       <TeamModal />
     </main>
   );

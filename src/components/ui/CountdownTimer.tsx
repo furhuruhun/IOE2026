@@ -5,8 +5,8 @@ import { Icon } from "@iconify/react/offline";
 
 interface CountdownTimerProps {
   targetDate: Date;
-  /** Opt-in visual details for the Event Overview hero; other uses keep their current styling. */
-  variant?: "default" | "eventOverview" | "shortCourse";
+  /** Opt-in visual details for sections with their own countdown layout. */
+  variant?: "default" | "eventOverview" | "shortCourse" | "competitionDetail";
 }
 
 interface TimeLeft {
@@ -66,6 +66,7 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => getTimeLeft(targetDate));
   const isEventOverview = variant === "eventOverview";
   const isShortCourse = variant === "shortCourse";
+  const isCompetitionDetail = variant === "competitionDetail";
   const hourDigits = String(timeLeft.hours).length;
   const overviewHoursSize = hourDigits >= 5
     ? "text-b2 md:text-h5"
@@ -110,19 +111,19 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
   }
 
   return (
-    <div className="flex flex-col items-center gap-sm">
-      <p className="countdown-date-label flex items-center gap-1.5 font-ui text-b4 font-bold text-neutral-100 md:text-b3">
-        <Icon icon="mdi:timer" className="size-4 md:size-5" />
+    <div className={`flex flex-col items-center ${isCompetitionDetail ? "gap-2" : "gap-sm"}`}>
+      <p className={`countdown-date-label flex items-center font-ui text-b4 font-bold md:text-b3 ${isCompetitionDetail ? "flex-wrap justify-center gap-2 text-center text-secondary-1000" : "gap-1.5 text-neutral-100"}`}>
+        <Icon icon="mdi:timer" className={isCompetitionDetail ? "size-5 shrink-0" : "size-4 md:size-5"} />
         {formatTargetLabel(targetDate)}
       </p>
 
-      <div className="flex items-center">
+      <div className="flex max-w-full items-center">
         {UNITS.map((unit, i) => (
           <div key={unit.key} className="flex items-center">
             {/* Outer ring — gradient border via padding, box-shadow: var(--shadow-md) (final,
                 bukan lagi "drop-shadow-light" placeholder) */}
             <div
-              className={`flex items-center justify-center rounded-full p-0.5 shadow-md ${isShortCourse ? "size-[60px] min-[380px]:size-[72px] lg:size-[112px]" : "size-[72px] md:size-[112px]"}`}
+              className={`flex shrink-0 items-center justify-center rounded-full p-0.5 shadow-md ${isCompetitionDetail ? "size-[72px] md:size-[112px] lg:size-[88px] xl:size-[112px]" : "size-[72px] md:size-[112px]"}`}
               style={{
                 background:
                   "linear-gradient(135deg, color-mix(in oklch, var(--color-primary-300) 55%, white) 0%, var(--color-secondary-600) 55%, var(--color-tertiary-600) 100%)",
@@ -134,19 +135,19 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
                 style={{ background: "linear-gradient(to bottom, var(--color-primary-900), var(--color-primary-1000))" }}
               >
                 <span className="font-ui text-b4 text-neutral-100">{unit.label}</span>
-                <span className={`h-px bg-neutral-100/40 ${isEventOverview ? "w-10 md:w-[70px]" : "w-4"}`} aria-hidden />
+                <span className={`h-px bg-neutral-100/40 ${isCompetitionDetail ? "w-10 md:w-[70px] lg:w-12 xl:w-[70px]" : isEventOverview ? "w-10 md:w-[70px]" : "w-4"}`} aria-hidden />
                 {/* suppressHydrationWarning: nilai ini SAH beda antara SSR-render dan client
                     hydrate (live clock) — pola resmi React untuk timestamp/clock. */}
-                <span className={`font-heading text-neutral-100 ${isEventOverview ? `tabular-nums ${unit.key === "hours" ? overviewHoursSize : "text-h4 md:text-h3"}` : isShortCourse ? "text-h6 lg:text-h3" : "text-h6 md:text-h3"}`} suppressHydrationWarning>
+                <span className={`font-heading text-neutral-100 ${isCompetitionDetail ? `tabular-nums ${unit.key === "hours" ? overviewHoursSize : "text-h4 md:text-h3 lg:text-h4 xl:text-h3"}` : isEventOverview ? `tabular-nums ${unit.key === "hours" ? overviewHoursSize : "text-h4 md:text-h3"}` : isShortCourse ? "text-h6 lg:text-h3" : "text-h6 md:text-h3"}`} suppressHydrationWarning>
                   {pad2(timeLeft[unit.key])}
                 </span>
               </div>
             </div>
 
             {i < UNITS.length - 1 && (
-              <div className={`flex flex-col ${isShortCourse ? "mx-0.5 min-[380px]:mx-1 lg:mx-3" : "mx-2 md:mx-3"} ${isEventOverview ? "gap-5" : "gap-1"}`} aria-hidden>
-                <span className="size-2 rounded-full bg-neutral-100/70" />
-                <span className="size-2 rounded-full bg-neutral-100/70" />
+              <div className={`flex flex-col ${isCompetitionDetail ? "mx-1.5" : isShortCourse ? "mx-0.5 min-[380px]:mx-1 lg:mx-3" : "mx-2 md:mx-3"} ${isCompetitionDetail || isEventOverview ? "gap-5" : "gap-1"}`} aria-hidden>
+                <span className={`size-2 rounded-full ${isCompetitionDetail ? "bg-secondary-600" : "bg-neutral-100/70"}`} />
+                <span className={`size-2 rounded-full ${isCompetitionDetail ? "bg-secondary-600" : "bg-neutral-100/70"}`} />
               </div>
             )}
           </div>
