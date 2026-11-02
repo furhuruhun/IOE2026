@@ -18,6 +18,21 @@ export interface EventDetail extends EventSummary {
   speakers?: { id: string; name: string }[];
 }
 
+export interface EventRegistrationInput {
+  sessionType: "seminar" | "workshop";
+  speakerId?: string;
+  phone: string;
+  lineId?: string;
+  institution: string;
+  domicile: string;
+  cvFile?: File | null;
+  paymentProof?: File | null;
+}
+
+export interface EventRegistrationResult {
+  registrationId: string;
+}
+
 export interface EventDetailResult {
   event: EventDetail;
   isDemo: boolean;

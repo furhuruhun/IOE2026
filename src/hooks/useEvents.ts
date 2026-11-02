@@ -1,7 +1,8 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchEvent, fetchEvents } from "@/services/eventService";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { fetchEvent, fetchEvents, registerEvent } from "@/services/eventService";
+import type { EventRegistrationInput } from "@/types/event";
 import { useCurrentUser } from "@/hooks/useAuth";
 
 export const eventKeys = {
@@ -18,4 +19,8 @@ export function useEvents() {
 export function useEvent(slug: string) {
   const { data: user } = useCurrentUser();
   return useQuery({ queryKey: eventKeys.detail(slug, user?.id ?? null), queryFn: () => fetchEvent(slug), retry: false, staleTime: 0 });
+}
+
+export function useRegisterEvent(slug: string) {
+  return useMutation({ mutationFn: (input: EventRegistrationInput) => registerEvent(slug, input) });
 }

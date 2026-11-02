@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { useEvent } from "@/hooks/useEvents";
 import { useProfile } from "@/hooks/useProfile";
@@ -14,6 +15,7 @@ import { RegistrationFoundationForm } from "./RegistrationFoundationForm";
 const LINK_CLASS = "ui-action ui-action-secondary ui-action-sm";
 
 export function RegistrationFoundationPage({ slug }: { slug: string }) {
+  const router = useRouter();
   const event = useEvent(slug);
   const profile = useProfile();
   const handleError = useErrorHandler();
@@ -57,7 +59,9 @@ export function RegistrationFoundationPage({ slug }: { slug: string }) {
         <Button disabled={profile.isFetching} onClick={() => { setMessage(null); void profile.refetch(); }}>{profile.isFetching ? "Memuat..." : "Coba lagi"}</Button>
       </section>}
       {/* Retain the mounted form and its edits through background query errors/retries. */}
-      {event.data && profile.data && <RegistrationFoundationForm key={slug} profile={profile.data} />}
+      {event.data && profile.data && <RegistrationFoundationForm key={slug} profile={profile.data} event={event.data.event} slug={slug}
+        onSuccess={() => router.push("/confirmation")}
+        onError={setMessage} />}
     </main>
   );
 }

@@ -1,6 +1,6 @@
 import { ApiError } from "@/services/authService";
 import type { ApiResponse } from "@/types/auth";
-import type { EventDetailResult, EventListResult, EventSummary } from "@/types/event";
+import type { EventDetailResult, EventListResult, EventRegistrationInput, EventRegistrationResult, EventSummary } from "@/types/event";
 import { z } from "zod";
 
 const eventDetailSchema = z.object({
@@ -32,4 +32,32 @@ export async function fetchEvents(): Promise<EventListResult> {
     throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Daftar event belum dapat dimuat");
   }
   return { events: json.data, isDemo: response.headers.get("X-IOE-Demo-Data") === "true" };
+}
+
+export async function registerEvent(slug: string, input: EventRegistrationInput): Promise<EventRegistrationResult> {
+  const body = new FormData();
+  body.append("sessionType", input.sessionType);
+  if (input.speakerId) body.append("speakerId", input.speakerId);
+  body.append("phone", input.phone);
+  if (input.lineId) body.append("lineId", input.lineId);
+  body.append("institution", input.institution);
+  body.append("domicile", input.domicile);
+  if (input.cvFile) body.append("cvFile", input.cvFile);
+  if (input.paymentProof) body.append("paymentProof", input.paymentProof);
+
+  const response = await fetch(`/api/events/${encodeURIComponent(slug)}/register`, {
+    method: "POST",
+    body,
+  });
+  const json = (await response.json()) as ApiResponse<EventRegistrationResult>;
+  if (!response.ok) {
+    if (!json.success) {
+      throw new ApiError(json.error.code, json.error.message);
+    }
+    throw new ApiError("SERVER_ERROR", "Pendaftaran event gagal");
+  }
+  if (!json.success) {
+    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Pendaftaran event gagal");
+  }
+  return json.data;
 }
