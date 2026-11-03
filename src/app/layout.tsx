@@ -3,6 +3,8 @@ import { Inter, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { QueryProvider } from "@/store/QueryProvider";
 import { SessionBootstrap } from "@/store/SessionBootstrap";
 import { IconRegistry } from "@/components/ui/iconRegistry";
+import { SectionScrollNavigation } from "@/components/ui/SectionScrollNavigation";
+import { Suspense } from "react";
 import "./globals.css";
 
 // Coolvetica (Headline/H1-H6) TIDAK ada di Google Fonts — harus di-self-host dari file
@@ -34,7 +36,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "IOE 2027 — Indonesia Ocean Expo",
+  title: "IOE 2027",
   description:
     "Towards a Smart and Sustainable Maritime Ecosystem: Energy, Economy, and Digital Innovation — KMKL ITB",
 };
@@ -53,6 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <QueryProvider>
           <a href="#main-content" className="skip-link ui-action ui-action-secondary">Lewati ke konten utama</a>
           <IconRegistry />
+          <Suspense fallback={null}><SectionScrollNavigation /></Suspense>
           <SessionBootstrap />
           {children}
         </QueryProvider>

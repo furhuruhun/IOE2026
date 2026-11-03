@@ -282,12 +282,7 @@ export function HeroCarousel() {
           })}
         </div>
       </div>
-      <nav aria-label="Jelajahi kegiatan IOE" className="site-container mt-8 flex flex-wrap justify-center gap-3">
-        <Link href="/competitions" className={buttonStyles("primary", "sm")}>Lihat Kompetisi</Link>
-        <Link href="/events" className={buttonStyles("primary", "sm")}>Lihat Event</Link>
-        <a href="#timeline" className={buttonStyles("text", "sm")}>Lihat Jadwal</a>
-      </nav>
-      <div className="mt-4 flex flex-col items-center gap-2">
+      <div className="mt-8 flex flex-col items-center gap-1">
         <div className="flex gap-2">
           {heroSlides.map((slide, index) => (
             <button
@@ -295,13 +290,12 @@ export function HeroCarousel() {
               type="button"
               onClick={() => goTo(index)}
               aria-label={`Ke slide ${index + 1}: ${slide.title}`}
-              aria-current={index === active}
-              className="flex size-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
-            ><span aria-hidden="true" className="h-2 rounded-full transition-[width,background] motion-reduce:transition-none"
-              style={{ width: index === active ? "26px" : "8px", background: index === active ? "var(--color-secondary-800)" : "var(--color-neutral-700)" }} /></button>
+              aria-current={index === active ? "true" : undefined}
+              className={`h-2 rounded-full transition-all duration-300 motion-reduce:transition-none md:h-2.5 ${index === active ? "w-8 bg-secondary-800 md:w-[50px]" : "w-4 bg-neutral-400"}`}
+            />
           ))}
         </div>
-        <p className="font-ui text-b4 text-neutral-700">{active + 1} dari {COUNT}</p>
+        <p aria-live="polite" className="font-ui text-b3 text-neutral-700">{active + 1} of {COUNT}</p>
       </div>
     </section>
   );

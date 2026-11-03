@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
 
@@ -6,13 +7,7 @@ import { Icon } from "@iconify/react/offline";
 // Struktur ulang [2026-08-30]: dual responsive layout (lg:hidden — stack rata tengah /
 // hidden lg:flex — 3 kolom) atas permintaan literal user, menggantikan layout single-column
 // sebelumnya. Lihat CHANGELOG untuk detail keputusan & penyimpangan dari dokumen rujukan:
-// - Spacing container (p-4/gap-5 mobile, px-[80px]/py-[35px]/gap-[30px] desktop) HARDCODED
-//   sesuai instruksi literal user, TIDAK snap ke --spacing-* scale (design_system_final.md
-//   tidak spesifik soal spacing Footer, jadi "wajib tanya dulu" CLAUDE.md §6 — user sudah
-//   menegaskan nilai ini 2x, dianggap sebagai keputusan sadar, bukan asumsi).
-// - Brand/logo lockup (icon mdi:waves + "IOE 2027") BUKAN bagian spec §Footer (dokumen itu
-//   cuma nyebut Background/Link/Copyright/Divider/Text color/Icon Instagram) — direplikasi
-//   PERSIS dari lockup Navbar.tsx supaya brand konsisten satu sumber, bukan nilai baru.
+// - Batas container dan logo mengikuti Navbar.tsx.
 // - Warna, font, text color, divider, & icon tetap ikut §Footer + token semantic project
 //   (primary-600→400→100 gradient, font-micro/font-body, text-neutral-1000).
 //
@@ -47,13 +42,16 @@ const SOCIAL_LINKS = Array.from({ length: 4 }, (_, i) => ({
   icon: "mdi:instagram",
 }));
 
-function FooterBrand({ iconSize, textSize }: { iconSize: string; textSize: string }) {
+function FooterBrand() {
   return (
-    <Link href="/" className="flex shrink-0 items-center gap-3.5">
-      <span className={`flex ${iconSize} items-center justify-center rounded-md bg-secondary-1000 text-neutral-100`}>
-        <Icon icon="mdi:waves" className="size-1/2" />
-      </span>
-      <span className={`font-heading ${textSize} text-secondary-1000`}>IOE 2027</span>
+    <Link href="/" className="shrink-0" aria-label="IOE 2027 — beranda">
+      <Image
+        src="/images/parent/logo-navibar.png"
+        alt="IOE 2027"
+        width={1920}
+        height={1080}
+        className="h-14 w-36 object-cover md:h-20 md:w-48"
+      />
     </Link>
   );
 }
@@ -75,8 +73,8 @@ export function Footer() {
       style={{ background: "linear-gradient(90deg, var(--color-primary-600), var(--color-primary-400), var(--color-primary-100))" }}
     >
       {/* Mobile / tablet — rata tengah, satu kolom (lg:hidden) */}
-      <div className="site-container flex flex-col items-center justify-center gap-5 py-8 lg:hidden">
-        <FooterBrand iconSize="size-8" textSize="text-lg" />
+      <div className="mx-auto flex w-full max-w-[1920px] flex-col items-center justify-center gap-5 px-6 py-8 md:px-20 lg:hidden">
+        <FooterBrand />
 
         <nav className="flex flex-col items-center justify-start gap-5">
           {FOOTER_LINKS.map((link) => (
@@ -103,9 +101,9 @@ export function Footer() {
       </div>
 
       {/* Desktop — 3 kolom (hidden lg:flex) */}
-      <div className="site-container hidden flex-col items-center justify-start gap-8 py-8 lg:flex">
+      <div className="mx-auto hidden w-full max-w-[1920px] flex-col items-center justify-start gap-8 px-6 py-8 md:px-20 lg:flex">
         <div className="flex w-full items-start justify-between">
-          <FooterBrand iconSize="size-9" textSize="text-xl xl:text-2xl" />
+          <FooterBrand />
 
           <nav className="mt-3 inline-flex flex-col items-start justify-start gap-2">
             {FOOTER_LINKS.map((link) => (

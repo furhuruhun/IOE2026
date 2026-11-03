@@ -34,14 +34,14 @@ export const heroSlides: HeroSlide[] = [
     eyebrow: "Competition",
     title: "Kompetisi Nasional",
     desc: "Business Case, Paper & Poster, Design Competition — uji ide dan kemampuanmu bersama peserta dari seluruh Indonesia.",
-    cta: { label: "Lihat Kompetisi", href: "/competitions" },
+    cta: { label: "Lihat Kompetisi", href: "/competitions#our-competition" },
   },
   {
     id: "slide-event",
     eyebrow: "Event",
     title: "Rangkaian Event",
     desc: "Talkshow, Workshop, Exhibition, Short Course — perluas wawasan maritim Indonesia lewat rangkaian acara IOE 2027.",
-    cta: { label: "Lihat Event", href: "/events" },
+    cta: { label: "Lihat Event", href: "/events#events" },
   },
 ];
 
@@ -87,18 +87,4 @@ export const timelineItems: TimelineItem[] = [
   { id: "milestone-06", title: "Milestone 06" },
   { id: "milestone-07", title: "Milestone 07" },
   { id: "milestone-08", title: "Milestone 08" },
-];
-
-export interface MemoryItem {
-  id: string;
-  caption: string;
-}
-
-// F-11 — dokumentasi tahun sebelumnya: PLACEHOLDER, klien belum kirim foto/video
-// (PRD §8 Assumptions & Dependencies — "dokumentasi event tahun sebelumnya").
-export const memories: MemoryItem[] = [
-  { id: "memory-opening", caption: "IOE 2026 — Opening Ceremony" },
-  { id: "memory-competition", caption: "IOE 2026 — Business Case Competition" },
-  { id: "memory-talkshow", caption: "IOE 2026 — Talkshow & Workshop" },
-  { id: "memory-exhibition", caption: "IOE 2026 — Exhibition" },
 ];

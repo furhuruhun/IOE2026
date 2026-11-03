@@ -2,11 +2,10 @@ import { CompetitionHero } from "@/features/competitions/CompetitionHero";
 import { CompetitionAboutSection } from "@/features/competitions/CompetitionAboutSection";
 import { CompetitionGrid } from "@/features/competitions/CompetitionGrid";
 import { CompetitionTimelineSection } from "@/features/competitions/CompetitionTimelineSection";
-import { CompetitionMemoriesSection } from "@/features/competitions/CompetitionMemoriesSection";
 import { CompetitionFAQSection } from "@/features/competitions/CompetitionFAQSection";
 
 // Route: /competitions — Competition Overview. Public. F-22–F-26 (ROUTES.md, PRD_IOE_2027_v4.md).
-// Scope halaman ini DIPERLUAS di luar F-22–F-26 atas keputusan eksplisit user (Memories, FAQ)
+// Scope halaman ini DIPERLUAS di luar F-22–F-26 atas keputusan eksplisit user (FAQ)
 // — lihat amunisi/CHANGELOG.md untuk catatan lengkap
 // ketidaksinkronan dengan PRD_IOE_2027_v4.md & ROUTES.md.
 export default function CompetitionOverviewPage() {
@@ -16,7 +15,6 @@ export default function CompetitionOverviewPage() {
       <CompetitionAboutSection />
       <CompetitionGrid />
       <CompetitionTimelineSection />
-      <CompetitionMemoriesSection />
       <CompetitionFAQSection />
     </main>
   );

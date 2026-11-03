@@ -6,7 +6,7 @@ import { competitionLogos } from "./competitionLogos";
 // "sumber: PRD" — klien belum kirim copywriting final (PRD §8/§13 A6).
 //
 // Scope halaman ini SUDAH DIPERLUAS di luar F-22–F-26 (PRD cuma minta Hero+Countdown, About,
-// CTA List, Timeline, Sponsor) atas keputusan eksplisit user — section Memories, Testimonial,
+// CTA List, Timeline, Sponsor) atas keputusan eksplisit user — section Testimonial,
 // Discord CTA, FAQ ditambahkan mengikuti referensi layout yang diberikan. Dicatat di
 // CHANGELOG.md bahwa PRD_IOE_2027_v4.md & ROUTES.md perlu direview manusia untuk sinkronisasi.
 
@@ -81,8 +81,7 @@ export interface Testimonial {
   quote: string;
 }
 
-// Dummy — belum ada testimoni real (dokumentasi "IOE 2026" di landingContent.memories
-// mengindikasikan sudah ada edisi sebelumnya, tapi belum ada kutipan asli dari klien).
+// Dummy — belum ada kutipan asli dari klien.
 // WAJIB diganti sebelum go-live, lihat CHANGELOG.
 export const testimonials: Testimonial[] = [
   {

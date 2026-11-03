@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@iconify/react/offline";
@@ -59,13 +60,15 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
     <header>
       <nav className={`fixed inset-x-0 top-0 z-[10000] mx-auto flex h-14 w-full max-w-[1920px] items-center justify-between border-b px-6 md:h-20 md:px-20 ${appearance === 'dashboard' ? 'border-primary-200' : 'border-neutral-300 bg-neutral-100'}`}
         style={appearance === 'dashboard' ? { background: 'linear-gradient(90deg, var(--color-primary-600), var(--color-primary-400), var(--color-primary-100))' } : undefined}>
-        {/* Logo — belum ada aset final dari klien (design_system_final.md: "Logo di Navbar
-            masih 'IOE 2026' — placeholder asset, menunggu aset final dari klien") */}
-        <Link href="/" className="flex items-center gap-2 justify-self-start">
-          <span className={'flex items-center justify-center rounded-md bg-secondary-1000 text-neutral-100 ' + (appearance === 'dashboard' ? 'size-10 md:size-16' : 'size-7 md:size-9')}>
-            <Icon icon="mdi:waves" className={appearance === 'dashboard' ? 'size-6 md:size-10' : 'size-4 md:size-5'} />
-          </span>
-          <span className={'whitespace-nowrap font-heading text-secondary-1000 ' + (appearance === 'dashboard' ? 'text-h6 md:text-h4' : 'text-[15px] md:text-[17px]')}>IOE 2027</span>
+        <Link href="/" className="shrink-0 justify-self-start" aria-label="IOE 2027 — beranda">
+          <Image
+            src="/images/parent/logo-navibar.png"
+            alt="IOE 2027"
+            width={1920}
+            height={1080}
+            priority
+            className="h-14 w-36 object-cover md:h-20 md:w-48"
+          />
         </Link>
 
         <div ref={desktopMenuRef} className="hidden items-center gap-4 xl:flex">

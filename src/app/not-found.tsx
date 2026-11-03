@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/Button";
 // Atas keputusan user: cuma font & warna yang disesuaikan ke token resmi project, struktur/
 // layout/proporsi lainnya ikut referensi persis. Background art & ilustrasi mascot di referensi
 // tidak ada asetnya di project ini (bukan aset IOE 2027) — diganti placeholder gradient tile +
-// icon, pola yang sama dipakai landing AboutSection/MemoriesSection untuk aset yang belum ada
+// icon, pola yang sama dipakai landing AboutSection untuk aset yang belum ada
 // dari klien (BUKAN gambar asing/hasil karang sendiri).
 const GRADIENT_TEXT = "linear-gradient(90deg, var(--color-primary-600), var(--color-secondary-600), var(--color-tertiary-600))";
 

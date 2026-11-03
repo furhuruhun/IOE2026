@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { useRouter } from "next/navigation";
 
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { useCompetitions } from "@/hooks/useCompetitions";
@@ -34,7 +33,6 @@ import { useCompetitions } from "@/hooks/useCompetitions";
 // ("lihat semua kompetisi" / "lihat timeline"), dan tombol ini sebelumnya juga tidak pernah
 // pakai icon — tidak ada alasan menambah icon baru yang tidak diminta.
 export function CompetitionHero() {
-  const router = useRouter();
   const { data, isLoading } = useCompetitions();
 
   const nearestDeadline = useMemo(() => {
@@ -51,6 +49,15 @@ export function CompetitionHero() {
         backgroundSize: "cover",
       }}
     >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 backdrop-blur-[12px]"
+        style={{
+          backgroundImage: "linear-gradient(to bottom, transparent 45%, var(--color-background) 100%)",
+          maskImage: "linear-gradient(to bottom, transparent 35%, black 100%)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 35%, black 100%)",
+        }}
+      />
       <div className="relative z-10 mx-auto flex w-full max-w-360 flex-col items-center justify-center gap-12 px-4 md:px-8 lg:flex-row xl:px-23">
         <div className="flex w-full min-w-0 flex-col items-center gap-8 text-center lg:mt-11 lg:w-133.75 lg:flex-none">
           <div className="flex w-full min-w-0 flex-col items-center">
@@ -73,21 +80,19 @@ export function CompetitionHero() {
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
             <div className="flex w-full min-w-0 flex-wrap items-center justify-center gap-4 md:gap-6">
-              <button
-                type="button"
-                onClick={() => router.push("#our-competition")}
+              <a
+                href="#our-competition"
                 className="ui-action ui-action-primary ui-action-sm rounded-xl px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
                 Lihat Semua Kompetisi
-              </button>
+              </a>
 
-              <button
-                type="button"
-                onClick={() => router.push("#timeline")}
+              <a
+                href="#timeline"
                 className="ui-action ui-action-secondary ui-action-sm rounded-xl border-transparent bg-secondary-1000/8 px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
                 Lihat Timeline
-              </button>
+              </a>
             </div>
           </div>
         </div>

@@ -1,13 +1,10 @@
-import { Icon } from "@iconify/react/offline";
+import Image from "next/image";
 import { Accordion } from "@/components/ui/Accordion";
 import { competitionFaqs } from "./competitionsContent";
 
 // Section TIDAK ada di spec F-22–F-26 (FAQ per PRD cuma di Competition Details, F-17) —
 // ditambahkan atas keputusan user mengikuti referensi layout.
 //
-// Redesign 2026-09-02 mengikuti spec pixel-precise dari user. Illustration di kanan header
-// TIDAK ada aset dari klien (PRD §8 Assumptions & Dependencies, presedan sama seperti maskot
-// AboutSection.tsx) — diganti tile gradient + icon MDI, BUKAN gambar asing/hasil karang sendiri.
 export function CompetitionFAQSection() {
   return (
     <section className="relative mx-auto flex w-full max-w-[1637.5px] flex-col items-center gap-8 overflow-hidden px-6 pt-16 pb-32 md:px-20">
@@ -19,12 +16,14 @@ export function CompetitionFAQSection() {
               Temukan berbagai pertanyaan yang sering ditanyakan serta jawabannya di sini!
             </p>
           </div>
-          <div
-            aria-hidden
-            className="flex size-48 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary-300 via-secondary-300 to-tertiary-300 shadow-lg max-lg:hidden"
-          >
-            <Icon icon="mdi:frequently-asked-questions" className="size-20 text-secondary-1000" />
-          </div>
+          <Image
+            src="/images/competitions/Bubblechat-Faq.png"
+            alt=""
+            aria-hidden="true"
+            width={224}
+            height={224}
+            className="size-56 shrink-0 object-contain max-lg:hidden"
+          />
         </div>
 
         <Accordion items={competitionFaqs} />
