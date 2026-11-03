@@ -12,6 +12,106 @@
 
 ## Unreleased
 
+### [2026-11-03 19:00] Hapus header kecil dan footer bernomor pada hero card
+
+- **Tipe:** Fix
+- **Scope:** Landing hero carousel.
+- **Ringkasan:** Menghapus logo kecil, garis pemisah dan label kiri atas pada seluruh card. Menghapus daftar program/kategori bernomor beserta garis footer dan nomor pada preview card. Judul, deskripsi, ilustrasi utama, CTA, serta navigasi tetap dipertahankan.
+- **File diubah:** `src/features/landing/HeroCarousel.tsx` — hapus elemen header/footer; `src/features/landing/HeroCarousel.module.css` — hapus style yang tidak terpakai; `scripts/check-hero.mjs` — sesuaikan pemeriksaan elemen yang dihapus dan tunggu transisi selesai sebelum pengujian panah balik; `amunisi/CHANGELOG.md` — catat perubahan.
+- **Verifikasi:** TypeScript, ESLint terarah dan `git diff --check` lulus. Pemeriksaan browser 24 kombinasi slide/tema/lebar 320/390/768/1440px lulus, termasuk kontras, tidak ada overflow, ketiadaan header/footer, autoplay, swipe, keyboard, preview, focus pause dan reduced motion. Screenshot: `.next/hero-review/clean-cards/`.
+- **Terkait requirement:** Permintaan menghapus header dan footer dekoratif card.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Tidak ada untuk perubahan ini; keterbatasan konten sebelumnya tetap berlaku.
+
+### [2026-11-03 18:39] Undo curated-content hero iteration
+
+- **Tipe:** Fix
+- **Scope:** Landing hero only.
+- **Ringkasan:** Restored the structured carousel immediately preceding the content-redesign request: Indonesia Ocean Expo 2027, Kompetisi Nasional and Rangkaian Event, with their original copy and CTAs. Restored secondary schedule discovery and previous rendering/check behavior while retaining all earlier visual refinements, artwork previews and carousel interactions.
+- **File diubah:** `src/features/landing/landingContent.ts`, `src/features/landing/HeroCarousel.tsx`, `src/features/landing/HeroCarousel.module.css`, `scripts/check-hero.mjs`; this changelog records the undo without removing history.
+- **Terkait requirement:** User-requested undo of the latest iteration only.
+- **Breaking change:** No; unrelated changes preserved.
+- **Belum selesai / follow-up:** The curated-highlight entry below is historical and no longer describes the current hero. Earlier content and asset limitations remain unchanged.
+
+### [2026-11-03 18:35] Curate actionable hero highlights from supported content
+
+- **Tipe:** Feature
+- **Scope:** Landing hero content, presentation and focused verification.
+- **Ringkasan:** Replaced generic category introductions with three curated highlights: Main Event IOE 2027, choosing a maritime competition, and the dedicated Short Course program. Each has one contextual detail/discovery CTA. Retained the aquatic framing, artwork previews, persistent Competition/Event discovery and carousel interaction architecture. Removed the hero's schedule teaser because no confirmed schedule is supplied.
+- **File diubah:**
+  - `src/features/landing/landingContent.ts` — data-driven headline lines, artwork, highlights and contextual CTAs, with per-slide provenance; removed unused provisional countdown metadata.
+  - `src/features/landing/HeroCarousel.tsx` — render highlight data rather than hardcoded category branches; expose meaningful highlights as accessible lists with decorative numbering.
+  - `src/features/landing/HeroCarousel.module.css` — retain the established composition, adapt list semantics and keep longer preview titles readable.
+  - `scripts/check-hero.mjs` — verify curated identities and CTA semantics, follow all three real links to public targets with isolated frontend reads, and confirm unavailable Short Course registration is not promoted.
+  - `amunisi/CHANGELOG.md` — record content audit, verification and limitations.
+- **Content evidence:** Main-event identity, organizer and theme come from `PRD_IOE_2027_v4.md` §1; program/category names from the existing PRD and public pages. Short Course copy directly reuses `shortCourseContent.description`. Mock/preview dates, benefits, speakers, competition schedules and eligibility claims were excluded. The landing map pin does not establish an event venue. Both inspected dedicated program registration flags are false, so no slide advertises open registration.
+- **CTA destinations:** `Temukan program IOE` → `/events#events`; `Bandingkan kompetisi` → `/competitions#our-competition`; `Pelajari Short Course` → `/events/short-course`. Each public target exists and was reached by the browser check.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Chrome passed 24 slide/viewport/theme combinations at 320/390/768/1440px, sampled contrast, text fit, heading/tab semantics, 44px controls and persistent discovery. Arrow keys, preview clicks, keyboard pagination, autoplay, hover pause/resume, swipe, focus pause and reduced-motion/manual navigation passed. All contextual CTA navigation checks passed, including disabled Short Course registration. Screenshots/results: ignored `.next/hero-review/highlights/`. API reads were intercepted; this is frontend routing/render verification rather than live registration/backend validation.
+- **Skills used:** `ponytail`, `ui-skills` with previously selected Swiss editorial guidance, and applicable `implement` verification/self-review guidance. Ticket-graph skills were inspected and excluded as inapplicable; no commits or backend suite were run under the user's constraints.
+- **Terkait requirement:** Curated promotional hero highlights with supported facts and truthful contextual actions; Track A/B1/B2 behavior preserved.
+- **Breaking change:** No routing, API, backend, authentication or registration changes; no dependencies, commits or pushes.
+- **Belum selesai / follow-up:** Confirmed event date/venue, eligibility, registration periods/deadlines and open-registration status are unavailable for hero promotion and were omitted. Short Course artwork is the existing learning/document illustration rather than a dedicated official program image. Existing font availability, historical hero design-document synchronization and persistent touch-pause limitations remain unchanged.
+
+### [2026-11-03 17:42] Restore a structured, large-scale artwork carousel
+
+- **Tipe:** Fix
+- **Scope:** Landing hero carousel only.
+- **Ringkasan:** Refined the existing hero into rounded aquatic frames with 72px wide-desktop headlines, larger artwork and compact artwork-led neighboring previews. Removed all ribbon/polygon layers and the full-section light/dark switch. Official IOE branding, existing blue engineering/learning illustrations and close aquatic surface variations now establish a consistent treatment across slides.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — shared artwork selection for main scenes and previews; official logo, engineering and learning/document assets replace the mismatched mascot/ribbon compositions; all original information and links retained.
+  - `src/features/landing/HeroCarousel.module.css` — restored 24px framing, controlled artwork scale, compact 320px preview panels, responsive typography and stable page background across rotation.
+  - `scripts/check-hero.mjs` — updated structured-geometry/artwork checks and verify loading only for rendered images, retaining painted contrast and navigation regressions.
+  - `amunisi/CHANGELOG.md` — record refinement and remaining asset limits.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Browser checks passed all 24 slide/viewport/theme combinations at 320/390/768/1440px, including fit, no horizontal overflow, loaded visible images, sampled text/program/preview contrast, heading semantics, inactive-link tab exclusion, 44px controls and persistent discovery. Arrow navigation, preview clicks, keyboard pagination, six-second autoplay, hover pause/resume, swipe, focus pause and reduced-motion/manual navigation passed without runtime exceptions. Final screenshots/results: ignored `.next/hero-review/structured/`. API requests were intercepted inside the isolated tab; no backend behavior inspected, modified or tested.
+- **Terkait requirement:** Owner-requested structured hero refinement; existing content and Track A/B1/B2 behavior.
+- **Breaking change:** No; no dependencies, new official assets, routing/API/authentication changes, commits or pushes.
+- **Belum selesai / follow-up:** Events uses the existing learning/document illustration as a visual metaphor, not a new official event-specific illustration; a dedicated matched program illustration remains an owner asset input. Official branding remains unchanged. Coolvetica availability and the pre-existing persistent touch-pause limitation remain unchanged. Historical hero design notes require manual synchronization; no global tokens were added.
+
+### [2026-11-03 17:32] Build an artwork-led open-canvas landing hero
+
+- **Tipe:** Feature
+- **Scope:** Landing hero carousel only.
+- **Ringkasan:** Removed enclosing poster frames and large adjacent preview cards in favor of a layered aquatic canvas with slim vertical title previews. Overview combines the official logo with the approved seahorse and ocean currents; Competition pairs existing offshore engineering artwork with a dark ocean environment and retained category labels; Events uses existing fluid ribbons with all four program labels. Headings use the existing family/scale with 1.2 line height and gentler tracking; desktop body copy now uses the shared 16px token.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — layered approved artwork, official branding on every slide and active visual-environment styling; original headings, descriptions, categories, destinations and interaction architecture retained.
+  - `src/features/landing/HeroCarousel.module.css` — open composition, responsive artwork crops, lighter title navigation, consistent typography and theme-aware text/controls.
+  - `scripts/check-hero.mjs` — verify approved artwork, open geometry and actual preview-label click targets; include visible preview text and inherited opacity in painted contrast sampling.
+  - `amunisi/CHANGELOG.md` — record visual direction, checks and limits.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Chrome passed 24 slide/viewport/theme combinations at 320/390/768/1440px, including content fit, no horizontal overflow, artwork loading, heading semantics, inactive-link tab exclusion, persistent discovery, 44px controls and sampled body/heading/program/preview contrast. Arrow navigation, preview-label clicks, keyboard pagination, six-second autoplay, hover pause/resume, swipe, focus pause and reduced-motion/manual navigation passed with no runtime exceptions. Final screenshots and measurements: ignored `.next/hero-review/visual-first/`; previous composition preserved in `.next/hero-review/visual-first-before/`. All browser API requests were intercepted; no backend behavior was inspected, modified or tested.
+- **Terkait requirement:** Owner-requested visual-first maritime hero; existing landing content and Track A/B1/B2 safeguards.
+- **Breaking change:** No — no new dependencies, assets, routes, contracts or registration/authentication changes; no commits or pushes.
+- **Belum selesai / follow-up:** The official Coolvetica file is still missing, so the existing Montserrat heading fallback remains. Supplied raster artwork limits maximum sharpness; no replacements were fabricated. Historical hero composition notes in `design_system_final.md` need manual synchronization with the approved open-canvas direction. Existing persistent touch-pause limitation remains unchanged; no pause button restored. Validation covers local frontend rendering rather than a deployed release or site-wide accessibility certification.
+
+### [2026-11-03 17:04] Soften editorial hero and align visuals with slide subjects
+
+- **Tipe:** Fix
+- **Scope:** Landing hero carousel only.
+- **Ringkasan:** Applied token-derived 24px main / 20px preview corners, softer action corners and quieter adjacent cards while retaining editorial framing. Replaced the standalone mascot with the complete official IOE logo; replaced single-category offshore artwork and generic water imagery with typography listing the existing competition categories and event programs. Mobile retains the original descriptive copy without a duplicate program list.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — official logo, subject-specific program compositions and reduced preview scale/opacity; interaction logic and destinations preserved.
+  - `src/features/landing/HeroCarousel.module.css` — consistent rounded silhouettes, responsive brand/program placement and restrained previews using existing tokens.
+  - `scripts/check-hero.mjs` — include program text contrast/fit, rounded geometry, official-logo-only imagery, adjacent-card clicking, keyboard pagination and configurable screenshot output.
+  - `amunisi/CHANGELOG.md` — record refinement and evidence.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Browser verification passed 24 slide/viewport/theme combinations at 320/390/768/1440px with no overflow/clipping, sampled text contrast including program lists, loaded logo, active heading semantics, inactive-link tab exclusion, 44px controls and persistent discovery. Arrow keys, keyboard pagination, adjacent-card click, six-second autoplay, hover pause/resume, touch swipe, focus pause and reduced-motion/manual navigation passed. Baseline screenshots preserved under `.next/hero-review/before/`; refined screenshots and results under `.next/hero-review/after/` (ignored artifacts). Browser API requests were isolated; no backend functionality was inspected, modified or tested.
+- **Terkait requirement:** Owner-requested editorial hero refinement; Track A/B1/B2 safeguards and discovery.
+- **Breaking change:** No; no new dependencies, routes, contracts, authentication/registration changes, commits or pushes.
+- **Belum selesai / follow-up:** A confirmed photo set covering the programs would be needed for a future photographic composition; typography is the intentional current treatment. Existing Coolvetica font availability and persistent touch-pause limitations remain unchanged. Historical hero styling in `design_system_final.md` needs manual synchronization with the approved editorial direction; no tokens were added.
+
+### [2026-11-03 16:53] Redesign landing hero as editorial exhibition posters
+
+- **Tipe:** Feature
+- **Scope:** Landing hero carousel only.
+- **Ringkasan:** Replaced centered sonar cards with asymmetric, typography-led posters, fine editorial rules, folios and distinct compositions using existing IOE artwork. Adjacent desktop cards show legible title previews. Restored the documented B1 persistent Competition/Event discovery links and Track A 44px pagination targets, which were absent from the starting component; schedule discovery remains secondary.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — editorial slide presentation, decorative existing images, intentional neighboring previews and persistent discovery; original slide copy, CTA destinations and carousel interaction logic retained.
+  - `src/features/landing/HeroCarousel.module.css` — scoped responsive composition, existing palette/font/spacing tokens, mobile artwork placement, dark-theme contrast and accessible controls.
+  - `scripts/check-hero.mjs` — focused browser regression check for 24 slide/theme/viewport combinations and retained interactions; API requests intercepted inside an isolated browser tab.
+  - `amunisi/CHANGELOG.md` — record implementation, verification and remaining limitations.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Chrome checks passed all three slides at 320/390/768/1440px in light/dark themes: text fit, no page overflow, loaded artwork, single active heading, inactive links outside the tab order, 44px controls, persistent discovery and sampled painted text contrast (3:1 large text / 4.5:1 body and controls). Arrow navigation, pagination, six-second autoplay, hover pause/resume, touch swipe, focus pause and reduced-motion suppression/manual navigation passed without runtime exceptions. Screenshots and measurements: ignored `.next/hero-review/`. No backend functionality inspected, modified or tested during this task.
+- **Terkait requirement:** Landing F-07; Track A accessibility and Track B1/B2 discovery; owner-requested editorial hero redesign.
+- **Breaking change:** No — no routing, API, authentication or registration changes; no dependencies, generated imagery, commits or pushes.
+- **Belum selesai / follow-up:** Official Coolvetica font files remain unavailable; the established Montserrat heading fallback is retained. Existing content is preserved without certifying it as final owner-approved copy. `design_system_final.md`'s historical centered hero/sonar/countdown composition is superseded by this request and needs manual synchronization; no design tokens were added. The previously documented persistent touch-pause limitation remains; no pause button was restored. Browser evidence covers local development, not a production deployment or site-wide accessibility certification.
+
 ### [2026-11-02] Correct Events About artwork filename
 
 - **Tipe:** Fix
