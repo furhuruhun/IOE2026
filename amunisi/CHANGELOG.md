@@ -12,6 +12,22 @@
 
 ## Unreleased
 
+### [2026-11-03 19:23] Apply supplied Card artwork as matching hero backgrounds
+
+- **Tipe:** Feature
+- **Scope:** Landing hero background integration only.
+- **Ringkasan:** Slide IOE now uses `/images/parent/Card IOE.png`, Competition uses `Card 2.png`, and Events uses `Card 3.png`. Existing foreground illustrations, content, framing, preview structure, navigation and carousel behavior are retained. Backgrounds use cover sizing, centered desktop composition, individual mobile positions and theme-aware overlays for readable text.
+- **File diubah:**
+  - `src/features/landing/HeroCarousel.tsx` — reference the existing background files directly with fill images; active backgrounds load eagerly. Original PNGs bypass a locally observed WebP optimizer conversion failure; no duplicate assets were created.
+  - `src/features/landing/HeroCarousel.module.css` — clipped background layers, responsive cover positioning and contrast overlays within existing rounded frames.
+  - `scripts/check-hero.mjs` — assert exact per-slide source mapping, cover sizing and full content-area coverage; wait for image decoding and completed wrap transitions before sampling contrast. Optional UI_WIDTHS supports targeted checks.
+  - `amunisi/CHANGELOG.md` — record integration and validation.
+- **Verifikasi:** Frontend TypeScript, targeted ESLint and `git diff --check` passed. Final browser run passed all 24 slide/viewport/theme combinations at 320/390/768/1440px: matching loaded backgrounds, cover bounds, text fit, sampled contrast, 44px controls and preserved discovery. Arrow keys, preview clicks, pagination, six-second autoplay, hover pause/resume, swipe, focus pause and reduced motion passed without runtime exceptions. Final screenshots/results: ignored `.next/hero-review/card-backgrounds/`; API reads were intercepted.
+- **Skills used:** `ponytail` and `ui-skills`, retaining the previously selected Swiss editorial/accessibility guidance within the existing IOE design.
+- **Terkait requirement:** Use supplied Card IOE, Card 2 and Card 3 assets as their corresponding slide backgrounds.
+- **Breaking change:** No; no content, routes, backend behavior, dependencies, commits or pushes changed.
+- **Belum selesai / follow-up:** Backgrounds are served as original PNGs to avoid the observed local optimizer issue. Image-file edits supplied during this task were preserved; no image files were rewritten by this integration. Earlier unrelated content/font limitations remain unchanged.
+
 ### [2026-11-03 19:00] Hapus header kecil dan footer bernomor pada hero card
 
 - **Tipe:** Fix

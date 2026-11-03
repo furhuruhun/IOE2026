@@ -109,7 +109,7 @@ try {
   await send("Page.bringToFront");
   await send("Runtime.enable");
   await send("Fetch.enable", { patterns: [{ urlPattern: "*://*/api/*" }] });
-  for (const width of [320, 390, 768, 1440]) {
+  for (const width of process.env.UI_WIDTHS?.split(",").map(Number) ?? [320, 390, 768, 1440]) {
     await send("Emulation.setDeviceMetricsOverride", { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     await send("Page.navigate", { url: origin });
     await until("!!document.querySelector('[data-position=active] h1') && !!document.querySelector('button[aria-current=true]')");
@@ -122,14 +122,18 @@ try {
       for (let slide = 0; slide < 3; slide++) {
         await evaluate(`document.querySelectorAll('button[aria-label^="Ke slide"]')[${slide}].click()`);
         await until(`document.querySelectorAll('button[aria-label^="Ke slide"]')[${slide}].getAttribute('aria-current')==='true'`);
-        await wait(600);
+        await wait(1200);
         await until("!document.querySelector('.hero-track').getAnimations({subtree:true}).some(a=>a.playState==='running')");
         await until("[...document.querySelectorAll('[data-position=active] img')].filter(i=>i.getClientRects().length && getComputedStyle(i).visibility==='visible').every(i=>i.complete && i.naturalWidth>0)");
+        await evaluate("Promise.all([...document.querySelectorAll('[data-position=active] img')].filter(i=>i.getClientRects().length && getComputedStyle(i).visibility==='visible').map(i=>i.decode()))");
+        await wait(150);
         const layout = await evaluate(`(() => {
           const hero=document.querySelector('[aria-roledescription=carousel]');
           const card=hero.querySelector('[data-position=active]');
           const poster=card.firstElementChild;
           const box=poster.getBoundingClientRect();
+          const background=card.querySelector('[data-slide-background]');
+          const backgroundBox=background.getBoundingClientRect();
           const texts=[...card.querySelectorAll('h1, h1>span, p, a, [data-program] span')].filter(e=>e.getClientRects().length);
           const fit=texts.every(e=>{const r=e.getBoundingClientRect();return e.scrollWidth<=e.clientWidth+1 && r.left>=box.left-1 && r.right<=box.right+1 && r.bottom<=box.bottom-8});
           const links=[...hero.querySelectorAll('nav a')];
@@ -138,7 +142,9 @@ try {
             h1:hero.querySelectorAll('h1').length, hiddenLinks:[...hero.querySelectorAll('[aria-hidden=true] a')].every(a=>a.tabIndex===-1),
             discovery:links.map(a=>a.getAttribute('href')),targets:[...links,...pagination].every(e=>{const r=e.getBoundingClientRect();return r.height>=44 && r.width>=44}),
             title:card.querySelector('h1').getAttribute('aria-label'), radius:parseFloat(getComputedStyle(poster).borderTopLeftRadius),
-            imagery:[...card.querySelectorAll('img')].map(i=>i.getAttribute('src')),
+            imagery:[...card.querySelectorAll('img:not([data-slide-background])')].map(i=>i.getAttribute('src')),
+            background:{src:new URL(background.currentSrc,location.href).searchParams.get('url') ?? decodeURIComponent(new URL(background.currentSrc,location.href).pathname),fit:getComputedStyle(background).objectFit,
+              covers:backgroundBox.left<=box.left+1.1 && backgroundBox.right>=box.right-1.1 && backgroundBox.top<=box.top+1.1 && backgroundBox.bottom>=box.bottom-1.1},
             programs:[...card.querySelectorAll('[data-program]')].map(e=>e.textContent),
             textPaint:[...card.querySelectorAll('h1,p')].map(e=>({color:getComputedStyle(e).color,background:getComputedStyle(poster).backgroundColor}))};
         })()`);
@@ -146,6 +152,7 @@ try {
         assert.equal(layout.overflow, false, "page has no horizontal overflow");
         assert.equal(layout.h1, 1, "one active hero heading");
         assert.equal(layout.radius, 24, "structured carousel uses a shared rounded silhouette");
+        assert.deepEqual(layout.background,{src:['/images/parent/Card IOE.png','/images/parent/Card 2.png','/images/parent/Card 3.png'][slide],fit:'cover',covers:true},"correct existing background covers each slide without stretching");
         if (slide === 0) assert.ok(layout.imagery.some(src=>src.includes('logo-navibar')), "overview retains its main brand illustration");
         assert.ok(await evaluate("!document.querySelector('[aria-roledescription=carousel] [class*=masthead], [aria-roledescription=carousel] [data-program], [aria-roledescription=carousel] [class*=previewNumber]')"), "card headers and numbered footers are removed");
         assert.ok(layout.imagery.every(src=>['logo-navibar','ioe-oil-rig-design-aquatic','ioe-paper-poster-aquatic'].some(asset=>src.includes(asset))), "existing blue illustration family only; no masks or ribbons");

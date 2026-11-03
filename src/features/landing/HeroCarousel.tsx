@@ -30,8 +30,13 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
   const competition = slide.id === "slide-competition";
   const artwork = overview ? "/images/parent/logo-navibar.png" : competition
     ? "/images/competitions/ioe-oil-rig-design-aquatic.png" : "/images/competitions/ioe-paper-poster-aquatic.png";
+  const background = overview ? "/images/parent/Card IOE.png" : competition
+    ? "/images/parent/Card 2.png" : "/images/parent/Card 3.png";
   return (
     <div className={styles.poster} data-slide={slide.id} data-active={active}>
+      <Image src={background} alt="" fill unoptimized className={styles.background} data-slide-background
+        sizes="(min-width: 1024px) 1040px, 100vw" loading={active ? "eager" : "lazy"}
+        fetchPriority={active ? "high" : "auto"} />
       <div className={styles.art} aria-hidden="true">
         <Image
           className={styles.subject}
