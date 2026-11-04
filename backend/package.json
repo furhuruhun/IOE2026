@@ -14,7 +14,8 @@
     "db:migrate:local": "wrangler d1 migrations apply ioe2027 --local",
     "db:migrate:remote": "wrangler d1 migrations apply ioe2027 --remote",
     "db:seed:local": "wrangler d1 execute ioe2027 --local --file=seed/seed.sql",
-    "db:admin:local": "node scripts/create-admin.mjs"
+    "db:admin:local": "node scripts/create-admin.mjs --local",
+    "db:admin:remote": "node scripts/create-admin.mjs --remote"
   },
   "dependencies": {
     "hono": "^4.13.14",

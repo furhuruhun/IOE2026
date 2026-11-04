@@ -7,9 +7,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const backendDir = resolve(__dirname, "..");
 
-const email = process.argv[2] || "admin@ioe2027.itb.ac.id";
-const name = process.argv[3] || "Panitia IOE 2027";
-const password = process.argv[4] || "AdminIOE2027!";
+const target = process.argv.includes("--remote") ? "--remote" : "--local";
+const positional = process.argv.filter((arg) => !arg.startsWith("--")).slice(2);
+const email = positional[0] || "admin@ioe2027.itb.ac.id";
+const name = positional[1] || "Panitia IOE 2027";
+const password = positional[2] || "AdminIOE2027!";
 
 // Simple PBKDF2 hash using WebCrypto in Node
 async function hashPassword(pw) {
@@ -45,7 +47,7 @@ async function main() {
   console.log(`Creating / updating admin user: ${email} (${password})...`);
   try {
     execSync(
-      `npx wrangler d1 execute ioe2027 --local --command="${sql.replace(/"/g, '\\"')}"`,
+      `npx wrangler d1 execute ioe2027 ${target} --command="${sql.replace(/"/g, '\\"')}"`,
       { stdio: "inherit", cwd: backendDir }
     );
     console.log("Admin user ready!");
