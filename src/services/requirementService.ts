@@ -1,11 +1,6 @@
-import { ApiError } from '@/services/authService';
-import type { ApiResponse } from '@/types/auth';
+import { unwrapResponse as unwrap } from "@/services/apiResponse";
 import type { RequirementItem } from '@/types/requirement';
-async function unwrap<T>(response: Response): Promise<T> {
-  const body = await response.json() as ApiResponse<T>;
-  if (!body.success) throw new ApiError(body.error.code, body.error.message);
-  return body.data;
-}
+
 const path = (id: string) => `/api/competitions/${encodeURIComponent(id)}/requirements`;
 export async function fetchRequirements(id: string) {
   return unwrap<RequirementItem[]>(await fetch(path(id)));

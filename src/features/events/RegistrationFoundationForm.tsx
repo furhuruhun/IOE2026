@@ -10,7 +10,7 @@ import { validateDocument } from "@/utils/validateDocument";
 import type { Profile } from "@/types/profile";
 import type { EventDetail, EventRegistrationInput } from "@/types/event";
 import { useRegisterEvent } from "@/hooks/useEvents";
-import { ApiError } from "@/services/authService";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 
 interface FoundationValues {
   sessionType: "seminar" | "workshop";
@@ -24,7 +24,7 @@ interface FoundationValues {
 }
 
 // A mounted form owns its defaults and edits. Query refreshes do not reset it,
-// and no mutation, browser storage or Profile cache update is performed.
+// and event submission never writes these edits back to the Profile cache.
 export function RegistrationFoundationForm({ profile, event, slug, onSuccess, onError }: {
   profile: Profile;
   event: EventDetail;
@@ -33,6 +33,7 @@ export function RegistrationFoundationForm({ profile, event, slug, onSuccess, on
   onError: (message: string) => void;
 }) {
   const id = useId();
+  const handleError = useErrorHandler();
   const registration = useRegisterEvent(slug);
   const { register, control, setValue, setError, clearErrors, handleSubmit, formState: { errors } } = useForm<FoundationValues>({
     defaultValues: {
@@ -50,7 +51,10 @@ export function RegistrationFoundationForm({ profile, event, slug, onSuccess, on
       await registration.mutateAsync(values satisfies EventRegistrationInput);
       onSuccess();
     } catch (error) {
-      onError(error instanceof ApiError ? error.message : "Pendaftaran event gagal");
+      handleError(error as Error, {
+        redirectTo: `/login?redirect=${encodeURIComponent(`/events/${slug}/register`)}`,
+        onToast: onError, onInlineField: onError, onInlineBanner: onError,
+      });
     }
   };
 

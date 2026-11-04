@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { getErrorEntry } from "@/constants/errorMessages";
 import type { ApiError } from "@/services/authService";
@@ -23,6 +23,7 @@ interface HandleErrorCallbacks {
 // Komponen HANYA perlu supply callback untuk treatment yang relevan ke form/aksi tsb.
 export function useErrorHandler() {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   return useCallback(
@@ -43,7 +44,7 @@ export function useErrorHandler() {
         case "redirect-silent":
           // UNAUTHORIZED — expected flow (token expired), tidak perlu toast.
           queryClient.clear();
-          router.push(callbacks.redirectTo ?? entry.redirectTo ?? "/login");
+          router.push(callbacks.redirectTo ?? `/login?redirect=${encodeURIComponent(pathname + window.location.search)}`);
           break;
         case "redirect-message":
           callbacks.onToast?.(message);
@@ -53,6 +54,6 @@ export function useErrorHandler() {
 
       return { message, treatment: entry.treatment };
     },
-    [router, queryClient]
+    [router, queryClient, pathname]
   );
 }

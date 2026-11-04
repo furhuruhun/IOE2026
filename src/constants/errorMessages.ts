@@ -23,6 +23,8 @@ export const ERROR_MESSAGES: Record<string, ErrorMessageEntry> = {
   NOT_TEAM_LEADER: { message: "Hanya ketua tim yang bisa melakukan ini", treatment: "toast" },
   ADMIN_ONLY: { message: "Kamu tidak punya akses ke halaman ini", treatment: "redirect-message", redirectTo: "/dashboard" },
   TEAM_CODE_INVALID: { message: "Kode tim tidak ditemukan, cek lagi kodenya", treatment: "inline-field" },
+  ALREADY_IN_TEAM: { message: "Kamu sudah tergabung di tim untuk kompetisi ini", treatment: "inline-banner" },
+  ALREADY_REGISTERED: { message: "Kamu sudah terdaftar di event ini", treatment: "inline-banner" },
   TEAM_FULL: { message: "Tim ini sudah penuh", treatment: "inline-banner" },
   TEAM_NOT_PUBLIC: { message: "Tim ini tidak lagi membuka pendaftaran publik", treatment: "toast" },
   REGISTRATION_CLOSED: { message: "Pendaftaran untuk batch ini sudah ditutup", treatment: "inline-banner" },

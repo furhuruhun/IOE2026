@@ -1,5 +1,6 @@
+import { ERROR_MESSAGES } from "@/constants/errorMessages";
 import { NextRequest, NextResponse } from "next/server";
-import { fetchWorkers, getTokenFromCookies } from "@/lib/api";
+import { fetchWorkers, getTokenFromCookies, COOKIE_NAME, CLEAR_AUTH_COOKIE_OPTIONS } from "@/lib/api";
 import { listPublicMockTeams } from "@/mocks/teams";
 import type { ApiResponse } from "@/types/auth";
 import type { PublicTeamSummary } from "@/types/team";
@@ -16,13 +17,21 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
     );
   }
 
-  try {
-    const { status, body } = await fetchWorkers<ApiResponse<PublicTeamSummary[]>>(`/competitions/${id}/team/public`, {
-      method: "GET",
-      token,
-    });
-    return NextResponse.json(body, { status });
-  } catch {
-    return NextResponse.json({ success: true, data: listPublicMockTeams(id) } satisfies ApiResponse<PublicTeamSummary[]>);
+  if (process.env.WORKERS_API_URL) {
+    try {
+      const { status, body } = await fetchWorkers<ApiResponse<PublicTeamSummary[]>>(`/competitions/${id}/team/public`, {
+        method: "GET",
+        token,
+      });
+      const response = NextResponse.json(body, { status });
+      if (status === 401) response.cookies.set(COOKIE_NAME, "", CLEAR_AUTH_COOKIE_OPTIONS);
+      return response;
+    } catch { return failure(502); }
   }
+  if (process.env.NODE_ENV !== "development") return failure(503);
+  return NextResponse.json({ success: true, data: listPublicMockTeams(id) } satisfies ApiResponse<PublicTeamSummary[]>);
+}
+
+function failure(status: number) {
+  return NextResponse.json({ success: false, error: { code: "SERVER_ERROR", message: ERROR_MESSAGES.SERVER_ERROR.message } }, { status });
 }

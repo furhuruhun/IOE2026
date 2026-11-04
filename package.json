@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:fe-resilience": "node scripts/check-fe-resilience.mjs",
+    "check:fe-hardening": "node scripts/check-fe-hardening.mjs",
     "icons:bundle": "node scripts/generate-icon-bundle.mjs"
   },
   "dependencies": {

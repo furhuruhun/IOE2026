@@ -6,6 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Icon } from "@iconify/react/offline";
 import { Toast, type ToastStatus } from "@/components/ui/Toast";
 import { useMyTeam } from "@/hooks/useTeam";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { useTeamModalStore, type TeamModalTab } from "@/stores/useTeamModalStore";
 import type { Team } from "@/types/team";
 import { TeamModalCreateView } from "./TeamModalCreateView";
@@ -21,6 +22,7 @@ type Step = "form" | "success";
 // halaman (Hero, Join a Team Now) tanpa duplikasi instance modal.
 export function TeamModal() {
   const router = useRouter();
+  const handleError = useErrorHandler();
   const returnFocus = useRef<HTMLElement | null>(null);
   const { isOpen, activeTab, competitionId, slug, competitionName, close, setActiveTab } = useTeamModalStore();
   const [step, setStep] = useState<Step>("form");
@@ -32,7 +34,16 @@ export function TeamModal() {
   // F-18 edge case (USER_FLOWS_v2.md): user yang sudah punya tim di kompetisi ini, modal
   // di-skip otomatis begitu diketahui. Query ini juga yang jadi dasar useRegisterGuard
   // memutuskan buka modal vs langsung redirect /dashboard.
-  const { data: myTeam } = useMyTeam(competitionId, isOpen);
+  const { data: myTeam, error: teamError } = useMyTeam(competitionId, isOpen);
+
+  useEffect(() => {
+    if (!isOpen || !teamError) return;
+    handleError(teamError, {
+      onToast: handleToast,
+      redirectTo: `/login?redirect=${encodeURIComponent(`/competitions/${slug}?openTeamModal=1`)}`,
+    });
+    if ("code" in teamError && teamError.code === "UNAUTHORIZED") close();
+  }, [isOpen, teamError, handleError, handleToast, slug, close]);
 
   useEffect(() => {
     if (!isOpen) {

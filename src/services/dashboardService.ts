@@ -1,14 +1,5 @@
-import type { ApiResponse } from "@/types/auth";
+import { unwrapResponse as unwrap } from "@/services/apiResponse";
 import type { AssignmentItem, CalendarItem, JourneyItem, RegisteredEventItem } from "@/types/dashboard";
-import { ApiError } from "@/services/authService";
-
-async function unwrap<T>(res: Response): Promise<T> {
-  const json = (await res.json()) as ApiResponse<T>;
-  if (!json.success) {
-    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Terjadi kesalahan, coba lagi nanti");
-  }
-  return json.data;
-}
 
 export async function fetchJourney(): Promise<JourneyItem[]> {
   const res = await fetch("/api/dashboard/journey");

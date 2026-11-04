@@ -1,5 +1,96 @@
 # FE HEAD regression verification
 
+## Phase 2 resilience update - 2026-11-04
+
+Added public/protected/root error boundaries plus independent global-error recovery.
+The installed Next.js supports both retry and reset; retry is used to re-fetch and
+re-render. Public page failures preserve their layout Navbar/Footer. Protected
+fallbacks intentionally replace page-owned chrome with Retry, Dashboard and Home.
+Global recovery uses system fonts/native controls without providers or icon setup;
+it initializes theme before paint as well as through an inline script, because
+production testing showed that React may install this document without executing
+its script. Generic copy is displayed; errors/digests are logged to the console.
+
+Talkshow/Short Course now expose initial loading, API failure/retry, missing-event
+success and cached refresh warnings beside registration controls. Query isFetched
+separates an initial load from a retry that returns to pending. Retry remains
+visible and disabled during refetch; inline feedback never steals focus. Existing
+registration availability/content guards remain unchanged.
+
+Only dynamic public competition/event details receive segment loading skeletons.
+Production browser tests observed both fallbacks during delayed RSC navigation;
+reduced-motion emulation disabled their pulse animation. Client query loading is
+still handled inside components; no broad dashboard/static loading layer was added.
+
+### Phase 2 verification
+
+- Final production build passed after every temporary fixture was removed,
+  generating the original 24 static pages with no test routes in the route table.
+- TypeScript --noEmit and git diff --check passed. Frontend/scripts ESLint passed
+  with zero errors and the existing RegisterForm compiler warning.
+
+- `npm run check:fe-resilience`: passed rendered feedback-state, retry, boundary,
+  independent-document and loading semantics checks without a new dependency.
+- Existing hardening and Events proxy checks passed after these changes.
+- Production headless Edge: 30 event/client-boundary cases across light/dark and
+  320/768/1440px passed. Covered failed reads, retry busy state, successful retry,
+  retained registration guards, cached refresh failure, preserved public chrome,
+  repeated client crashes, successful recovery, focus/Tab outlines and overflow.
+- Three additional production server-crash cases passed for public/protected/auth.
+- Six production root-layout crash cases passed across both themes/all three widths,
+  including independent fonts/styles, theme, focus, keyboard controls, repeated
+  failure and restoration of the real layout after retry.
+- Successful missing-event responses and both detail-navigation loading states
+  passed separately, including reduced motion. Screenshots were visually inspected.
+- Development also passed the 30 event/client-boundary viewport/theme cases before
+  the production run. Loading prefetch behavior was verified in production instead
+  of claiming a development-mode loading fallback result.
+
+Temporary crash routes and root-layout injection were removed, and the original
+root layout was restored. Persistent source contains no test routes or failure
+switches. Local harness/results/screenshots are retained under ignored out/phase2;
+all-results.json holds the 30 client cases plus three server cases, global-results.json
+holds six global cases, and loading-results.json holds three targeted checks.
+
+This is targeted resilience verification, not a site-wide accessibility or browser
+compatibility certification. Existing RegisterForm compiler warning and unrelated
+broken public-content regression references remain. No real backend submission or
+deployment verification is claimed. Existing Phase 1 and package-lock changes were
+preserved; no new package dependencies were added.
+
+## FE hardening update - 2026-11-04
+
+Implemented the five-task hardening plan: internal login redirects, development-only
+competition/team mocks, shared client response parsing, error-map coverage and
+session-expiry recovery. This does not replace historical visual verification.
+
+Run `npm run check:fe-hardening`. It exercises real TypeScript modules and Next
+responses with cookies, network and hook adapters replaced. Coverage includes
+unsafe/normalized redirects, malformed response envelopes and HTTP failures,
+contract/backend error-code coverage, silent cache-clearing redirects, Events demo
+provenance, team 404 and anonymous-session semantics, and competition/team handlers
+with/without a backend in development/production. It checks upstream failures,
+status forwarding, JSON input validation and cookie clearing including non-JSON
+401s. Auth/me checks ensure backend outages do not clear session cookies.
+
+Session audit: profile reads/saves, dashboard reads, requirements reads/uploads/
+deletes and team management already use the shared handler. Fixed registration
+submission, modal team reads and the registration guard. Cookie-only route checks
+and session-cache timing remain unchanged.
+
+The backend catalog has 19 codes; the contract lists 17. Added FE mappings and
+treatment documentation for ALREADY_IN_TEAM and ALREADY_REGISTERED. Contract table
+synchronization remains a follow-up. No backend implementation was changed.
+
+Validation: TypeScript --noEmit passed; ESLint src/scripts passed with zero errors
+and the existing RegisterForm compiler warning. Hardening checks, Events proxy
+checks, deadline sorting and git diff --check passed.
+
+No visual changes, new dependencies, production build, browser matrix, real Workers
+integration or deployment sign-off are claimed. The pre-existing content-check
+failure referencing deleted Memories components remains outside this plan.
+The pre-existing package-lock.json working-tree change was retained.
+
 ## Current-state update — 2026-11-02
 
 The October 29 report below is historical evidence, not a current HEAD sign-off.

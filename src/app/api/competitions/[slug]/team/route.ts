@@ -22,7 +22,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     );
   }
 
-  const { teamName } = await req.json();
+  let teamName: string;
+  try {
+    const input = await req.json();
+    if (typeof input?.teamName !== "string" || !input.teamName.trim()) throw new Error("Invalid input");
+    teamName = input.teamName;
+  } catch {
+    return NextResponse.json({ success: false, error: { code: "VALIDATION_ERROR", message: ERROR_MESSAGES.VALIDATION_ERROR.message } }, { status: 400 });
+  }
 
   if (process.env.WORKERS_API_URL) {
     try {

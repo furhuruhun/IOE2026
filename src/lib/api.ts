@@ -49,7 +49,14 @@ export async function fetchWorkers<T = unknown>(
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 
-  const json = (await res.json()) as T;
+  let json: T;
+  try {
+    json = (await res.json()) as T;
+  } catch (error) {
+    // Preserve expired-session status so each proxy can clear its auth cookie.
+    if (res.status !== 401) throw error;
+    json = { success: false, error: { code: "UNAUTHORIZED", message: "" } } as T;
+  }
   return { status: res.status, body: json };
 }
 

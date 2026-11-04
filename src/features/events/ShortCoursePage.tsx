@@ -7,6 +7,7 @@ import { Icon } from "@iconify/react/offline";
 import { Button, buttonStyles } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
+import { EventRegistrationFeedback } from "./EventRegistrationFeedback";
 import { useEvents } from "@/hooks/useEvents";
 import { mockEvents } from "@/mocks/events";
 import type { EventSummary } from "@/types/event";
@@ -65,7 +66,7 @@ function HeroRegistrationAction({ state }: { state: RegistrationState }) {
   return <Button disabled size="sm"><Icon icon="mdi:door-open" className="size-5 shrink-0" aria-hidden="true" />{state.label}</Button>;
 }
 
-function ShortCourseHero({ state, title, now, demoDeadline }: { state: RegistrationState; title: string; now: number | null; demoDeadline: Date | null }) {
+function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state: RegistrationState; title: string; now: number | null; demoDeadline: Date | null; feedback: React.ReactNode }) {
   const countdownDeadline = state.deadline ?? demoDeadline;
   const futureDeadline = countdownDeadline && now !== null && countdownDeadline.getTime() > now ? countdownDeadline : null;
 
@@ -85,6 +86,7 @@ function ShortCourseHero({ state, title, now, demoDeadline }: { state: Registrat
               <HeroRegistrationAction state={state} />
               <a href="#about-short-course" className={`${heroAction} `}><Icon icon="mdi:door-open" className="size-5 shrink-0 md:size-6" aria-hidden="true" />More Details</a>
             </div>
+            {feedback}
           </div>
           <div className="w-full flex items-center justify-center">
             <div className="w-full max-w-[400px] h-auto relative">
@@ -358,7 +360,7 @@ function ShortCourseDocumentation() {
 }
 
 export function ShortCoursePage() {
-  const { data, isError } = useEvents();
+  const { data, isPending, isError, isFetching, isFetched, refetch } = useEvents();
   const now = useCurrentTime();
   const event = data?.events.find((item) => item.slug === "short-course");
   const state = getRegistrationState(event, data?.isDemo ?? true, now);
@@ -374,7 +376,13 @@ export function ShortCoursePage() {
 
   return (
     <main id="main-content" tabIndex={-1} className="relative flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 pb-20 text-neutral-900 md:gap-24 md:pb-32">
-      <ShortCourseHero state={state} title={!data?.isDemo && event ? event.name : shortCourseContent.title} now={now} demoDeadline={demoDeadline} />
+      <ShortCourseHero state={state} title={!data?.isDemo && event ? event.name : shortCourseContent.title} now={now} demoDeadline={demoDeadline} feedback={<EventRegistrationFeedback
+        isPending={isPending && !isFetched}
+        isError={isError || (isPending && isFetched)}
+        isFetching={isFetching}
+        hasEvent={Boolean(event)}
+        onRetry={() => { void refetch(); }}
+      />} />
       <AboutShortCourse />
       <ShortCourseBenefits />
       <ShortCourseTimeline milestones={milestones} now={now} />

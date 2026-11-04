@@ -41,6 +41,8 @@
 | `NOT_TEAM_LEADER` | 403 | `DELETE /team/members/:userId`, `PATCH /team/visibility` | **Toast** | Tombol aksi ini seharusnya sudah disembunyikan di UI untuk non-leader — kalau toast ini muncul, kemungkinan ada state stale, ikutkan `refetch()` team data setelah toast |
 | `ADMIN_ONLY` | 403 | Semua endpoint `/admin/*` | **Redirect + pesan** ke `/dashboard` | Toast singkat: "Kamu tidak punya akses ke halaman ini" muncul di `/dashboard` setelah redirect |
 | `TEAM_CODE_INVALID` | 400 | `POST /team/join` | **Inline (field-level)** — di bawah input Team Code | — |
+| `ALREADY_IN_TEAM` | 400 | Competition team create/join | **Inline (form-level banner)** | Already a member; retain the form and explain the conflict. |
+| `ALREADY_REGISTERED` | 400 | Event registration | **Inline (form-level banner)** | Already registered; retain the form and explain the conflict. |
 | `TEAM_FULL` | 400 | `POST /team/join`, `POST /team/join-public` | **Inline (form-level banner)** di modal Join Team | Modal tetap terbuka, tampilkan CTA alternatif ("cari tim lain" / "buat tim baru") |
 | `TEAM_NOT_PUBLIC` | 400 | `POST /team/join-public` | **Toast** | Kemungkinan besar karena list tim public sudah stale — trigger `refetch()` list tim public setelah toast |
 | `REGISTRATION_CLOSED` | 400 | `POST /events/:id/register`, `POST /competitions/:id/team` | **Inline (form-level banner)** | Sembunyikan/disable tombol submit setelah error ini muncul, supaya user tidak retry percuma |
@@ -151,3 +153,37 @@ export const DEFAULT_ERROR = ERROR_MESSAGES.SERVER_ERROR;
 For Journey, Preparation, Calendar and Registered Events read queries, display persistent mapped error text next to the affected content with a local retry button. The existing useErrorHandler mapping still supplies the message and auth redirects; these components render their message callback locally rather than creating parallel global toasts. Retry is disabled during its active request. Loading has an accessible status and busy indication; empty state is distinct from an error.
 
 Shared action-error toasts use role=alert and remain until explicitly dismissed. Other toast statuses use role=status; their existing timed dismissal is suspended while hovered or focused, followed by a fresh reading interval. This supersedes earlier automatic dismissal guidance for error toasts only. No API codes or contracts change.
+
+
+## Route-level crashes and event registration feedback (Phase 2)
+
+- `src/app/(public)/error.tsx` catches page render crashes while its parent public
+  layout retains Navbar/Footer. Root `error.tsx` catches other descendant crashes,
+  including auth pages and failures in child layouts. `(protected)/error.tsx`
+  offers retry, Dashboard and Home; page-owned dashboard chrome is not retained.
+- Boundaries use the installed Next.js `retry()` API to re-fetch/re-render. `reset()`
+  also exists, but does not re-fetch. A failed retry keeps the fallback actionable.
+- `global-error.tsx` replaces a failed root layout with its own HTML document,
+  theme initialization (including before-paint initialization when React installs
+  the document without executing inline scripts), global CSS, native controls and
+  system-font fallback. Its
+  Home link intentionally performs full navigation outside the failed router tree.
+- Route fallback content receives focus and announces a generic message. Technical
+  errors/digests are logged to the console, never displayed. No reporting service
+  is configured. Inline event feedback never steals keyboard focus.
+- These boundaries handle render/server-component crashes, not event-handler or
+  arbitrary asynchronous exceptions. API/query/mutation errors retain their
+  existing shared handling; TanStack Query errors are not thrown into boundaries.
+- Talkshow/Short Course distinguish initial loading, API failure, successful
+  missing-event responses and cached-data refresh failure. Failed reads use the
+  existing informational FormBanner and retry; retry is disabled during fetching.
+  Existing content remains visible, and registration readiness/demo/deadline guards
+  remain unchanged. Recovery UI copy lives in `src/constants/recoveryMessages.ts`;
+  it does not introduce API error codes.
+- Dynamic public competition/event detail routes have a segment loading fallback
+  for navigation. Their client queries retain their own loading states; static
+  pages and the client-fetching dashboard receive no extra loading boundary.
+
+Open design item: there is no approved crash-page artwork/layout. Recovery screens
+use the existing tokens and simple heading/message/actions pattern. A later visual
+specification can replace their presentation without changing error semantics.

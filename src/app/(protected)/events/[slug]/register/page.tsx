@@ -1,6 +1,6 @@
 import { RegistrationFoundationPage } from "@/features/events/RegistrationFoundationPage";
 
-// Protected by src/proxy.ts. This foundation has no registration mutation.
+// Protected by src/proxy.ts; registration submits through the event proxy.
 // Auto-fill institution/phone/domicile dari GET /profile — lihat API_CONTRACT.md POST /events/:id/register.
 export default async function EventRegisterPage({
   params,

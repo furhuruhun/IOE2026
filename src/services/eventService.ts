@@ -1,5 +1,4 @@
-import { ApiError } from "@/services/authService";
-import type { ApiResponse } from "@/types/auth";
+import { ApiError, unwrapResponse } from "@/services/apiResponse";
 import type { EventDetailResult, EventListResult, EventRegistrationInput, EventRegistrationResult, EventSummary } from "@/types/event";
 import { z } from "zod";
 
@@ -12,11 +11,8 @@ const eventDetailSchema = z.object({
 export async function fetchEvent(slug: string): Promise<EventDetailResult> {
   try {
     const response = await fetch(`/api/events/${encodeURIComponent(slug)}`, { cache: "no-store" });
-    const json = await response.json();
-    if (!response.ok || !json.success) {
-      throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Detail event belum dapat dimuat");
-    }
-    const parsed = eventDetailSchema.safeParse(json.data);
+    const data = await unwrapResponse<unknown>(response);
+    const parsed = eventDetailSchema.safeParse(data);
     if (!parsed.success || parsed.data.slug !== slug) throw new ApiError("SERVER_ERROR", "Data event tidak sesuai");
     return { event: parsed.data, isDemo: response.headers.get("X-IOE-Demo-Data") === "true" };
   } catch (error) {
@@ -27,11 +23,8 @@ export async function fetchEvent(slug: string): Promise<EventDetailResult> {
 
 export async function fetchEvents(): Promise<EventListResult> {
   const response = await fetch("/api/events", { cache: "no-store" });
-  const json = (await response.json()) as ApiResponse<EventSummary[]>;
-  if (!json.success) {
-    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Daftar event belum dapat dimuat");
-  }
-  return { events: json.data, isDemo: response.headers.get("X-IOE-Demo-Data") === "true" };
+  const events = await unwrapResponse<EventSummary[]>(response);
+  return { events, isDemo: response.headers.get("X-IOE-Demo-Data") === "true" };
 }
 
 export async function registerEvent(slug: string, input: EventRegistrationInput): Promise<EventRegistrationResult> {
@@ -49,15 +42,5 @@ export async function registerEvent(slug: string, input: EventRegistrationInput)
     method: "POST",
     body,
   });
-  const json = (await response.json()) as ApiResponse<EventRegistrationResult>;
-  if (!response.ok) {
-    if (!json.success) {
-      throw new ApiError(json.error.code, json.error.message);
-    }
-    throw new ApiError("SERVER_ERROR", "Pendaftaran event gagal");
-  }
-  if (!json.success) {
-    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Pendaftaran event gagal");
-  }
-  return json.data;
+  return unwrapResponse<EventRegistrationResult>(response);
 }

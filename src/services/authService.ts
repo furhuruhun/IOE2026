@@ -1,29 +1,13 @@
+export { ApiError } from "@/services/apiResponse";
+import { unwrapResponse as unwrap } from "@/services/apiResponse";
 import type {
   User,
   RegisterRequestBody,
   LoginRequestBody,
   GoogleLoginRequestBody,
-  ApiResponse,
   AuthResponseData,
   GoogleAuthResponseData,
 } from "@/types/auth";
-
-export class ApiError extends Error {
-  code: string;
-
-  constructor(code: string, message: string) {
-    super(message);
-    this.code = code;
-  }
-}
-
-async function unwrap<T>(res: Response): Promise<T> {
-  const json = (await res.json()) as ApiResponse<T>;
-  if (!json.success) {
-    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Terjadi kesalahan, coba lagi nanti");
-  }
-  return json.data;
-}
 
 export async function registerUser(body: RegisterRequestBody): Promise<AuthResponseData> {
   const res = await fetch("/api/auth/register", {

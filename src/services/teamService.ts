@@ -1,14 +1,5 @@
-import type { ApiResponse } from "@/types/auth";
+import { unwrapResponse as unwrap } from "@/services/apiResponse";
 import type { PublicTeamSummary, Team } from "@/types/team";
-import { ApiError } from "@/services/authService";
-
-async function unwrap<T>(res: Response): Promise<T> {
-  const json = (await res.json()) as ApiResponse<T>;
-  if (!json.success) {
-    throw new ApiError(json.error?.code ?? "SERVER_ERROR", json.error?.message ?? "Terjadi kesalahan, coba lagi nanti");
-  }
-  return json.data;
-}
 
 export async function createTeam(competitionId: string, teamName: string): Promise<Team> {
   const res = await fetch(`/api/competitions/${competitionId}/team`, {

@@ -7,6 +7,7 @@ import { buttonStyles } from "@/components/ui/Button";
 import { Accordion } from "@/components/ui/Accordion";
 import { eventContacts } from "@/features/events/eventOverviewContent";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
+import { EventRegistrationFeedback } from "./EventRegistrationFeedback";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import { talkshowContent, talkshowFaqs } from "./talkshowContent";
@@ -83,7 +84,7 @@ function MetadataLine({ icon, children }: { icon: string; children: React.ReactN
   );
 }
 
-function TalkshowHero({ state }: { state: RegistrationState }) {
+function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback: React.ReactNode }) {
   return (
     <section aria-labelledby="talkshow-title" className={`${shell} flex flex-col items-center gap-8 pt-10 lg:flex-row lg:justify-between`}>
       <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:max-w-[560px] lg:items-start lg:text-left">
@@ -106,6 +107,7 @@ function TalkshowHero({ state }: { state: RegistrationState }) {
           </a>
         </div>
         {!state.available && <p className="mt-3 font-body text-b4 text-neutral-700" role="status">{state.note}</p>}
+        {feedback}
       </div>
       <div className="flex min-w-0 flex-1 justify-center lg:justify-end">
         <OceanVisual />
@@ -242,7 +244,7 @@ function TalkshowContact() {
 }
 
 export function TalkshowPage() {
-  const { data } = useEvents();
+  const { data, isPending, isError, isFetching, isFetched, refetch } = useEvents();
   const now = useCurrentTime();
   const event = data?.events.find((item) => item.slug === "talkshow");
   const state = registrationState(event, data?.isDemo ?? true, now);
@@ -251,7 +253,13 @@ export function TalkshowPage() {
     <main id="main-content" tabIndex={-1} className="relative isolate flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-24">
       <Image src="/images/events/ioe-talk-background-flow-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1251} className="pointer-events-none absolute left-1/2 top-[8%] z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain md:top-0 md:w-full" />
       <Image src="/images/events/ioe-talk-photograph-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1952} className="pointer-events-none absolute left-1/2 top-[15%] z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain md:w-full" />
-      <TalkshowHero state={state} />
+      <TalkshowHero state={state} feedback={<EventRegistrationFeedback
+        isPending={isPending && !isFetched}
+        isError={isError || (isPending && isFetched)}
+        isFetching={isFetching}
+        hasEvent={Boolean(event)}
+        onRetry={() => { void refetch(); }}
+      />} />
       <TalkshowDetails state={state} />
       <TalkshowSpeakers />
       <TalkshowRegistrationRecall state={state} />

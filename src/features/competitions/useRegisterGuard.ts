@@ -2,6 +2,8 @@
 
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
+import { ApiError } from "@/services/authService";
 import { useIsLoggedIn } from "@/hooks/useAuth";
 import { fetchMyTeam } from "@/services/teamService";
 import { useTeamModalStore } from "@/stores/useTeamModalStore";
@@ -24,6 +26,7 @@ interface RegisterGuardContext {
 // ini, modal di-skip, langsung ke /dashboard) baru buka modal Create/Join Team.
 export function useRegisterGuard({ competitionId, slug, competitionName }: RegisterGuardContext) {
   const router = useRouter();
+  const handleError = useErrorHandler();
   const isLoggedIn = useIsLoggedIn();
   const openModal = useTeamModalStore((s) => s.open);
 
@@ -34,12 +37,19 @@ export function useRegisterGuard({ competitionId, slug, competitionName }: Regis
     }
     if (!competitionId || !competitionName) return; // data kompetisi belum selesai fetch
 
-    const myTeam = await fetchMyTeam(competitionId).catch(() => null);
+    const myTeam = await fetchMyTeam(competitionId).catch((error) => {
+      if (error instanceof ApiError && error.code === "UNAUTHORIZED") {
+        handleError(error, { redirectTo: `/login?redirect=${encodeURIComponent(`/competitions/${slug}?openTeamModal=1`)}` });
+        return undefined;
+      }
+      return null;
+    });
+    if (myTeam === undefined) return;
     if (myTeam) {
       router.push("/dashboard");
       return;
     }
 
     openModal({ competitionId, slug, competitionName });
-  }, [isLoggedIn, router, competitionId, slug, competitionName, openModal]);
+  }, [isLoggedIn, router, competitionId, slug, competitionName, openModal, handleError]);
 }

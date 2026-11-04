@@ -9,6 +9,7 @@ import {
   logoutUser,
   fetchCurrentUser,
 } from "@/services/authService";
+import { getSafeRedirect } from "@/utils/safeRedirect";
 import type { User } from "@/types/auth";
 
 export const authKeys = {
@@ -32,7 +33,7 @@ function useRedirectAfterAuth() {
 
   return () => {
     const redirectTo = searchParams.get("redirect");
-    router.push(redirectTo && redirectTo.startsWith("/") ? redirectTo : "/dashboard");
+    router.push(getSafeRedirect(redirectTo));
   };
 }
 

@@ -12,6 +12,90 @@
 
 ## Unreleased
 
+### [2026-11-04 19:38] Add route and root-layout crash recovery
+
+- **Tipe:** Feature
+- **Scope:** Frontend render resilience and accessible recovery UI.
+- **Ringkasan:** Public, protected and root boundaries use Next.js retry to recover from render failures. Public layout chrome survives page crashes; protected failures offer Dashboard/Home. Global recovery supplies its own HTML, CSS, system fonts and native controls, with theme initialization before paint when React does not execute the inline script. Fallbacks focus their main content and log technical details without displaying them.
+- **File diubah:**
+  - `src/app/error.tsx`, `src/app/(public)/error.tsx`, `src/app/(protected)/error.tsx`, `src/app/global-error.tsx` - boundary placement and independent global document.
+  - `src/components/ui/ErrorState.tsx`, `src/components/ui/RouteError.tsx`, `src/constants/recoveryMessages.ts` - shared fallback presentation, logging and copy.
+  - `scripts/check-fe-resilience.mjs`, `package.json` - dependency-free rendered recovery checks via check:fe-resilience.
+  - `amunisi/ERROR_HANDLING_FE.md`, `amunisi/FE_HEAD_REGRESSION_VERIFICATION.md` - recovery conventions and evidence.
+- **Terkait requirement:** Existing public/protected route map; frontend unexpected-error recovery.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** No official crash-page artwork/layout exists; existing tokens and patterns are used. No telemetry service is configured. Render boundaries do not replace API/mutation error handling. Temporary client/server crash routes and a root-layout failure injection were used for development/production testing, then removed; the original root layout was restored. Screenshots and the local harness are retained only under ignored out/phase2.
+
+### [2026-11-04 19:38] Explain event API failures and scope detail-route loading
+
+- **Tipe:** Fix
+- **Scope:** Talkshow/Short Course registration feedback and public detail navigation.
+- **Ringkasan:** Event heroes now distinguish initial loading, read failure, successful missing-event responses and cached refresh failure. Retry stays visible and disabled during refetch; cached content remains and readiness/deadline/demo guards are unchanged. Only dynamic competition/event detail routes receive navigation skeletons, verified during delayed production RSC navigation with reduced motion.
+- **File diubah:**
+  - `src/features/events/EventRegistrationFeedback.tsx`, `src/features/events/TalkshowPage.tsx`, `src/features/events/ShortCoursePage.tsx` - inline informational feedback beside registration controls, without moving focus.
+  - `src/components/ui/RouteLoading.tsx`, `src/app/(public)/events/[slug]/loading.tsx`, `src/app/(public)/competitions/[slug]/loading.tsx` - accessible, reduced-motion-aware segment loading.
+  - `src/constants/recoveryMessages.ts`, `scripts/check-fe-resilience.mjs` - centralized copy and rendered state checks.
+- **Terkait requirement:** F-12-F-21, F-27-F-34; existing Events API and registration readiness rules.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** Official content and registration readiness remain separate work. Dashboard/static routes keep their existing client loading states. Browser API fixtures validate the frontend, not real Workers connectivity or registration submission. Existing unrelated content-regression references to deleted Memories components remain unresolved.
+
+
+### [2026-11-04 19:06] Close external login redirects
+
+- **Tipe:** Fix
+- **Scope:** FE authentication, proxy and service hardening.
+- **Ringkasan:** Login and Google login reject external origins, backslashes, control characters and unsafe normalized paths.
+- **File diubah:**
+  - src/utils/safeRedirect.ts; src/hooks/useAuth.ts - implementation and focused regression coverage.
+- **Terkait requirement:** F-12-F-26, F-41/F-43a; existing API error/session contracts.
+- **Breaking change:** Tidak - successful API contracts remain unchanged.
+- **Belum selesai / follow-up:** Account registration retains its existing /dashboard destination.
+
+### [2026-11-04 19:06] Restrict competition and team mocks
+
+- **Tipe:** Fix
+- **Scope:** FE authentication, proxy and service hardening.
+- **Ringkasan:** Five unguarded routes now use fixtures only in development without a backend. Configured failures return 502; unconfigured production returns 503. Team 401s clear cookies; create/join inputs return 400 for malformed JSON.
+- **File diubah:**
+  - src/app/api/competitions/**/route.ts - implementation and focused regression coverage.
+- **Terkait requirement:** F-12-F-26, F-41/F-43a; existing API error/session contracts.
+- **Breaking change:** Tidak - successful API contracts remain unchanged.
+- **Belum selesai / follow-up:** Configured but unreachable Workers now returns errors in development; unset WORKERS_API_URL for competition/team fixtures. Events retains its separate development demo policy.
+
+### [2026-11-04 19:06] Share client response parsing
+
+- **Tipe:** Refactor
+- **Scope:** FE authentication, proxy and service hardening.
+- **Ringkasan:** Seven services share safe envelope/HTTP parsing. Events provenance and schema checks, team 404-as-null and anonymous-session semantics remain. ApiError is re-exported for existing callers. Added check:fe-hardening without dependencies.
+- **File diubah:**
+  - src/services/apiResponse.ts; src/services/*Service.ts; package.json; scripts/check-fe-hardening.mjs - implementation and focused regression coverage.
+- **Terkait requirement:** F-12-F-26, F-41/F-43a; existing API error/session contracts.
+- **Breaking change:** Tidak - successful API contracts remain unchanged.
+- **Belum selesai / follow-up:** Parser checks envelopes rather than every endpoint payload. Offline errors retain existing shared fallback handling.
+
+### [2026-11-04 19:06] Cover actual backend error codes
+
+- **Tipe:** Fix
+- **Scope:** FE authentication, proxy and service hardening.
+- **Ringkasan:** All 17 contract codes are covered. Added the actual backend codes ALREADY_IN_TEAM and ALREADY_REGISTERED with documented inline-banner treatments. Regression checks compare contract/backend coverage and messages.
+- **File diubah:**
+  - src/constants/errorMessages.ts; amunisi/ERROR_HANDLING_FE.md; scripts/check-fe-hardening.mjs - implementation and focused regression coverage.
+- **Terkait requirement:** F-12-F-26, F-41/F-43a; existing API error/session contracts.
+- **Breaking change:** Tidak - successful API contracts remain unchanged.
+- **Belum selesai / follow-up:** API_CONTRACT (2).md still lists 17 codes; a human should add the two existing backend codes to that table. Backend implementation unchanged.
+
+### [2026-11-04 19:06] Recover expired sessions consistently
+
+- **Tipe:** Fix
+- **Scope:** FE authentication, proxy and service hardening.
+- **Ringkasan:** Registration submission, modal reads and the register guard now use shared unauthorized recovery. Default redirects retain path/query and clear cache. Non-JSON upstream 401s preserve cookie clearing; auth/me no longer clears cookies on backend outages.
+- **File diubah:**
+  - src/hooks/useErrorHandler.ts; src/features/competitions/TeamModal.tsx; src/features/competitions/useRegisterGuard.ts; src/features/events/RegistrationFoundationForm.tsx; src/app/(protected)/events/[slug]/register/page.tsx; src/app/api/auth/me/route.ts; src/lib/api.ts; scripts/check-fe-hardening.mjs - implementation and focused regression coverage.
+- **Terkait requirement:** F-12-F-26, F-41/F-43a; existing API error/session contracts.
+- **Breaking change:** Tidak - successful API contracts remain unchanged.
+- **Belum selesai / follow-up:** Existing profile/dashboard/requirements/team-management handlers were audited. Cookie-only route checks and session-cache timing remain. Real Workers/browser verification remains outstanding.
+
+
 ### [2026-11-03 19:23] Apply supplied Card artwork as matching hero backgrounds
 
 - **Tipe:** Feature
