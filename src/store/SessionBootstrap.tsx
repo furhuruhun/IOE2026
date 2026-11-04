@@ -1,10 +1,14 @@
 "use client";
 
 import { useCurrentUser } from "@/hooks/useAuth";
+import { useEffect } from "react";
+import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 
-// Tidak render apapun — satu-satunya tujuan trigger GET /api/auth/me saat root layout mount,
-// hasilnya masuk cache TanStack Query untuk dipakai useUser() di komponen manapun.
+// Bootstrap the shared session cache and discard transient confirmation evidence
+// when the session is known to be anonymous.
 export function SessionBootstrap() {
-  useCurrentUser();
+  const { data } = useCurrentUser();
+  const clear = useEventRegistrationStore(state => state.clear);
+  useEffect(() => { if (data === null) clear(); }, [data, clear]);
   return null;
 }

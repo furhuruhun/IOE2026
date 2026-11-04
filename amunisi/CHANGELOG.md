@@ -12,6 +12,23 @@
 
 ## Unreleased
 
+### [2026-11-04 21:49] Complete the guarded frontend registration journey
+
+- **Tipe:** Feature
+- **Scope:** Event registration, confirmation, frontend API errors and regression coverage.
+- **Ringkasan:** Complete accessible validation/consent, guarded direct routes, preflight eligibility and safe submission outcomes while leaving public readiness disabled. Successful registration replaces the form with a receipt-backed confirmation; direct access/refresh cannot claim success from a URL parameter.
+- **File diubah:**
+  - `src/features/events/RegistrationFoundationForm.tsx`, `RegistrationFoundationPage.tsx` - inline validation, local consent, radio session/speaker controls, readiness, preflight, duplicate lock, retained edits/files, server rejection and uncertain-outcome recovery.
+  - `src/features/events/RegistrationConfirmation.tsx`, `src/app/(public)/confirmation/page.tsx`, `src/stores/useEventRegistrationStore.ts`, `src/store/SessionBootstrap.tsx` - participant-scoped in-memory success evidence, replace navigation, neutral refresh/direct access, focus and session cleanup.
+  - `src/features/events/registrationState.ts`, `ShortCoursePage.tsx`, `TalkshowPage.tsx`, `shortCourseContent.ts`, `talkshowContent.ts` - shared readiness checks; both public readiness flags remain false and existing CTA precedence/opening behavior is retained.
+  - `src/services/apiResponse.ts`, `eventService.ts`, `src/constants/errorMessages.ts`, `src/app/api/events/[slug]/register/route.ts` - validated optional field details, verified POST success, uncertain outcomes, centralized recovery copy and non-JSON 401 cookie clearing.
+  - `src/hooks/useEvents.ts` - targeted event/dashboard-events/calendar invalidation independent of committed registration success; no mutation auto-retry.
+  - `scripts/check-public-content.mjs`, `scripts/check-registration.mjs`, `scripts/check-registration-browser.mjs`, `package.json` - repaired content/timeline checks, dependency-free module/proxy checks, temporary dev-only browser fixtures and check:registration command.
+  - `amunisi/PHASE6_REGISTRATION.md`, `amunisi/ERROR_HANDLING_FE.md` - implementation, evidence, unresolved dependencies and Phase 7 handoff.
+- **Terkait requirement:** F-31/F-34a, F-53/F-56, PDP NFR; /events/[slug]/register and /confirmation; existing Events multipart API and dashboard calendar/event reads.
+- **Breaking change:** Tidak - existing API fields and two-argument ApiError consumers are preserved. Previously unguarded direct registration forms now respect the already-disabled public readiness policy.
+- **Belum selesai / follow-up:** Phase 7 real-backend/deployment verification and organizer activation remain outstanding. Read contracts lack paid/capacity/session-policy metadata; no fields or payment promises were invented. Consent/privacy wording and official content require organizer review. Backend accepts both ID and slug despite the contract's :id notation; no backend/contract edit was made. Historical design/flow notes describing a placeholder, unconditional URL-based success or email delivery are superseded by this scoped implementation record. Cross-tab/reload idempotency belongs to backend verification. Temporary fixtures are removed, no new dependencies, and no commit/push.
+
 ### [2026-11-04 19:38] Add route and root-layout crash recovery
 
 - **Tipe:** Feature

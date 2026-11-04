@@ -54,10 +54,10 @@ assert.equal(shortCourse.includes("Pembicara seminar menyusul"), preview);
 assert.equal((about.match(/Preview/g) ?? []).length, 0, "sponsor and statistic notices removed");
 assert.equal(timeline.includes("Preview"), false, "sample milestones have no preview notice");
 assert.ok(!footer.includes("Preview") && !shortCourse.includes("Preview"), "no visible preview notices");
-for (const [file,name] of [["features/landing/MemoriesSection.tsx","MemoriesSection"],["features/competitions/CompetitionMemoriesSection.tsx","CompetitionMemoriesSection"],["features/competitions/CompetitionTestimonialCarousel.tsx","CompetitionTestimonialCarousel"]]) {
-  const markup = render(file,name);
-  assert.equal(markup.length > 0,preview, `${name} preview-only`);
-  assert.equal(markup.includes("Preview"),false, `${name} sample notices removed`);
+// These sections were deliberately removed; verify public pages do not restore them.
+for (const file of ["app/(public)/page.tsx", "app/(public)/competitions/page.tsx"]) {
+  const source = fs.readFileSync(path.join(root, file), "utf8");
+  assert.ok(!/MemoriesSection|CompetitionTestimonialCarousel/.test(source), `${file}: removed sample sections remain absent`);
 }
 assert.equal(render("features/competitions/CompetitionDetailPrizeSection.tsx","CompetitionDetailPrizeSection",{slug:"business-case-competition"}).length > 0,preview,"unconfirmed competition prize widget is preview-only");
 const competitionAbout = render("features/competitions/CompetitionAboutSection.tsx","CompetitionAboutSection");
@@ -71,8 +71,9 @@ if (preview) {
   const originalUseRef = React.useRef;
   React.useRef = () => ({ current: null });
   try {
-    const { CompetitionTimelineSection } = load(path.join(root, "features/competitions/CompetitionTimelineSection.tsx"));
-    const container = CompetitionTimelineSection().props.children.find(child => child?.props?.onPointerDown);
+    const { CompetitionTimelineTrack } = load(path.join(root, "features/competitions/CompetitionTimelineSection.tsx"));
+    const { overallTimelineItems } = load(path.join(root, "features/competitions/competitionsContent.ts"));
+    const container = CompetitionTimelineTrack({ items: overallTimelineItems, ariaLabel: "Timeline fixture" });
     const target = { scrollLeft: 100, setPointerCapture: () => {} };
     const event = { pointerType: "mouse", button: 0, pointerId: 1, clientX: 300, currentTarget: target, preventDefault: () => {} };
     container.props.onPointerDown(event);

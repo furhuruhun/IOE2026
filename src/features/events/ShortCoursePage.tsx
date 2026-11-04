@@ -10,6 +10,7 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { EventRegistrationFeedback } from "./EventRegistrationFeedback";
 import { useEvents } from "@/hooks/useEvents";
 import { mockEvents } from "@/mocks/events";
+import { getRegistrationReadiness } from "./registrationState";
 import type { EventSummary } from "@/types/event";
 import { formatWibDate } from "@/utils/formatDate";
 import { shortCourseContent, type ShortCourseMilestone } from "./shortCourseContent";
@@ -40,7 +41,7 @@ function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, 
       return { available: false, label: "Pendaftaran belum dibuka", deadline };
     }
   }
-  if (!shortCourseContent.registrationFormReady) return { available: false, label: "Pendaftaran menyusul", deadline };
+  if (!getRegistrationReadiness("short-course")) return { available: false, label: "Pendaftaran menyusul", deadline };
   return { available: true, label: "Daftar Short Course", deadline };
 }
 

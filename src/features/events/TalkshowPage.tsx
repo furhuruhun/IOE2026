@@ -11,6 +11,7 @@ import { EventRegistrationFeedback } from "./EventRegistrationFeedback";
 import { useEvents } from "@/hooks/useEvents";
 import type { EventSummary } from "@/types/event";
 import { talkshowContent, talkshowFaqs } from "./talkshowContent";
+import { getRegistrationReadiness } from "./registrationState";
 import styles from "./TalkshowDetails.module.css";
 
 const shell = "site-container relative z-10";
@@ -32,7 +33,7 @@ function registrationState(event: EventSummary | undefined, isDemo: boolean, now
   if (Number.isFinite(deadline) && now !== null && deadline <= now) {
     return { available: false, label: "Pendaftaran ditutup", note: "Batas pendaftaran Talkshow telah berlalu." };
   }
-  if (!talkshowContent.registrationFormReady) {
+  if (!getRegistrationReadiness("talkshow")) {
     return { available: false, label: "Pendaftaran menyusul", note: "Formulir pendaftaran sedang disiapkan." };
   }
   if (!event || isDemo || now === null) {

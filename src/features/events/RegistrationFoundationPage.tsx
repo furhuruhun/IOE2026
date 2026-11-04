@@ -11,6 +11,8 @@ import { ApiError } from "@/services/authService";
 import { Button } from "@/components/ui/Button";
 import { Toast } from "@/components/ui/Toast";
 import { RegistrationFoundationForm } from "./RegistrationFoundationForm";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 
 const LINK_CLASS = "ui-action ui-action-secondary ui-action-sm";
 
@@ -18,6 +20,8 @@ export function RegistrationFoundationPage({ slug }: { slug: string }) {
   const router = useRouter();
   const event = useEvent(slug);
   const profile = useProfile();
+  const user = useCurrentUser();
+  const record = useEventRegistrationStore(state => state.record);
   const handleError = useErrorHandler();
   const [message, setMessage] = useState<string | null>(null);
   const dismiss = useCallback(() => setMessage(null), []);
@@ -60,7 +64,11 @@ export function RegistrationFoundationPage({ slug }: { slug: string }) {
       </section>}
       {/* Retain the mounted form and its edits through background query errors/retries. */}
       {event.data && profile.data && <RegistrationFoundationForm key={slug} profile={profile.data} event={event.data.event} slug={slug}
-        onSuccess={() => router.push("/confirmation")}
+        isDemo={event.data.isDemo} blocked={event.isError || profile.isError || !user.data}
+        onSuccess={(result) => {
+          if (user.data) record({ participantId: user.data.id, slug, eventName: event.data.event.name, registrationId: result.registrationId });
+          router.replace("/confirmation?from=registration");
+        }}
         onError={setMessage} />}
     </main>
   );

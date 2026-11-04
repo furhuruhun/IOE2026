@@ -1,6 +1,7 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { dashboardKeys } from "@/hooks/useDashboard";
 import { fetchEvent, fetchEvents, registerEvent } from "@/services/eventService";
 import type { EventRegistrationInput } from "@/types/event";
 import { useCurrentUser } from "@/hooks/useAuth";
@@ -22,5 +23,15 @@ export function useEvent(slug: string) {
 }
 
 export function useRegisterEvent(slug: string) {
-  return useMutation({ mutationFn: (input: EventRegistrationInput) => registerEvent(slug, input) });
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: EventRegistrationInput) => registerEvent(slug, input),
+    retry: false,
+    onSuccess: () => {
+      // Refresh is independent of the committed POST result, including failed reads.
+      for (const queryKey of [eventKeys.all, dashboardKeys.events(), dashboardKeys.calendar()]) {
+        void client.invalidateQueries({ queryKey }).catch(() => {});
+      }
+    },
+  });
 }

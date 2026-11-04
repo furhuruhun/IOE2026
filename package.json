@@ -9,6 +9,7 @@
     "lint": "eslint",
     "check:fe-resilience": "node scripts/check-fe-resilience.mjs",
     "check:fe-hardening": "node scripts/check-fe-hardening.mjs",
+    "check:registration": "node scripts/check-registration.mjs",
     "icons:bundle": "node scripts/generate-icon-bundle.mjs"
   },
   "dependencies": {

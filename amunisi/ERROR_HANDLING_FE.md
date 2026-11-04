@@ -8,6 +8,22 @@
 
 ---
 
+## Phase 6 registration refinement (2026-11-04)
+
+Shared ApiError preserves optional VALIDATION_ERROR fields only when they form an
+object map of nonblank strings. Registration maps known request fields inline,
+focuses them after submission controls unlock, and keeps mapped general feedback
+for missing, unknown or malformed details. REGISTRATION_CLOSED, QUOTA_FULL and
+ALREADY_REGISTERED disable submission while preserving form data.
+
+For registration POST only, lost responses, malformed success payloads and
+SERVER_ERROR have an uncertain outcome. Keep the mapped SERVER_ERROR treatment
+and add persistent warning copy from REGISTRATION_RECOVERY. Block another POST in
+the mounted form; offer a read-only status check and dashboard navigation instead
+of an automatic or blind mutation retry. A failed cache refresh cannot reverse a
+confirmed POST success. This scoped mutation rule supersedes the generic retry
+guidance below. See PHASE6_REGISTRATION.md for verification and limitations.
+
 ## Prinsip Umum
 
 1. **Satu sumber pesan error.** Jangan hardcode pesan user-facing di komponen manapun — semua pesan diambil dari mapping terpusat (`src/constants/errorMessages.ts`, lihat §Implementasi).

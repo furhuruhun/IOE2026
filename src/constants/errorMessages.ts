@@ -15,6 +15,15 @@ export interface ErrorMessageEntry {
   redirectTo?: string;
 }
 
+// Mutation recovery copy supplements the mapped SERVER_ERROR treatment: never auto-resubmit.
+export const REGISTRATION_RECOVERY = {
+  unknown: "Status pengiriman belum dapat dipastikan. Periksa status pendaftaran sebelum mengirim kembali.",
+  stillUnknown: "Status pengiriman belum dapat dipastikan. Periksa dashboard sebelum mengirim kembali; pengiriman ulang tetap dinonaktifkan di formulir ini.",
+  registered: "Kamu sudah terdaftar di event ini. Lihat dashboard untuk status pendaftaran.",
+  unavailable: "Pendaftaran belum tersedia.",
+  readFailed: "Informasi pendaftaran belum dapat dipastikan. Muat ulang informasi sebelum melanjutkan.",
+};
+
 export const ERROR_MESSAGES: Record<string, ErrorMessageEntry> = {
   VALIDATION_ERROR: { message: "Ada isian yang belum sesuai, cek lagi ya", treatment: "inline-field" },
   EMAIL_ALREADY_REGISTERED: { message: "Email ini sudah terdaftar, coba login", treatment: "inline-field" },

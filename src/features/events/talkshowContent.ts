@@ -22,8 +22,7 @@ export const talkshowContent = {
     { role: "speaker", name: "Pembicara akan diumumkan", affiliation: "Informasi menyusul", image: "/images/events/ioe-speaker-02.svg" },
     { role: "speaker", name: "Pembicara akan diumumkan", affiliation: "Informasi menyusul", image: "/images/events/ioe-speaker-03.svg" },
   ] as SpeakerEntry[],
-  // The route exists, but its form is still a placeholder. Flip this only once
-  // the real event registration form and submission flow have been implemented.
+  // Keep disabled pending organizer readiness and Phase 7 backend verification.
   registrationFormReady: false,
   registrationHref: "/events/talkshow/register",
 };

@@ -1,9 +1,11 @@
 import { redirect } from "next/navigation";
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { RegistrationConfirmation } from "@/features/events/RegistrationConfirmation";
+import type { Metadata } from "next";
 
-// Route: /confirmation. Public, TAPI hanya boleh diakses hasil submit Event Registration.
-// Guard: TECHNICAL_CONSTRAINTS_FE.md §Guard Halaman /confirmation — server-side check di sini,
-// bukan middleware, karena route ini tetap Public untuk kasus valid (?from=registration).
+export const metadata: Metadata = { title: "Status Pendaftaran | IOE 2027" };
+
+// Retain the documented navigation marker; it is not proof of registration.
+// The client shows success only with a validated, participant-scoped receipt.
 export default async function ConfirmationPage({
   searchParams,
 }: {
@@ -15,11 +17,5 @@ export default async function ConfirmationPage({
     redirect("/");
   }
 
-  return (
-    <PlaceholderPage
-      title="Pendaftaran Berhasil"
-      fId="F-53–F-54"
-      note="SuccessMessage — belum dibangun. Guard ?from=registration sudah aktif."
-    />
-  );
+  return <RegistrationConfirmation />;
 }

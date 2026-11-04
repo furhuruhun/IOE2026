@@ -50,8 +50,7 @@ export const shortCourseContent = {
   registrationHref: "/events/short-course/register",
   // Set only after the organizer confirms an opening timestamp with timezone.
   registrationOpensAt: null as string | null,
-  // The destination route currently renders a placeholder, so registration
-  // actions must remain disabled until the form and submission flow work.
+  // Keep disabled pending organizer readiness and Phase 7 backend verification.
   registrationFormReady: false,
   benefits: [
     { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "https://assets.compfest.id/event/xcelerate/real.svg" },

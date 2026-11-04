@@ -27,7 +27,12 @@ export async function POST(
       body: await request.formData(),
       cache: "no-store",
     });
-    const body = await upstream.json();
+    let body;
+    try { body = await upstream.json(); }
+    catch (error) {
+      if (upstream.status !== 401) throw error;
+      body = { success: false, error: { code: "UNAUTHORIZED", message: "" } };
+    }
     const response = NextResponse.json(body, { status: upstream.status });
     if (upstream.status === 401) {
       response.cookies.set(COOKIE_NAME, "", CLEAR_AUTH_COOKIE_OPTIONS);
