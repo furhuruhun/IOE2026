@@ -8,6 +8,18 @@
 
 ---
 
+## Phase 3 admin gate refinement (2026-11-05)
+
+The /admin frontend gate reuses useIsAdmin and the shared error mapping. Resolved
+participants and ADMIN_ONLY failures redirect to /dashboard; a transient in-memory
+notice carries the existing message across navigation and is dismissible above the
+fixed navbar. Anonymous/UNAUTHORIZED recovery retains /admin as the login destination.
+Pending or revalidating identity never renders the Admin placeholder. Generic
+session-read errors show mapped feedback and retry, including when committee data
+was previously cached. No new error codes, API operations or backend authorization
+guarantees are introduced. This follows the existing Dashboard redirect convention;
+a separate 403 page and Admin UI remain deferred.
+
 ## Phase 6 registration refinement (2026-11-04)
 
 Shared ApiError preserves optional VALIDATION_ERROR fields only when they form an

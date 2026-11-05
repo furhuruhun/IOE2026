@@ -16,10 +16,10 @@ function demoResponse(slug?: string) {
 }
 
 // Public reads may carry participant identity. Never cache personalized responses.
-// During local development, event pages use the existing demo fixtures even
-// when a backend URL is configured. Production reads continue through Workers.
+// Development defaults to demos. Only an explicit server-side opt-in reads Workers.
+// The development selector has no effect in production.
 export async function eventProxy(slug?: string) {
-  if (process.env.NODE_ENV === "development") return demoResponse(slug);
+  if (process.env.NODE_ENV === "development" && process.env.IOE_DEV_EVENTS_SOURCE !== "real") return demoResponse(slug);
 
   const token = await getTokenFromCookies();
   const headers = { "Cache-Control": "private, no-store" };

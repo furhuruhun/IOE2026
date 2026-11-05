@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import { rootMetadata } from "@/lib/siteMetadata";
 import { Inter, Montserrat, Plus_Jakarta_Sans } from "next/font/google";
 import { QueryProvider } from "@/store/QueryProvider";
 import { SessionBootstrap } from "@/store/SessionBootstrap";
@@ -6,6 +6,9 @@ import { IconRegistry } from "@/components/ui/iconRegistry";
 import { SectionScrollNavigation } from "@/components/ui/SectionScrollNavigation";
 import { Suspense } from "react";
 import "./globals.css";
+import { ManualSimulation } from "@/components/ManualSimulation";
+import { manualSimulationEnabled } from "@/lib/manualSimulation";
+import { AdminAccessNotice } from "@/features/auth/AdminGate";
 
 // Coolvetica (Headline/H1-H6) TIDAK ada di Google Fonts — harus di-self-host dari file
 // .woff2/.ttf resmi (lisensi Typodermic Fonts, gratis termasuk komersial). File-nya belum
@@ -35,11 +38,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
   weight: ["300", "400", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  title: "IOE 2027",
-  description:
-    "Towards a Smart and Sustainable Maritime Ecosystem: Energy, Economy, and Digital Innovation — KMKL ITB",
-};
+export const metadata = rootMetadata();
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -57,7 +56,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <IconRegistry />
           <Suspense fallback={null}><SectionScrollNavigation /></Suspense>
           <SessionBootstrap />
-          {children}
+          <AdminAccessNotice />
+          <ManualSimulation enabled={manualSimulationEnabled()}>{children}</ManualSimulation>
         </QueryProvider>
       </body>
     </html>

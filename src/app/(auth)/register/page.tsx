@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { RegisterForm } from "@/features/auth/RegisterForm";
+import { privateMetadata } from "@/lib/siteMetadata";
+export const metadata = privateMetadata("Register");
 
 // Route: /register. Public — redirect ke /dashboard kalau sudah ada sesi (src/proxy.ts).
 // F-40, F-42.

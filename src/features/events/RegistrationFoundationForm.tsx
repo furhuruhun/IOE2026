@@ -17,6 +17,7 @@ import { getRegistrationEligibility } from "./registrationState";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { FormBanner } from "@/components/ui/FormBanner";
 import type { EventRegistrationResult } from "@/types/event";
+import { useManualSimulation } from "@/components/ManualSimulation";
 
 interface FoundationValues {
   sessionType: "seminar" | "workshop";
@@ -42,6 +43,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
   onError: (message: string) => void;
 }) {
   const id = useId();
+  const simulation = useManualSimulation();
   const handleError = useErrorHandler();
   const registration = useRegisterEvent(slug);
   const now = useCurrentTime();
@@ -53,7 +55,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
   const [uncertain, setUncertain] = useState(false);
   const [checking, setChecking] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const eligibility = getRegistrationEligibility(slug, event, isDemo, now);
+  const eligibility = getRegistrationEligibility(slug, event, isDemo, now, simulation);
   const unavailable = blocked || !eligibility.available || Boolean(rejection) || uncertain;
   const { register, control, setValue, setError, clearErrors, handleSubmit, formState: { errors } } = useForm<FoundationValues>({
     defaultValues: {
@@ -88,7 +90,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
   const onSubmit = async (values: FoundationValues) => {
     // Synchronous lock also covers the eligibility read before the mutation starts.
     if (lock.current || unavailable) return;
-    const current = getRegistrationEligibility(slug, event, isDemo, Date.now());
+    const current = getRegistrationEligibility(slug, event, isDemo, Date.now(), simulation);
     if (!current.available) { setRejection(current.note); return; }
     lock.current = true;
     setBusy(true);
@@ -96,7 +98,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
     let result: EventRegistrationResult | undefined;
     try {
       const latest = await fetchEvent(slug);
-      const state = getRegistrationEligibility(slug, latest.event, latest.isDemo, Date.now());
+      const state = getRegistrationEligibility(slug, latest.event, latest.isDemo, Date.now(), simulation);
       if (!state.available) { setRejection(state.note); return; }
       if (values.sessionType === "workshop") {
         const speakers = latest.event.speakers ?? [];

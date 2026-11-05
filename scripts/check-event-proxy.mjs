@@ -26,9 +26,13 @@ Module._load = function(request, ...rest) {
 const originalFetch = globalThis.fetch;
 const originalMode = process.env.NODE_ENV;
 const originalUrl = process.env.WORKERS_API_URL;
+const originalSource = process.env.IOE_DEV_EVENTS_SOURCE;
 try {
   for (const mode of ["development", "production"]) {
+   for (const source of [undefined, "demo", "real", "invalid"]) {
     process.env.NODE_ENV = mode;
+    if (source === undefined) delete process.env.IOE_DEV_EVENTS_SOURCE;
+    else process.env.IOE_DEV_EVENTS_SOURCE = source;
     for (const configured of [false, true]) {
       if (configured) process.env.WORKERS_API_URL = "https://upstream.invalid";
       else delete process.env.WORKERS_API_URL;
@@ -39,7 +43,7 @@ try {
       for (const slug of [undefined, "talkshow"]) {
         const response = await eventProxy(slug);
         const body = await response.json();
-        const demo = mode === "development";
+        const demo = mode === "development" && source !== "real";
         assert.equal(response.status, demo ? 200 : configured ? 502 : 503, `${mode}, configured=${configured}, slug=${slug}`);
         assert.equal(body.success, demo);
         assert.equal(response.headers.get("X-IOE-Demo-Data"), demo ? "true" : null);
@@ -47,10 +51,11 @@ try {
         if (!demo) assert.equal(body.error.code, "SERVER_ERROR");
         else assert.ok(slug ? body.data.slug === slug : Array.isArray(body.data));
       }
-      if (!configured || mode === "development") {
+      const demo = mode === "development" && source !== "real";
+      if (!configured || demo) {
         assert.equal(requests.length, 0, "development demos and unconfigured production make no upstream request");
-        if (mode === "development") assert.equal((await eventProxy("missing")).status, 404);
-        console.log(`PASS ${mode}, configured=${configured}: demo boundary, missing slug and no upstream request`);
+        if (demo) assert.equal((await eventProxy("missing")).status, 404);
+        console.log(`PASS ${mode}, source=${source}, configured=${configured}: demo/unconfigured boundary`);
         continue;
       }
       assert.equal(requests[1][0], "https://upstream.invalid/events/talkshow");
@@ -68,11 +73,13 @@ try {
         assert.equal(response.headers.get("Cache-Control"), "private, no-store");
         assert.equal(!!response.cookies.get("ioe_token"), status === 401, "only 401 clears authentication");
       }
-      console.log(`PASS ${mode}: network/JSON failures, upstream statuses, auth, cache and demo boundaries`);
+      console.log(`PASS ${mode}, source=${source}: network/JSON failures, upstream statuses, auth, cache and demo boundaries`);
     }
+   }
   }
 } finally {
   globalThis.fetch = originalFetch;
   if (originalMode === undefined) delete process.env.NODE_ENV; else process.env.NODE_ENV = originalMode;
   if (originalUrl === undefined) delete process.env.WORKERS_API_URL; else process.env.WORKERS_API_URL = originalUrl;
+  if (originalSource === undefined) delete process.env.IOE_DEV_EVENTS_SOURCE; else process.env.IOE_DEV_EVENTS_SOURCE = originalSource;
 }

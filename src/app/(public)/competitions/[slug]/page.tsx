@@ -9,6 +9,10 @@ import { CompetitionDetailOtherCompetitionsCarousel } from "@/features/competiti
 import { CompetitionDetailFAQSection } from "@/features/competitions/CompetitionDetailFAQSection";
 import { EventOverviewContact } from "@/features/events/EventOverviewStaticSections";
 import { TeamModal } from "@/features/competitions/TeamModal";
+import { publicMetadata } from "@/lib/siteMetadata";
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  return publicMetadata(`/competitions/${(await params).slug}`);
+}
 
 // Route: /competitions/[slug] — Competition Details. Public. ROUTES.md.
 // 10 section: F-12 (Hero), F-13 (About+Countdown), F-14 (Timeline), Fun Fact*, F-15

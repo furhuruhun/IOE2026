@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { Icon } from "@iconify/react/offline";
 import { LoginForm } from "@/features/auth/LoginForm";
+import { privateMetadata } from "@/lib/siteMetadata";
+export const metadata = privateMetadata("Login");
 
 // Route: /login. Public — redirect ke /dashboard kalau sudah ada sesi (src/proxy.ts).
 // F-40, F-41.

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { manualSimulationEnabled, SIMULATION_COOKIE } from "@/lib/manualSimulation";
 
 // Next.js 16 mendeprekasi file convention `middleware.ts` → `proxy.ts` (export function
 // `proxy`, bukan `middleware`). Perilaku identik dengan yang dideskripsikan sebagai
@@ -28,7 +29,23 @@ function isProtectedPath(pathname: string): boolean {
 
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const hasSession = req.cookies.has(COOKIE_NAME);
+  const simulation = manualSimulationEnabled();
+  if (simulation && (pathname === "/api" || pathname.startsWith("/api/"))) {
+    const origin = req.headers.get("origin");
+    if (origin && new URL(origin).host !== req.headers.get("host")) {
+      return NextResponse.json({ success: false, error: { code: "UNAUTHORIZED", message: "Cross-origin simulation request rejected" } }, { status: 403 });
+    }
+  }
+  if (simulation && pathname === "/api/manual-simulation") return NextResponse.next();
+  if (simulation && (pathname === "/api" || pathname.startsWith("/api/"))) {
+    const target = new URL("/api/manual-simulation", req.url);
+    const headers = new Headers(req.headers);
+    // Origin was validated against the browser-facing host before rewriting.
+    headers.delete("origin");
+    headers.set("x-ioe-simulation-path", pathname);
+    return NextResponse.rewrite(target, { request: { headers } });
+  }
+  const hasSession = req.cookies.has(simulation ? SIMULATION_COOKIE : COOKIE_NAME);
 
   if (isProtectedPath(pathname) && !hasSession) {
     const loginUrl = new URL("/login", req.url);
@@ -47,5 +64,5 @@ export function proxy(req: NextRequest) {
 // roundtrip ke Workers di tiap request. Validasi role admin dilakukan di komponen
 // lewat useIsAdmin(); Workers tetap return 403 ADMIN_ONLY sebagai safety net.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  matcher: ["/api/:path*", "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

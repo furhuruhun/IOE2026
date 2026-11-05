@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { RegistrationConfirmation } from "@/features/events/RegistrationConfirmation";
-import type { Metadata } from "next";
+import { privateMetadata } from "@/lib/siteMetadata";
 
-export const metadata: Metadata = { title: "Status Pendaftaran | IOE 2027" };
+export const metadata = privateMetadata("Status Pendaftaran");
 
 // Retain the documented navigation marker; it is not proof of registration.
 // The client shows success only with a validated, participant-scoped receipt.

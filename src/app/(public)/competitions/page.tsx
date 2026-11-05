@@ -19,3 +19,5 @@ export default function CompetitionOverviewPage() {
     </main>
   );
 }
+import { publicMetadata } from "@/lib/siteMetadata";
+export const metadata = publicMetadata("/competitions");

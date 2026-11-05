@@ -13,6 +13,7 @@ import type { EventSummary } from "@/types/event";
 import { talkshowContent, talkshowFaqs } from "./talkshowContent";
 import { getRegistrationReadiness } from "./registrationState";
 import styles from "./TalkshowDetails.module.css";
+import { useManualSimulation } from "@/components/ManualSimulation";
 
 const shell = "site-container relative z-10";
 const action = buttonStyles("secondary");
@@ -25,7 +26,7 @@ type RegistrationState = {
   note: string;
 };
 
-function registrationState(event: EventSummary | undefined, isDemo: boolean, now: number | null): RegistrationState {
+function registrationState(event: EventSummary | undefined, isDemo: boolean, now: number | null, simulation = false): RegistrationState {
   if (event?.isRegisteredByUser && !isDemo) {
     return { available: false, label: "Sudah terdaftar", note: "Kamu sudah terdaftar di Talkshow ini." };
   }
@@ -33,7 +34,7 @@ function registrationState(event: EventSummary | undefined, isDemo: boolean, now
   if (Number.isFinite(deadline) && now !== null && deadline <= now) {
     return { available: false, label: "Pendaftaran ditutup", note: "Batas pendaftaran Talkshow telah berlalu." };
   }
-  if (!getRegistrationReadiness("talkshow")) {
+  if (!getRegistrationReadiness("talkshow", simulation)) {
     return { available: false, label: "Pendaftaran menyusul", note: "Formulir pendaftaran sedang disiapkan." };
   }
   if (!event || isDemo || now === null) {
@@ -245,10 +246,11 @@ function TalkshowContact() {
 }
 
 export function TalkshowPage() {
+  const simulation = useManualSimulation();
   const { data, isPending, isError, isFetching, isFetched, refetch } = useEvents();
   const now = useCurrentTime();
   const event = data?.events.find((item) => item.slug === "talkshow");
-  const state = registrationState(event, data?.isDemo ?? true, now);
+  const state = registrationState(event, data?.isDemo ?? true, now, simulation);
 
   return (
     <main id="main-content" tabIndex={-1} className="relative isolate flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 text-neutral-900 md:gap-24">

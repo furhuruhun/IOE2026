@@ -5,6 +5,8 @@ import { EventOverviewActivities } from "@/features/events/EventOverviewActiviti
 import { EventOverviewTimeline } from "@/features/events/EventOverviewTimeline";
 import { EventOverviewCTA, EventOverviewContact, EventOverviewSponsors } from "@/features/events/EventOverviewStaticSections";
 import artwork from "@/features/events/EventOverviewArtwork.module.css";
+import { publicMetadata } from "@/lib/siteMetadata";
+export const metadata = publicMetadata("/events");
 
 // F-35–F-39: enam section referensi visual + sponsor sebagai section ketujuh.
 export default function EventOverviewPage() {

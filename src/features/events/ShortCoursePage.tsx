@@ -15,6 +15,7 @@ import type { EventSummary } from "@/types/event";
 import { formatWibDate } from "@/utils/formatDate";
 import { shortCourseContent, type ShortCourseMilestone } from "./shortCourseContent";
 import { ShortCoursePanelIllustration, ShortCourseSpeakerIllustration } from "./ShortCourseSpeakerIllustration";
+import { useManualSimulation } from "@/components/ManualSimulation";
 
 const shell = "site-container relative";
 const heroAction = buttonStyles("secondary", "sm");
@@ -26,7 +27,7 @@ type RegistrationState = {
   deadline: Date | null;
 };
 
-function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, now: number | null): RegistrationState {
+function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, now: number | null, simulation = false): RegistrationState {
   const unavailable = { available: false, label: "Pendaftaran menyusul", deadline: null };
   if (!event || isDemo || now === null) return unavailable;
   if (event.isRegisteredByUser) return { available: false, label: "Sudah terdaftar", deadline: null };
@@ -41,7 +42,7 @@ function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, 
       return { available: false, label: "Pendaftaran belum dibuka", deadline };
     }
   }
-  if (!getRegistrationReadiness("short-course")) return { available: false, label: "Pendaftaran menyusul", deadline };
+  if (!getRegistrationReadiness("short-course", simulation)) return { available: false, label: "Pendaftaran menyusul", deadline };
   return { available: true, label: "Daftar Short Course", deadline };
 }
 
@@ -361,10 +362,11 @@ function ShortCourseDocumentation() {
 }
 
 export function ShortCoursePage() {
+  const simulation = useManualSimulation();
   const { data, isPending, isError, isFetching, isFetched, refetch } = useEvents();
   const now = useCurrentTime();
   const event = data?.events.find((item) => item.slug === "short-course");
-  const state = getRegistrationState(event, data?.isDemo ?? true, now);
+  const state = getRegistrationState(event, data?.isDemo ?? true, now, simulation);
   // A sample timer is useful in development; it never changes registration state.
   const demoEvent = data?.isDemo ? event : isError && process.env.NODE_ENV === "development" ? mockEvents.find((item) => item.slug === "short-course") : null;
   const demoDeadline = process.env.NODE_ENV === "development" && demoEvent && Number.isFinite(new Date(demoEvent.deadline).getTime()) ? new Date(demoEvent.deadline) : null;

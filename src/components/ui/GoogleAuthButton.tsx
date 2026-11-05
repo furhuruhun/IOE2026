@@ -3,6 +3,7 @@
 import Script from "next/script";
 import { useCallback, useRef } from "react";
 import { GoogleLogo } from "./GoogleLogo";
+import { useManualSimulation } from "@/components/ManualSimulation";
 
 declare global {
   interface Window {
@@ -34,8 +35,9 @@ interface GoogleAuthButtonProps {
 // §Awareness A2) — tombol di-disable + tampil catatan sampai env var itu diisi, alih-alih
 // pura-pura berfungsi. Begitu Client ID tersedia, tombol otomatis aktif tanpa perlu ubah kode.
 export function GoogleAuthButton({ onIdToken, disabled }: GoogleAuthButtonProps) {
+  const simulation = useManualSimulation();
   const initialized = useRef(false);
-  const isConfigured = Boolean(GOOGLE_CLIENT_ID);
+  const isConfigured = Boolean(GOOGLE_CLIENT_ID) && !simulation;
 
   const ensureInitialized = useCallback(() => {
     if (!GOOGLE_CLIENT_ID || !window.google || initialized.current) return;

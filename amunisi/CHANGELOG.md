@@ -2,7 +2,19 @@
 
 > Audit trail per-task, bukan changelog rilis versi biasa. Setiap task yang
 > dikerjakan AI agent (atau developer) WAJIB menambahkan satu entry baru di
-> bagian `## Unreleased`, ditulis SEBELUM task dianggap selesai.
+> bagian `## Unreleased
+
+### [2026-11-05] Add isolated local manual participant simulation
+
+- **Type:** Frontend development tooling.
+- **Scope:** Opt-in development-only API simulation; no backend inspection, commands or changes.
+- **Changes:** Complete API routing gate, terminal simulator, separate synthetic-session cookie, schema-validated local JSON persistence, serialized updates/reset, existing registration UI enabled through server-controlled context, visible scenario controls, synthetic dashboard/calendar projections and Google-login exclusion. Public readiness flags remain false.
+- **Files:** src/proxy.ts, src/lib/manualSimulation.ts, src/mocks/manualSimulation.ts, src/app/api/manual-simulation/route.ts, src/components/ManualSimulation.tsx, src/app/layout.tsx, src/components/ui/GoogleAuthButton.tsx, event readiness/form/detail components, .env.local.example, scripts/check-manual-simulation*.mjs, amunisi/PHASE7_1B_MANUAL_SIMULATION.md.
+- **Validation:** PASS: TypeScript, changed-file ESLint, production build, existing registration/proxy/hardening/resilience checks; localhost API success/failure/concurrency/storage tests with zero upstream hits; 320/1440px browser journey and Registered Events keyboard interaction; server-restart persistence; default development and production exclusion with flag set. See Phase 7.1B report for evidence and boundaries.
+- **Limits:** One synthetic participant and one local dev process; no durable event-upload bytes, real OAuth/payment/email, team mutations or backend E2E claims. Synthetic failure responses are local-only scenarios; deployed contracts unchanged.
+- **Preservation:** Existing Phase 7.1A changes retained; no actual .env.local edit, dependency, deployment, commit or push.
+- **Skills:** Ponytail; UI Skills registry with ibelick/fixing-accessibility.
+`, ditulis SEBELUM task dianggap selesai.
 >
 > Format & aturan penulisan entry: lihat `CHANGELOG_AGENT_PROMPT.md`.
 > File ini bersifat **append-only** — jangan hapus/rewrite entry lama kecuali
@@ -11,6 +23,31 @@
 ---
 
 ## Unreleased
+
+### [2026-11-05] Add environment-safe SEO foundation and frontend admin role gate
+
+- **Tipe:** Feature
+- **Scope:** Frontend metadata/indexing and role-aware /admin placeholder; Admin UI deferred.
+- **Ringkasan:** Centralize server-only public-origin and metadata policy, add public route metadata/robots/sitemap and private noindex layouts. Default and preview remain non-indexable; URL/indexing opt-in requires approved production configuration. Reuse useIsAdmin and shared error handling for pending/anonymous/peserta/panitia/error states; preserve denial feedback after Dashboard redirect.
+- **File diubah:** src/lib/siteMetadata.ts; root/public/auth/profile/confirmation/admin pages; auth/protected/dashboard metadata layouts; robots.ts and sitemap.ts; src/features/auth/AdminGate.tsx; .env.local.example; scripts/check-phase3*.mjs; amunisi/PHASE3_SEO_ROLE_GATE.md; amunisi/ERROR_HANDLING_FE.md; this changelog.
+- **Verifikasi:** Controlled metadata/origin/environment and admin-state checks, localhost HTTP metadata coverage, browser role fixtures, production build and existing frontend regression/simulation checks. Final evidence and PASS/BLOCKED boundaries are recorded in PHASE3_SEO_ROLE_GATE.md.
+- **Breaking change:** No API/backend contract changes. /admin now withholds its placeholder until committee identity resolves; participants follow the existing ADMIN_ONLY Dashboard redirect/message mapping.
+- **Belum selesai / follow-up:** Owner approval for real origin/indexing and OG sharing artwork remains pending. Unknown dynamic routes retain existing client NOT_FOUND handling and initial 200 shell, now explicitly noindex; no duplicated server reads introduced. Gate is frontend presentation only and retains existing session-cache policy. Admin UI/navigation design, deployed verification and real registration writes remain deferred. Existing Phase 6/7 behavior and public readiness false are preserved. Scope exception: existing check-fe-hardening.mjs indirectly imported backend/src/lib/errors.ts before that dependency was noticed; no backend changes or live requests. No dependency, actual .env.local edit, deployment, commit, push or merge.
+- **Skills:** Ponytail; UI Skills with ibelick/fixing-accessibility.
+
+### [2026-11-04 22:35] Verify read-only Workers integration from the local frontend
+
+- **Tipe:** Config
+- **Scope:** Development event-source selection and Phase 7.0-7.1A verification.
+- **Ringkasan:** Add a server-only opt-in for real event reads while preserving default demos, production behavior and disabled public registration. Verified deployed Workers and local-proxy GET behavior; write integration remains blocked by unknown environment ownership and the user's read-only restriction.
+- **File diubah:**
+  - `src/lib/eventProxy.ts`, `.env.local.example` - IOE_DEV_EVENTS_SOURCE=real opt-in only in development; no change to auth or registration readiness.
+  - `scripts/check-event-proxy.mjs` - default/demo/real/invalid selector coverage in development and production.
+  - `scripts/check-phase7-readonly.mjs`, `scripts/check-phase7-browser.mjs` - sanitized GET-only probes and real-read browser verification with mutating methods blocked.
+  - `amunisi/PHASE7_1A_INTEGRATION.md`, `amunisi/CHANGELOG.md` - environment classification, test matrix, limitations, rollback and Phase 7.1B prerequisites.
+- **Terkait requirement:** Existing Events reads, force-auth/session recovery, Phase 6 integration handoff.
+- **Breaking change:** Tidak - development defaults to existing demo data; production ignores the new selector.
+- **Belum selesai / follow-up:** Stayed on main per explicit user correction; pushed Phase 6 aa97e12 is preserved and remotely confirmed. Actual local backend configuration differed from the documented deployed target; a temporary read-only session used the documented target and restored local environment bytes afterward. Live event list is empty and the shared environment is not classified; no write tests, accounts, registrations, uploads, backend edits, deployment, commit or push. Phase 7.1B needs explicit test-data/write authorization and published events before real registration can be signed off.
 
 ### [2026-11-04 21:49] Complete the guarded frontend registration journey
 
