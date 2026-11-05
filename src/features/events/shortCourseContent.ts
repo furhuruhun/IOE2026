@@ -50,8 +50,8 @@ export const shortCourseContent = {
   registrationHref: "/events/short-course/register",
   // Set only after the organizer confirms an opening timestamp with timezone.
   registrationOpensAt: null as string | null,
-  // Keep disabled pending organizer readiness and Phase 7 backend verification.
-  registrationFormReady: false,
+  // The registration form and backend endpoint are now available.
+  registrationFormReady: true,
   benefits: [
     { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "/images/events/Maskot_Variance_1.png" },
     { id: "personal-branding", title: "Personal Branding Mentorship", illustrationSrc: "/images/events/Maskot_Variance_2.png" },

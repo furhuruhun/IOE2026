@@ -22,8 +22,8 @@ export const talkshowContent = {
     { role: "speaker", name: "Pembicara akan diumumkan", affiliation: "Informasi menyusul", image: "/images/events/ioe-speaker-02.svg" },
     { role: "speaker", name: "Pembicara akan diumumkan", affiliation: "Informasi menyusul", image: "/images/events/ioe-speaker-03.svg" },
   ] as SpeakerEntry[],
-  // Keep disabled pending organizer readiness and Phase 7 backend verification.
-  registrationFormReady: false,
+  // The registration form and backend endpoint are now available.
+  registrationFormReady: true,
   registrationHref: "/events/talkshow/register",
 };
 

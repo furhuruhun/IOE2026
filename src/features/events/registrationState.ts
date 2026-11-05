@@ -7,8 +7,10 @@ export function getRegistrationReadiness(slug: string, simulation = false) {
   if (simulation && (slug === "talkshow" || slug === "short-course")) return true;
   if (slug === "short-course") return shortCourseContent.registrationFormReady;
   if (slug === "talkshow") return talkshowContent.registrationFormReady;
-  // Workshop/Exhibition have no verified public registration configuration yet.
-  return false;
+  // The backend registration endpoint supports any published event. Unknown
+  // slugs are still rejected by the event API, so this only enables a real
+  // event after its API response and deadline have been validated below.
+  return true;
 }
 
 export function getRegistrationEligibility(slug: string, event: EventSummary | undefined, isDemo: boolean, now: number | null, simulation = false) {

@@ -9,7 +9,7 @@ import { useEvent } from "@/hooks/useEvents";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { ApiError } from "@/services/authService";
-import { Button } from "@/components/ui/Button";
+import { Button, buttonStyles } from "@/components/ui/Button";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { Toast } from "@/components/ui/Toast";
 import { formatWibDate } from "@/utils/formatDate";
@@ -37,12 +37,14 @@ export function EventDetailPage({ slug }: { slug: string }) {
   // Demo fixtures never establish real membership or registration availability.
   const registered = !isError && !data?.isDemo && event?.isRegisteredByUser === true;
   const closed = !data?.isDemo && hasDeadline && now !== null && deadline!.getTime() <= now;
-  const registrationLabel = registered ? "Sudah terdaftar" : closed ? "Pendaftaran ditutup" : "Register";
+  const registrationOpen = !isError && Boolean(event) && !registered && !closed;
   const registrationMessage = registered
     ? "Kamu sudah terdaftar di event ini."
     : closed
       ? "Batas waktu pendaftaran telah berakhir."
-      : "Informasi ketersediaan pendaftaran belum tersedia. Silakan cek kembali nanti.";
+      : registrationOpen
+        ? "Pendaftaran sedang dibuka."
+        : "Informasi ketersediaan pendaftaran belum tersedia. Silakan cek kembali nanti.";
 
   return (
     <main id="main-content" tabIndex={-1} className="min-w-0 bg-neutral-100 [overflow-wrap:anywhere]">
@@ -112,9 +114,17 @@ export function EventDetailPage({ slug }: { slug: string }) {
               <h2 id="event-registration" className="font-heading text-h4 text-secondary-1000 md:text-h3">Pendaftaran</h2>
               {hasDeadline && <p className="font-body text-b3 text-neutral-700">Batas pendaftaran: <time dateTime={event.deadline}>{formatWibDate(event.deadline)} WIB</time></p>}
               <p id="registration-availability" role="status" className="font-body text-b2 text-neutral-800">{registrationMessage}</p>
-              {/* No read contract establishes open/full availability. Keep the CTA
-                  disabled until that boundary and the registration form are ready. */}
-              <ParticipantAction><Button disabled aria-describedby="registration-availability">{registrationLabel}</Button></ParticipantAction>
+              <ParticipantAction>
+                {registrationOpen ? (
+                  <Link href={`/events/${encodeURIComponent(slug)}/register`} className={buttonStyles("primary")} aria-describedby="registration-availability">
+                    Register
+                  </Link>
+                ) : (
+                  <Button disabled aria-describedby="registration-availability">
+                    {registered ? "Sudah terdaftar" : "Pendaftaran ditutup"}
+                  </Button>
+                )}
+              </ParticipantAction>
               <Link href="/events" className={BACK_LINK}>Lihat event lainnya</Link>
             </section>
           </div>
