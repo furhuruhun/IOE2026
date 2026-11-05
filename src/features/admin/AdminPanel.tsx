@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -119,7 +119,7 @@ export function AdminPanel() {
           <div className="flex flex-wrap items-center justify-between gap-md"><div><h2 className="font-heading text-h4">Data pendaftar</h2><p className="mt-sm text-b3 text-neutral-800">Pendaftaran kompetisi dan kegiatan IOE 2027.</p></div><div className="flex flex-wrap gap-sm"><Button variant="ghost" size="sm" loading={registrations.isFetching} onClick={() => void registrations.refetch()}>Muat ulang</Button><Button size="sm" onClick={() => void exportCsv()}>Export tim (.csv)</Button></div></div>
           {registrations.isPending && <p className="mt-lg" role="status">Memuat pendaftar...</p>}
           {registrations.isError && <p className="mt-lg" role="status">Data belum dapat dimuat. Silakan coba lagi.</p>}
-          {registrations.isSuccess && <><RegistrationTable title="Tim kompetisi" headers={["Tim", "Kompetisi / batch", "Ketua", "Tanggal daftar"]} rows={registrations.data.teams.map(team => ({ id: team.team_id, cells: [team.team_name, `${team.competition_name} / ${team.batch_name}`, `${team.leader_name} · ${team.leader_email}`, date(team.created_at)] }))} /><RegistrationTable title="Peserta kegiatan" headers={["Peserta", "Kegiatan / sesi", "Kontak", "Institusi / domisili", "Tanggal daftar"]} rows={registrations.data.eventRegistrations.map(item => ({ id: item.registration_id, cells: [item.participant_name, `${item.event_name} / ${item.session_type}`, `${item.email} · ${item.phone}`, `${item.institution} / ${item.domicile}`, date(item.created_at)] }))} /></>}
+          {registrations.isSuccess && <><RegistrationTable title="Tim kompetisi" headers={["Tim", "Kompetisi / batch", "Ketua", "Tanggal daftar"]} rows={registrations.data.teams.map(team => ({ id: team.team_id, cells: [team.team_name, `${team.competition_name} / ${team.batch_name}`, `${team.leader_name} · ${team.leader_email}`, date(team.created_at)] }))} /><RegistrationTable title="Peserta kegiatan" headers={["Peserta", "Kegiatan / sesi", "Kontak", "Institusi / domisili", "Berkas", "Tanggal daftar"]} rows={registrations.data.eventRegistrations.map(item => ({ id: item.registration_id, cells: [item.participant_name, `${item.event_name} / ${item.session_type}`, `${item.email} · ${item.phone}`, `${item.institution} / ${item.domicile}`, <span key="files" className="flex flex-wrap gap-sm">{item.cv_url && <a className="text-secondary-800 underline" href={item.cv_url} target="_blank" rel="noopener noreferrer">CV</a>}{item.payment_proof_url && <a className="text-secondary-800 underline" href={item.payment_proof_url} target="_blank" rel="noopener noreferrer">Bukti bayar</a>}{!item.cv_url && !item.payment_proof_url && "—"}</span>, date(item.created_at)] }))} /></>}
         </Tabs.Content>
         <Tabs.Content value="announcements" className={card}>
           <h2 className="font-heading text-h4">Buat pengumuman</h2><p className="mt-sm text-b3 text-neutral-800">Kirim informasi untuk seluruh peserta atau satu kompetisi.</p>
@@ -142,6 +142,6 @@ export function AdminPanel() {
   </main>;
 }
 
-function RegistrationTable({ title, headers, rows }: { title: string; headers: string[]; rows: { id: string; cells: string[] }[] }) {
+function RegistrationTable({ title, headers, rows }: { title: string; headers: string[]; rows: { id: string; cells: ReactNode[] }[] }) {
   return <section className="mt-xl"><h3 className="font-ui text-s4 font-bold">{title} <span className="text-neutral-800">({rows.length})</span></h3>{rows.length === 0 ? <p className="mt-md text-b3 text-neutral-800">Belum ada pendaftar.</p> : <div className="mt-md overflow-x-auto rounded-xl border border-neutral-300" tabIndex={0} role="region" aria-label={title}><table className="w-full text-left text-b3"><caption className="sr-only">{title}</caption><thead className="bg-tertiary-100"><tr>{headers.map(header => <th key={header} scope="col" className="px-md py-md font-ui font-bold text-secondary-1000">{header}</th>)}</tr></thead><tbody>{rows.map(row => <tr key={row.id} className="border-t border-neutral-300">{row.cells.map((cell, index) => <td key={index} className="px-md py-md align-top wrap-anywhere">{cell || "—"}</td>)}</tr>)}</tbody></table></div>}</section>;
 }

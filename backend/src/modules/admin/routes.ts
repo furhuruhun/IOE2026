@@ -176,16 +176,34 @@ adminRoutes.get("/registrations", async (c) => {
 
   const eventRegs = await c.env.DB.prepare(
     `SELECT r.id as registration_id, e.name as event_name, r.session_type,
-            u.name as participant_name, u.email, r.phone, r.institution, r.domicile, r.created_at
+            u.name as participant_name, u.email, r.phone, r.institution, r.domicile,
+            r.cv_key, r.payment_proof_key, r.created_at
      FROM event_registrations r
      JOIN events e ON e.id = r.event_id
      JOIN users u ON u.id = r.user_id
      ORDER BY r.created_at DESC`
   ).all();
 
+  // Berkas event disimpan pada kolom cv_key/payment_proof_key, terpisah dari
+  // requirement_submissions milik kompetisi. Kembalikan URL bertanda tangan,
+  // bukan key R2 mentah, agar tetap hanya dapat diakses panitia.
+  const origin = new URL(c.req.url).origin;
+  const eventRegistrations = await Promise.all(eventRegs.results.map(async (row) => {
+    const item = row as Record<string, unknown>;
+    return {
+      ...item,
+      cv_url: item.cv_key ? await generateSignedFileUrl(origin, String(item.cv_key), c.env.FILE_SIGNING_SECRET) : null,
+      payment_proof_url: item.payment_proof_key
+        ? await generateSignedFileUrl(origin, String(item.payment_proof_key), c.env.FILE_SIGNING_SECRET)
+        : null,
+      cv_key: undefined,
+      payment_proof_key: undefined,
+    };
+  }));
+
   return ok(c, {
     teams: compTeams.results,
-    eventRegistrations: eventRegs.results,
+    eventRegistrations,
   });
 });
 
