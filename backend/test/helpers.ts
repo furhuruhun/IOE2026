@@ -1,5 +1,6 @@
 import { env } from "cloudflare:test";
 import migrationSql from "../migrations/0001_initial.sql?raw";
+import recoverySql from "../migrations/0002_password_recovery.sql?raw";
 import seedSql from "../seed/seed.sql?raw";
 
 function cleanStatements(rawSql: string): string[] {
@@ -15,6 +16,12 @@ export async function resetDatabase() {
   for (const stmt of migrationStatements) {
     await env.DB.prepare(stmt).run();
   }
+  const columns = await env.DB.prepare("PRAGMA table_info(users)").all<{ name: string }>();
+  if (!columns.results.some(column => column.name === "session_version")) {
+    for (const stmt of cleanStatements(recoverySql)) await env.DB.prepare(stmt).run();
+  }
+  await env.DB.prepare("DELETE FROM password_reset_tokens").run();
+  await env.DB.prepare("DELETE FROM password_reset_limits").run();
 
   try {
     await env.DB.prepare("DELETE FROM users").run();

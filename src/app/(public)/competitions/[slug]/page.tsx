@@ -35,6 +35,7 @@ export default async function CompetitionDetailsPage({
 
   return (
     <main id="main-content" tabIndex={-1} className="wrap-anywhere flex min-w-0 flex-1 flex-col">
+      <div className="site-container pt-6"><Link href="/competitions" className="ui-action ui-action-secondary ui-action-sm"><span aria-hidden="true">←</span> Kembali ke daftar kompetisi</Link></div>
       <CompetitionDetailHero slug={slug} />
       <CompetitionDetailAboutSection slug={slug} />
       <CompetitionDetailTimelineSection slug={slug} />
@@ -49,3 +50,4 @@ export default async function CompetitionDetailsPage({
     </main>
   );
 }
+import Link from "next/link";

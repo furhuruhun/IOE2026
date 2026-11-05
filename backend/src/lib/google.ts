@@ -14,10 +14,11 @@ export interface GoogleUserPayload {
 
 export async function verifyGoogleIdToken(
   idToken: string,
-  clientId: string
+  clientId: string,
+  allowMock = false
 ): Promise<GoogleUserPayload> {
   // Support mock token for local development and test environment
-  if (idToken.startsWith("mock:")) {
+  if (allowMock && idToken.startsWith("mock:")) {
     const parts = idToken.split(":");
     return {
       sub: parts[1] || "mock-sub-123",

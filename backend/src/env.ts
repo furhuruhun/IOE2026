@@ -7,6 +7,10 @@ export interface Bindings {
   FILE_URL_TTL_SECONDS?: string;
   GOOGLE_CLIENT_ID: string;
   APP_TZ?: string;
+  RESEND_API_KEY?: string;
+  PASSWORD_RESET_FROM?: string;
+  PASSWORD_RESET_ORIGIN?: string;
+  AUTH_TEST_MODE?: string;
 }
 
 export interface AuthUser {

@@ -1,17 +1,19 @@
 'use client';
 import { useEffect, useId, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Icon } from '@iconify/react/offline';
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { Button, buttonStyles } from '@/components/ui/Button';
 import { Toast } from '@/components/ui/Toast';
 import { FormBanner } from '@/components/ui/FormBanner';
 import { profileSchema, type ProfileFormValues } from './schemas';
 import type { Profile } from '@/types/profile';
+import { passwordManagementEnabled } from '@/features/auth/PasswordForm';
 const FIELDS = [
   { key: 'name', label: 'Name', autoComplete: 'name' },
   { key: 'email', label: 'Email', autoComplete: 'email' },
@@ -73,5 +75,6 @@ export function ProfileForm() {
       </div>
     </form>}
     {toast?.status === 'error' && !profile.isError && <Button variant="ghost" className="self-start" onClick={editing ? handleSubmit(submit) : () => { setToast(null); void profile.refetch(); }}>Coba lagi</Button>}
+    {profile.data && passwordManagementEnabled && <Link href="/change-password" className={`${buttonStyles('secondary')} self-start`}>Ubah password</Link>}
   </section>;
 }

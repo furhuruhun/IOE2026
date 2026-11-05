@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ioe2027-api-test",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [{ "binding": "DB", "database_name": "ioe2027-test", "database_id": "00000000-0000-0000-0000-000000000000" }],
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "ioe2027-test-files" }],
+  "vars": {
+    "JWT_SECRET": "isolated-test-secret-never-use-in-production",
+    "FILE_SIGNING_SECRET": "isolated-test-file-secret",
+    "GOOGLE_CLIENT_ID": "test-google-client",
+    "AUTH_TEST_MODE": "1",
+    "APP_TZ": "Asia/Jakarta"
+  }
+}

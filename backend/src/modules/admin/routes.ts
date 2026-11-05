@@ -153,7 +153,7 @@ adminRoutes.post("/users/password", async (c) => {
 
   const passwordHash = await hashPassword(body.newPassword);
   await c.env.DB.prepare(
-    "UPDATE users SET password_hash = ?1, updated_at = ?2 WHERE id = ?3"
+    "UPDATE users SET password_hash = ?1, updated_at = ?2, session_version = session_version + 1 WHERE id = ?3"
   )
     .bind(passwordHash, nowIsoWib(), user.id)
     .run();

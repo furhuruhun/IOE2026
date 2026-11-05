@@ -11,7 +11,7 @@ const COOKIE_NAME = "ioe_token";
 
 // Route yang butuh login. /events/[slug]/register ditangani terpisah di bawah
 // karena /events dan /events/[slug] harus tetap public.
-const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/admin"];
+const PROTECTED_PREFIXES = ["/dashboard", "/profile", "/change-password", "/admin"];
 
 const AUTH_ROUTES = ["/login", "/register"];
 

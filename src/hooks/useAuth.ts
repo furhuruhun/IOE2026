@@ -11,6 +11,7 @@ import {
 } from "@/services/authService";
 import { getSafeRedirect } from "@/utils/safeRedirect";
 import type { User } from "@/types/auth";
+import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 
 export const authKeys = {
   all: ["auth"] as const,
@@ -78,13 +79,15 @@ export function useGoogleLogin() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: logoutUser,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.cancelQueries();
       queryClient.clear();
-      router.push("/login");
+      useEventRegistrationStore.getState().clear();
+      // Reload after cookie deletion to discard prefetched routes and mounted account state.
+      window.location.replace("/login");
     },
   });
 }

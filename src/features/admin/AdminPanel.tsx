@@ -5,6 +5,7 @@ import Link from "next/link";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 import { Input } from "@/components/ui/Input";
 import { FormBanner } from "@/components/ui/FormBanner";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
@@ -67,7 +68,10 @@ export function AdminPanel() {
     <div className="site-container flex flex-col gap-xl py-xl md:py-2xl">
       <header className={`${styles.hero} flex flex-wrap items-start justify-between gap-md`}>
         <div><p className="font-ui text-b3 font-bold text-secondary-800">IOE 2027 · Ruang Panitia</p><h1 className="mt-sm font-heading text-h3 md:text-h2">Admin Panel</h1><p className="mt-sm text-b2 text-neutral-800">Kelola persiapan peserta dan informasi kegiatan.</p></div>
-        <Link href="/dashboard" className="ui-action ui-action-ghost ui-action-sm">Kembali ke dashboard</Link>
+        <div className="flex flex-wrap items-center gap-md">
+          <Link href="/dashboard" className="ui-action ui-action-ghost ui-action-sm">Kembali ke dashboard</Link>
+          <LogoutButton />
+        </div>
       </header>
       <div className={`${styles.stats} grid gap-md sm:grid-cols-3`}>
         {[["Menunggu review", all.filter(item => item.status === "pending").length], ["Diterima", all.filter(item => item.status === "accepted").length], ["Ditolak", all.filter(item => item.status === "rejected").length]].map(([label, count], index) => <div key={label} className={`${card} ${styles.stat}`} data-status={index}><p className="text-b3 text-neutral-800"><span className={styles.dot} aria-hidden="true" />{label}</p><p className="mt-sm font-heading text-h3 text-secondary-1000 tabular-nums">{submissions.isSuccess ? count : "—"}</p><p className="mt-sm text-b3 text-neutral-800">Berkas peserta</p></div>)}

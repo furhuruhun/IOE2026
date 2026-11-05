@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
 import { LoginForm } from "@/features/auth/LoginForm";
 import { privateMetadata } from "@/lib/siteMetadata";
@@ -19,6 +20,7 @@ export default function LoginPage() {
   return (
     <main id="main-content" tabIndex={-1} className="relative flex flex-1 overflow-hidden">
       <div className="flex flex-1 flex-col justify-center gap-8 px-6 py-16 md:w-1/2 md:flex-none md:px-16 lg:px-24">
+        <Link href="/" className="ui-action ui-action-secondary ui-action-sm self-start"><span aria-hidden="true">←</span> Kembali ke beranda</Link>
         {/* max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom membayangi container scale
             bawaan Tailwind untuk key "sm", lihat CHANGELOG. */}
         <div className="w-full max-w-[24rem]">

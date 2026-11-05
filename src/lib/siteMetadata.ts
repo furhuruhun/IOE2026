@@ -70,5 +70,5 @@ export function siteSitemap(): MetadataRoute.Sitemap {
 export function siteRobots(): MetadataRoute.Robots {
   const site = getSiteConfig();
   if (!site.indexable || !site.origin) return { rules: { userAgent: "*", disallow: "/" } };
-  return { rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin", "/dashboard", "/profile", "/login", "/register", "/confirmation", "/events/*/register"] }, sitemap: `${site.origin}/sitemap.xml` };
+  return { rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin", "/dashboard", "/profile", "/change-password", "/login", "/register", "/forgot-password", "/reset-password", "/confirmation", "/events/*/register"] }, sitemap: `${site.origin}/sitemap.xml` };
 }

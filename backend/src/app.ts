@@ -6,6 +6,7 @@ import { ok, fail } from "./lib/response";
 import { nowIsoWib } from "./lib/time";
 
 import { authRoutes } from "./modules/auth/routes";
+import { recoveryRoutes } from "./modules/auth/recovery";
 import { profileRoutes } from "./modules/profile/routes";
 import { competitionRoutes } from "./modules/competitions/routes";
 import { teamRoutes } from "./modules/teams/routes";
@@ -36,6 +37,7 @@ api.get("/health", (c) => {
 
 // Mount modules
 api.route("/auth", authRoutes);
+api.route("/auth", recoveryRoutes);
 api.route("/profile", profileRoutes);
 api.route("/competitions", competitionRoutes);
 api.route("/competitions", teamRoutes);

@@ -11,6 +11,7 @@ import { MobileNavDrawer } from "@/components/ui/MobileNavDrawer";
 import { NavbarDropdown } from "@/components/ui/NavbarDropdown";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { LogoutButton } from "@/components/ui/LogoutButton";
 
 // Shared gradient reference for existing IOE action components.
 export const CTA_GRADIENT =
@@ -81,7 +82,7 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
           <ThemeToggle />
 
           {/* User / Login pill — desktop only, ≥1280px */}
-          <div className="hidden xl:flex">
+          <div className="hidden items-center gap-2 xl:flex">
             {isLoggedIn ? (
               <Link href="/profile" className={CTA_PILL}>
                 <UserAvatar avatarUrl={user?.avatarUrl} size="size-[22px]" />
@@ -94,6 +95,7 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
                 Login
               </Link>
             )}
+            {isLoggedIn && <LogoutButton />}
           </div>
 
           {/* F-02: hamburger — mobile only, <1280px. Nutupnya lewat tombol X di dalam

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLogin, useGoogleLogin } from "@/hooks/useAuth";
@@ -16,6 +17,7 @@ import { loginSchema, type LoginFormValues } from "./schemas";
 // F-40, F-41, F-43. Flow: USER_FLOWS_v2.md §Flow Login via Google OAuth & (implisit)
 // Flow Registrasi Akun untuk pola validasi/error yang sama dipakai login.
 export function LoginForm() {
+  const searchParams = useSearchParams();
   const login = useLogin();
   const googleLogin = useGoogleLogin();
   const handleApiError = useErrorHandler();
@@ -61,6 +63,7 @@ export function LoginForm() {
     // membayangi container scale bawaan Tailwind untuk key "sm", lihat CHANGELOG.
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex w-full max-w-[24rem] flex-col gap-4">
       {formBanner && <FormBanner message={formBanner} variant="error" />}
+      {searchParams.get("passwordChanged") === "1" && <FormBanner message="Password berhasil diubah. Silakan login dengan password baru." variant="success" />}
 
       <Input
         label="Email"
@@ -84,6 +87,7 @@ export function LoginForm() {
         {login.isPending ? "Masuk..." : "Login"}
       </Button>
 
+      <Link href="/forgot-password" className="text-b3 text-secondary-800 underline">Lupa password?</Link>
       <div className="flex items-center gap-3">
         <div className="h-px flex-1 bg-neutral-300" />
         <span className="text-b4 text-neutral-700">Atau</span>

@@ -24,6 +24,7 @@ interface UserDbRow {
   institution: string | null;
   phone: string | null;
   domicile: string | null;
+  session_version?: number;
 }
 
 authRoutes.post("/register", async (c) => {
@@ -75,7 +76,7 @@ authRoutes.post("/login", async (c) => {
   const body = parseBody(loginSchema, await c.req.json());
 
   const user = await c.env.DB.prepare(
-    `SELECT id, email, name, role, password_hash, avatar_url, institution, phone, domicile
+    `SELECT id, email, name, role, password_hash, avatar_url, institution, phone, domicile, session_version
      FROM users WHERE email = ?1 LIMIT 1`
   )
     .bind(body.email)
@@ -95,7 +96,7 @@ authRoutes.post("/login", async (c) => {
     throw new AppError("INVALID_CREDENTIALS", 401);
   }
 
-  const token = await signJwt({ id: user.id, role: user.role }, c.env.JWT_SECRET);
+  const token = await signJwt(user, c.env.JWT_SECRET);
 
   return ok(c, {
     token,
@@ -135,11 +136,13 @@ authRoutes.post("/change-password", requireAuth, async (c) => {
 
   const passwordHash = await hashPassword(body.newPassword);
   const timestamp = nowIsoWib();
-  await c.env.DB.prepare(
-    "UPDATE users SET password_hash = ?1, updated_at = ?2 WHERE id = ?3"
+  const changed = await c.env.DB.prepare(
+    "UPDATE users SET password_hash = ?1, updated_at = ?2, session_version = session_version + 1 WHERE id = ?3 AND password_hash = ?4"
   )
-    .bind(passwordHash, timestamp, authUser.id)
+    .bind(passwordHash, timestamp, authUser.id, user.password_hash)
     .run();
+
+  if (changed.meta.changes !== 1) throw new AppError("UNAUTHORIZED", 401);
 
   return ok(c, { changed: true, changedAt: timestamp });
 });
@@ -150,11 +153,12 @@ authRoutes.post("/google", async (c) => {
 
   const googlePayload = await verifyGoogleIdToken(
     rawToken,
-    c.env.GOOGLE_CLIENT_ID
+    c.env.GOOGLE_CLIENT_ID,
+    c.env.AUTH_TEST_MODE === "1"
   );
 
   let user = await c.env.DB.prepare(
-    `SELECT id, email, name, role, avatar_url, institution, phone, domicile
+    `SELECT id, email, name, role, avatar_url, institution, phone, domicile, session_version
      FROM users WHERE google_sub = ?1 OR email = ?2 LIMIT 1`
   )
     .bind(googlePayload.sub, googlePayload.email)
@@ -209,7 +213,7 @@ authRoutes.post("/google", async (c) => {
     };
   }
 
-  const token = await signJwt({ id: user.id, role: user.role }, c.env.JWT_SECRET);
+  const token = await signJwt(user, c.env.JWT_SECRET);
 
   return ok(c, {
     token,

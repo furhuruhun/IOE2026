@@ -21,12 +21,12 @@ export const requireAuth: MiddlewareHandler<AppContext> = async (c, next) => {
   }
 
   const user = await c.env.DB.prepare(
-    "SELECT id, email, role, name FROM users WHERE id = ?1 LIMIT 1"
+    "SELECT id, email, role, name, session_version FROM users WHERE id = ?1 LIMIT 1"
   )
     .bind(payload.sub)
-    .first<AuthUser>();
+    .first<AuthUser & { session_version: number }>();
 
-  if (!user) {
+  if (!user || user.session_version !== payload.sessionVersion) {
     throw new AppError("UNAUTHORIZED", 401);
   }
 
@@ -40,12 +40,12 @@ export const optionalAuth: MiddlewareHandler<AppContext> = async (c, next) => {
     const payload = await verifyJwt(token, c.env.JWT_SECRET);
     if (payload) {
       const user = await c.env.DB.prepare(
-        "SELECT id, email, role, name FROM users WHERE id = ?1 LIMIT 1"
+        "SELECT id, email, role, name, session_version FROM users WHERE id = ?1 LIMIT 1"
       )
         .bind(payload.sub)
-        .first<AuthUser>();
+        .first<AuthUser & { session_version: number }>();
 
-      if (user) {
+      if (user && user.session_version === payload.sessionVersion) {
         c.set("user", user);
       }
     }

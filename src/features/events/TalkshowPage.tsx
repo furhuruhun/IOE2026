@@ -90,6 +90,7 @@ function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback:
   return (
     <section aria-labelledby="talkshow-title" className={`${shell} flex flex-col items-center gap-8 pt-10 lg:flex-row lg:justify-between`}>
       <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:max-w-[560px] lg:items-start lg:text-left">
+        <Link href="/events" className="ui-action ui-action-secondary ui-action-sm mb-6"><span aria-hidden="true">←</span> Kembali ke daftar event</Link>
         <span className="rounded-full border border-primary-600 bg-primary-100 px-4 py-2 font-ui text-b4 font-bold uppercase tracking-widest text-secondary-1000">
           Event IOE 2027
         </span>
