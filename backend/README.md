@@ -39,6 +39,9 @@ Backend resmi untuk platform **Indonesia Ocean Expo 2027 (IOE 2027)**. Dibangun 
    - `GET /dashboard/assignments`: Daftar tugas dan persyaratan yang harus diselesaikan.
 9. **Admin Panel (`/api/admin`)**:
    - `GET /admin/registrations`: Monitoring seluruh tim dan peserta terdaftar.
+   - `GET /admin/submissions`: Daftar submission peserta, dapat difilter dengan `status` dan `competitionId`.
+   - `PATCH /admin/requirements/:requirementId/deadline`: Mengubah deadline requirement.
+   - `POST /admin/users/password`: Reset password peserta berdasarkan email.
    - `GET /admin/registrations/export`: Ekspor data registrasi dalam format CSV.
    - `PATCH /admin/submissions/:id/review`: Review persetujuan/penolakan berkas (otomatis hapus file dari R2 jika ditolak).
    - `POST /admin/announcements`: Publikasi pengumuman untuk peserta.
@@ -67,6 +70,11 @@ npm run db:seed:local
 npm run db:admin:local
 ```
 *Akun default*: `admin@ioe2027.itb.ac.id` / `AdminIOE2027!`
+
+Untuk membuat atau memperbarui akun panitia di database remote:
+```bash
+npm run db:admin:remote -- panitia@ioe2027.com "Panitia IOE 2027" "PasswordKuat123!"
+```
 
 ### 5. Jalankan Local Development Server (Port 8000)
 ```bash

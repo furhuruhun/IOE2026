@@ -8,7 +8,8 @@ import { signJwt } from "../../lib/jwt";
 import { verifyGoogleIdToken } from "../../lib/google";
 import { newId } from "../../lib/ids";
 import { nowIsoWib } from "../../lib/time";
-import { registerSchema, loginSchema, googleSchema } from "./schemas";
+import { registerSchema, loginSchema, googleSchema, changePasswordSchema } from "./schemas";
+import { requireAuth } from "../../middleware/auth";
 
 export const authRoutes = new Hono<AppContext>();
 
@@ -109,6 +110,38 @@ authRoutes.post("/login", async (c) => {
       domicile: user.domicile,
     },
   });
+});
+
+// POST /auth/change-password — participant changes their own password
+authRoutes.post("/change-password", requireAuth, async (c) => {
+  const body = parseBody(changePasswordSchema, await c.req.json());
+  const authUser = c.get("user")!;
+
+  const user = await c.env.DB.prepare(
+    "SELECT password_hash FROM users WHERE id = ?1 LIMIT 1"
+  )
+    .bind(authUser.id)
+    .first<{ password_hash: string | null }>();
+
+  if (!user?.password_hash || !(await verifyPassword(body.currentPassword, user.password_hash))) {
+    throw new AppError("INVALID_CREDENTIALS", 401, "Password lama salah");
+  }
+
+  if (body.currentPassword === body.newPassword) {
+    throw new AppError("VALIDATION_ERROR", 400, "Password baru harus berbeda dari password lama", {
+      newPassword: "Password baru harus berbeda dari password lama",
+    });
+  }
+
+  const passwordHash = await hashPassword(body.newPassword);
+  const timestamp = nowIsoWib();
+  await c.env.DB.prepare(
+    "UPDATE users SET password_hash = ?1, updated_at = ?2 WHERE id = ?3"
+  )
+    .bind(passwordHash, timestamp, authUser.id)
+    .run();
+
+  return ok(c, { changed: true, changedAt: timestamp });
 });
 
 authRoutes.post("/google", async (c) => {

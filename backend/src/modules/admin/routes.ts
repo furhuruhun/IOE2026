@@ -3,10 +3,12 @@ import type { AppContext } from "../../env";
 import { requireAuth, requireRole } from "../../middleware/auth";
 import { ok, created } from "../../lib/response";
 import { AppError } from "../../lib/errors";
-import { nowIsoWib } from "../../lib/time";
+import { nowIsoWib, toWib } from "../../lib/time";
 import { newId } from "../../lib/ids";
 import { z } from "zod";
 import { parseBody } from "../../lib/validate";
+import { hashPassword } from "../../lib/password";
+import { generateSignedFileUrl } from "../../lib/signedUrl";
 
 export const adminRoutes = new Hono<AppContext>();
 
@@ -20,6 +22,143 @@ const reviewSchema = z.object({
 const announcementSchema = z.object({
   competitionId: z.string().optional(),
   body: z.string().min(1, "Konten pengumuman wajib diisi"),
+});
+
+const deadlineSchema = z.object({
+  dueAt: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), "Format deadline tidak valid"),
+});
+
+const adminPasswordSchema = z.object({
+  email: z.string().trim().email("Format email tidak valid").toLowerCase(),
+  newPassword: z
+    .string()
+    .min(8, "Password minimal 8 karakter")
+    .regex(/[A-Za-z]/, "Password harus mengandung huruf")
+    .regex(/[0-9]/, "Password harus mengandung angka"),
+});
+
+const allowedSubmissionStatuses = new Set(["pending", "accepted", "rejected"]);
+
+interface AdminSubmissionRow {
+  id: string;
+  status: string;
+  file_key: string | null;
+  file_name: string | null;
+  file_size: number | null;
+  file_mime: string | null;
+  rejection_reason: string | null;
+  submitted_at: string | null;
+  reviewed_at: string | null;
+  requirement_id: string;
+  requirement_name: string;
+  requirement_type: string;
+  due_at: string;
+  competition_id: string;
+  competition_name: string;
+  team_id: string | null;
+  team_name: string | null;
+  team_code: string | null;
+  user_id: string | null;
+  participant_name: string | null;
+  participant_email: string | null;
+  updated_at: string;
+}
+
+// GET /admin/submissions
+adminRoutes.get("/submissions", async (c) => {
+  const status = c.req.query("status");
+  const competitionId = c.req.query("competitionId");
+  if (status && !allowedSubmissionStatuses.has(status)) {
+    throw new AppError("VALIDATION_ERROR", 400, "Status submission tidak valid");
+  }
+
+  const conditions: string[] = [];
+  const binds: string[] = [];
+  if (status) {
+    conditions.push(`s.status = ?${binds.length + 1}`);
+    binds.push(status);
+  }
+  if (competitionId) {
+    conditions.push(`t.competition_id = ?${binds.length + 1}`);
+    binds.push(competitionId);
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+  const rows = await c.env.DB.prepare(
+    `SELECT s.id, s.status, s.file_key, s.file_name, s.file_size, s.file_mime,
+            s.rejection_reason, s.submitted_at, s.reviewed_at,
+            rt.id AS requirement_id, rt.name AS requirement_name, rt.type AS requirement_type,
+            rt.due_at, c.id AS competition_id, c.name AS competition_name,
+            s.team_id, tm.name AS team_name, tm.code AS team_code,
+            u.id AS user_id, u.name AS participant_name, u.email AS participant_email
+     FROM requirement_submissions s
+     JOIN requirement_templates rt ON rt.id = s.template_id
+     JOIN competitions c ON c.id = rt.competition_id
+     LEFT JOIN teams tm ON tm.id = s.team_id
+     LEFT JOIN users u ON u.id = s.user_id
+     ${where}
+     ORDER BY COALESCE(s.submitted_at, s.updated_at) DESC`
+  )
+    .bind(...binds)
+    .all<AdminSubmissionRow>();
+
+  const origin = new URL(c.req.url).origin;
+  const submissions = await Promise.all(
+    rows.results.map(async (row) => ({
+      ...row,
+      dueAt: row.due_at,
+      fileUrl: row.file_key
+        ? await generateSignedFileUrl(origin, row.file_key, c.env.FILE_SIGNING_SECRET)
+        : null,
+    }))
+  );
+
+  return ok(c, submissions);
+});
+
+// PATCH /admin/requirements/:requirementId/deadline
+adminRoutes.patch("/requirements/:requirementId/deadline", async (c) => {
+  const requirementId = c.req.param("requirementId");
+  const body = parseBody(deadlineSchema, await c.req.json());
+  const dueAt = toWib(body.dueAt);
+  const existing = await c.env.DB.prepare(
+    "SELECT id FROM requirement_templates WHERE id = ?1 LIMIT 1"
+  )
+    .bind(requirementId)
+    .first<{ id: string }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Requirement tidak ditemukan");
+
+  await c.env.DB.prepare(
+    "UPDATE requirement_templates SET due_at = ?1 WHERE id = ?2"
+  )
+    .bind(dueAt, requirementId)
+    .run();
+
+  return ok(c, { requirementId, dueAt });
+});
+
+// POST /admin/users/password — admin reset tanpa meminta password lama peserta
+adminRoutes.post("/users/password", async (c) => {
+  const body = parseBody(adminPasswordSchema, await c.req.json());
+  const user = await c.env.DB.prepare(
+    "SELECT id, role FROM users WHERE email = ?1 LIMIT 1"
+  )
+    .bind(body.email)
+    .first<{ id: string; role: "peserta" | "panitia" }>();
+
+  if (!user) throw new AppError("NOT_FOUND", 404, "Peserta tidak ditemukan");
+  if (user.role !== "peserta") {
+    throw new AppError("VALIDATION_ERROR", 400, "Password akun panitia tidak diubah dari endpoint ini");
+  }
+
+  const passwordHash = await hashPassword(body.newPassword);
+  await c.env.DB.prepare(
+    "UPDATE users SET password_hash = ?1, updated_at = ?2 WHERE id = ?3"
+  )
+    .bind(passwordHash, nowIsoWib(), user.id)
+    .run();
+
+  return ok(c, { email: body.email, changed: true });
 });
 
 // GET /admin/registrations

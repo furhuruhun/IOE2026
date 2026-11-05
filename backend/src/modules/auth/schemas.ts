@@ -34,6 +34,15 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password wajib diisi"),
 });
 
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Password lama wajib diisi"),
+  newPassword: z
+    .string()
+    .min(8, "Password minimal 8 karakter")
+    .regex(/[A-Za-z]/, "Password harus mengandung huruf")
+    .regex(/[0-9]/, "Password harus mengandung angka"),
+});
+
 export const googleSchema = z
   .object({
     idToken: z.string().min(1, "idToken tidak boleh kosong").optional(),
