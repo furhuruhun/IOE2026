@@ -30,7 +30,6 @@ export const navigationCategories: NavigationCategory[] = [
     icon: "mdi:calendar-star",
     children: [
       { id: "talkshow", label: "Talkshow", href: "/events/talkshow" },
-      { id: "workshop", label: "Workshop", href: "/events/workshop" },
       { id: "short-course", label: "Short Course", href: "/events/short-course" },
     ],
   },

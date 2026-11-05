@@ -40,7 +40,7 @@ export const heroSlides: HeroSlide[] = [
     id: "slide-event",
     eyebrow: "Event",
     title: "Rangkaian Event",
-    desc: "Talkshow, Workshop, Exhibition, Short Course — perluas wawasan maritim Indonesia lewat rangkaian acara IOE 2027.",
+    desc: "Talkshow, Exhibition, Short Course — perluas wawasan maritim Indonesia lewat rangkaian acara IOE 2027.",
     cta: { label: "Lihat Event", href: "/events#events" },
   },
 ];

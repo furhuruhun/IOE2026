@@ -53,10 +53,10 @@ export const shortCourseContent = {
   // Keep disabled pending organizer readiness and Phase 7 backend verification.
   registrationFormReady: false,
   benefits: [
-    { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "https://assets.compfest.id/event/xcelerate/real.svg" },
-    { id: "personal-branding", title: "Personal Branding Mentorship", illustrationSrc: "https://assets.compfest.id/event/xcelerate/personal.svg" },
-    { id: "career-guidance", title: "Career Guidance", illustrationSrc: "https://assets.compfest.id/event/xcelerate/career.svg" },
-    { id: "industry-portfolio", title: "Industry Level Portofolio", illustrationSrc: "https://assets.compfest.id/event/xcelerate/industry.svg" },
+    { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "/images/events/Maskot_Variance_1.png" },
+    { id: "personal-branding", title: "Personal Branding Mentorship", illustrationSrc: "/images/events/Maskot_Variance_2.png" },
+    { id: "career-guidance", title: "Career Guidance", illustrationSrc: "/images/events/Maskot_Variance_4.png" },
+    { id: "industry-portfolio", title: "Industry Level Portofolio", illustrationSrc: "/images/events/Maskot_Variance_5.png" },
   ] as ShortCourseBenefit[],
   milestones: [] as ShortCourseMilestone[],
   // Layout preview from the supplied timeline reference. These are not IOE dates.

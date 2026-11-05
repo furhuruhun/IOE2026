@@ -114,11 +114,17 @@ try {
   for (const width of [320, 768, 1440]) {
     await send("Emulation.setDeviceMetricsOverride", { width, height: 950, deviceScaleFactor: 1, mobile: false });
     registered = false; deadline = "2030-01-01T00:00:00+07:00"; mode = "success";
-    for (const slug of ["talkshow", "short-course", "workshop", "exhibition"]) {
+    for (const slug of ["talkshow", "short-course", "exhibition"]) {
       await go(`/events/${slug}/register`); await wait(`${form} && ${submit}.disabled`);
       await js(`${form}.requestSubmit()`); assert.equal(posts, 0);
     }
     await record(width, "direct routes retain disabled readiness");
+    for (const suffix of ["", "/register"]) {
+      await go(`/events/workshop${suffix}`);
+      await wait("document.body.innerText.includes('Event tidak ditemukan')");
+      assert.equal(await js("!!document.querySelector('form')"), false);
+    }
+    await record(width, "hidden workshop routes show not found");
     await go("/confirmation?from=registration");
     await wait("document.body.innerText.includes('Periksa status pendaftaran')");
     await wait("document.activeElement.id === 'main-content'");

@@ -141,7 +141,7 @@ export const competitionFaqs: FaqItem[] = [
   {
     value: "faq-5",
     question: "Apa saja yang bisa saya dapatkan dari IOE 2027 selain kompetisi?",
-    answer: "Placeholder — rangkaian acara/benefit non-kompetisi (workshop, talkshow, dst) menunggu konfirmasi panitia.",
+    answer: "Placeholder — rangkaian acara/benefit non-kompetisi (talkshow, short course, dst) menunggu konfirmasi panitia.",
   },
 ];
 

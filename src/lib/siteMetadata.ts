@@ -26,7 +26,7 @@ export function getSiteConfig() {
 export const publicPages = [
   { path: "/", title: "Indonesia Ocean Expo 2027", description },
   { path: "/competitions", title: "Competitions", description: "Business Case, Paper & Poster, Design Competition — IOE 2027." },
-  { path: "/events", title: "Events", description: "Talkshow, Workshop, Exhibition, Short Course — IOE 2027." },
+  { path: "/events", title: "Events", description: "Talkshow, Exhibition, Short Course — IOE 2027." },
   ...navigationCategories.flatMap(category => category.children.map(item => ({ path: item.href, title: item.label, description: `${item.label} — Indonesia Ocean Expo 2027, KMKL ITB.` }))),
   { path: "/events/exhibition", title: "Exhibition", description: "Exhibition — Indonesia Ocean Expo 2027, KMKL ITB." },
 ];

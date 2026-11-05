@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 import { buttonStyles } from "@/components/ui/Button";
+import { isHiddenEvent } from "@/lib/eventVisibility";
 
 export function RegistrationConfirmation() {
   const receipt = useEventRegistrationStore(state => state.receipt);
@@ -22,7 +23,7 @@ export function RegistrationConfirmation() {
           : "Halaman ini tidak dapat memastikan hasil pendaftaran setelah dimuat ulang atau dibuka langsung. Periksa dashboard sebelum mengirim pendaftaran kembali."}</p>
         <div className="flex flex-wrap gap-sm">
           <Link href="/dashboard" className={buttonStyles("primary")}>Lihat Dashboard</Link>
-          {confirmed && <Link href={`/events/${encodeURIComponent(receipt.slug)}`} className={buttonStyles("secondary")}>Lihat detail event</Link>}
+          {confirmed && !isHiddenEvent(receipt.slug) && <Link href={`/events/${encodeURIComponent(receipt.slug)}`} className={buttonStyles("secondary")}>Lihat detail event</Link>}
           <Link href="/events" className={buttonStyles("secondary")}>Jelajahi event</Link>
         </div>
       </section>

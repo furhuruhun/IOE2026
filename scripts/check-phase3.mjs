@@ -58,7 +58,10 @@ try {
     assert.equal(metadata.robots.index, true);
     assert.equal(metadata.openGraph.images, undefined);
   }
-  assert.equal(seo.siteSitemap().length, 10);
+  assert.equal(seo.siteSitemap().length, 9);
+  assert(seo.siteSitemap().every(item => !item.url.includes('/events/workshop')));
+  assert.equal(seo.publicMetadata('/events/workshop').robots.index, false);
+  assert.equal(seo.publicMetadata('/events/workshop').alternates, undefined);
   assert(seo.siteSitemap().every(item => !/login|register|dashboard|profile|confirmation|admin|api/.test(new URL(item.url).pathname)));
   assert.equal(seo.publicMetadata('/events/unknown').robots.index, false);
   assert.equal(seo.publicMetadata('/events/unknown').alternates, undefined);

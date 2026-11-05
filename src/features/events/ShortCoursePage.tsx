@@ -17,7 +17,7 @@ import { shortCourseContent, type ShortCourseMilestone } from "./shortCourseCont
 import { ShortCoursePanelIllustration, ShortCourseSpeakerIllustration } from "./ShortCourseSpeakerIllustration";
 import { useManualSimulation } from "@/components/ManualSimulation";
 
-const shell = "site-container relative";
+const shell = "site-container relative z-10";
 const heroAction = buttonStyles("secondary", "sm");
 const action = buttonStyles("secondary", "sm");
 
@@ -73,16 +73,17 @@ function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state:
   const futureDeadline = countdownDeadline && now !== null && countdownDeadline.getTime() > now ? countdownDeadline : null;
 
   return (
-    <section aria-labelledby="short-course-title" className="w-full">
+    <section aria-labelledby="short-course-title" className="relative isolate w-full">
+      <Image src="/images/events/desktop-hero-ioe-aquatic-seamless.svg" alt="" aria-hidden="true" fill sizes="100vw" className="pointer-events-none z-0 object-cover object-center" />
       <div className="site-container relative z-10 py-10">
-        <div className="grid w-full grid-cols-1 gap-8 rounded-xl border-2 border-primary-500 bg-secondary-1000 p-4 text-neutral-100 md:p-8 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)] xl:p-12">
+        <div className="grid w-full grid-cols-1 items-center gap-8 py-6 text-secondary-1000 md:py-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)] lg:gap-12">
           <div className="flex min-w-0 flex-col h-full justify-center">
             <div className="w-full self-center h-auto relative items-center py-6 md:py-8">
-              <h1 id="short-course-title" className="text-center font-heading text-h3 leading-tight text-primary-100 md:text-h2">{title}</h1>
+              <h1 id="short-course-title" className="text-balance text-center font-heading text-h3 leading-tight text-secondary-1000 md:text-h1">{title}</h1>
             </div>
             <p className="font-heading text-h5 max-md:text-h6 text-center mb-2">{state.label}</p>
             {futureDeadline ? (
-              <div>{!state.deadline && demoDeadline && <p className="mb-2 text-center font-micro text-b3 text-neutral-100">Sample</p>}<CountdownTimer targetDate={futureDeadline} variant="shortCourse" /></div>
+              <div>{!state.deadline && demoDeadline && <p className="mb-2 text-center font-micro text-b3 text-neutral-800">Sample</p>}<CountdownTimer targetDate={futureDeadline} variant="shortCourse" /></div>
             ) : null}
             <div className="flex flex-wrap justify-center gap-3">
               <HeroRegistrationAction state={state} />
@@ -92,7 +93,7 @@ function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state:
           </div>
           <div className="w-full flex items-center justify-center">
             <div className="w-full max-w-[400px] h-auto relative">
-              <Image src="/short-course/hero-placeholder.svg" alt="Ilustrasi abstrak Short Course IOE" width={800} height={800} className="object-contain" />
+              <Image src="/images/events/ShortCourse-Logo.png" alt="Logo Short Course IOE" width={1536} height={1024} sizes="(max-width: 767px) 90vw, 400px" className="h-auto w-full object-contain" />
             </div>
           </div>
         </div>
@@ -103,14 +104,14 @@ function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state:
 
 function AboutShortCourse() {
   return (
-    <section id="about-short-course" aria-labelledby="short-course-about-title" className="site-container scroll-mt-24 md:scroll-mt-28">
-      <div className="flex flex-col gap-8">
+    <section id="about-short-course" aria-labelledby="short-course-about-title" className={`${shell} scroll-mt-24 md:scroll-mt-28`}>
+      <div className="grid items-center gap-6 md:grid-cols-[1fr_1.4fr] md:gap-12">
         <div className="text-center md:text-left">
           <p className="font-ui text-b2 font-bold uppercase tracking-wide text-secondary-700">What is</p>
-          <h2 id="short-course-about-title" className="font-heading text-h3 text-secondary-1000 md:text-h1">Short Course?</h2>
+          <h2 id="short-course-about-title" className="text-balance font-heading text-h3 text-secondary-1000 md:text-h2">Short Course?</h2>
         </div>
-        <div className="rounded-3xl bg-linear-to-r from-primary-500 via-secondary-500 to-tertiary-600 p-0.5">
-          <div className="rounded-[22px] bg-neutral-100 px-6 py-8 text-center md:px-8 md:py-10">
+        <div className="border-t border-secondary-300 pt-6 md:border-l md:border-t-0 md:pl-10 md:pt-0">
+          <div className="text-center md:text-left">
             <p className="mx-auto max-w-[56rem] font-body text-b2 leading-relaxed text-neutral-900 md:text-b1">{shortCourseContent.description}</p>
           </div>
         </div>
@@ -122,23 +123,17 @@ function AboutShortCourse() {
 function ShortCourseBenefits() {
   const benefits = shortCourseContent.benefits;
   if (process.env.NODE_ENV !== "development") return null;
-  const cardGradients = [
-    "from-primary-700 to-secondary-800",
-    "from-secondary-700 to-secondary-900",
-    "from-secondary-800 to-primary-1000",
-    "from-primary-1000 to-secondary-1000",
-  ];
   return (
-    <section aria-labelledby="short-course-benefits-title" className="site-container">
+    <section aria-labelledby="short-course-benefits-title" className={shell}>
       <h2 id="short-course-benefits-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">What Will You Gain?</h2>
       {benefits.length > 0 ? (
-        <div className="grid w-full grid-cols-2 gap-4 md:flex md:justify-center md:gap-0">
-          {benefits.map((benefit, index) => (
-            <article key={benefit.id} className={`relative flex min-w-0 w-full shrink-0 flex-col items-center gap-4 rounded-2xl bg-linear-to-b ${cardGradients[index % cardGradients.length]} px-4 py-5 text-center text-neutral-100 md:w-[25%] md:px-8 md:py-10 ${index > 0 ? "md:-ml-[2.3%]" : ""}`} style={{ zIndex: benefits.length - index }}>
-              <div className="relative flex aspect-square w-full items-center justify-center">
+        <div className="grid w-full grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 md:gap-8">
+          {benefits.map((benefit) => (
+            <article key={benefit.id} className="relative flex min-w-0 flex-col items-center gap-4 text-center text-secondary-1000">
+              <div className="relative flex aspect-square w-full max-w-64 items-center justify-center">
                 {benefit.illustrationSrc ? <Image src={benefit.illustrationSrc} alt={benefit.illustrationAlt ?? ""} fill sizes="(max-width: 768px) 40vw, 22vw" className="object-contain" /> : <Icon icon="mdi:school-outline" className="size-24 text-neutral-100" aria-hidden="true" />}
               </div>
-              <h3 className="break-words font-heading text-h6 md:text-h5">{benefit.title}</h3>
+              <h3 className="max-w-56 text-balance break-words font-heading text-h6 md:text-h5">{benefit.title}</h3>
             </article>
           ))}
         </div>
@@ -186,7 +181,7 @@ function ShortCourseTimeline({ milestones, now }: { milestones: ShortCourseMiles
   };
 
   return (
-    <section aria-labelledby="short-course-timeline-title" className="site-container">
+    <section aria-labelledby="short-course-timeline-title" className={shell}>
       <h2 id="short-course-timeline-title" className="mb-6 text-center font-heading text-h3 text-secondary-1000 md:text-h2">Our Timeline</h2>
       <div
         ref={scroller}
@@ -199,7 +194,7 @@ function ShortCourseTimeline({ milestones, now }: { milestones: ShortCourseMiles
         onPointerUp={finishPointerDrag}
         onPointerCancel={finishPointerDrag}
         onLostPointerCapture={finishPointerDrag}
-        className="no-scrollbar flex w-full cursor-grab overflow-x-auto overscroll-x-contain rounded-3xl border border-secondary-900 bg-secondary-100/20 p-5 active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:rounded-[36px] md:p-10"
+        className="flex w-full cursor-grab overflow-x-auto overscroll-x-contain p-5 active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800 md:p-10"
       >
         <div className="relative w-fit">
           <div aria-hidden="true" className="absolute left-0 top-1/2 h-1 w-full -translate-y-1/2 rounded-full bg-neutral-500 md:h-2" />
@@ -246,7 +241,7 @@ function ShortCourseSessionCard({ session, state }: { session: (typeof shortCour
   return (
     <div className="flex flex-col gap-4">
       <h3 className="text-center font-heading text-h5 text-secondary-1000 md:text-h4">{session.title}</h3>
-      <article className="relative z-10 w-full rounded-3xl bg-linear-to-r from-primary-500 via-secondary-500 to-tertiary-600 p-0.5">
+      <article className="relative z-10 w-full rounded-3xl border border-secondary-200 bg-neutral-100 shadow-md">
         <div className="grid w-full overflow-hidden rounded-[22px] bg-neutral-100 md:grid-cols-[1fr_2fr]">
           <div className="flex flex-col items-center justify-center gap-4 bg-linear-to-b from-neutral-100 to-secondary-100/40 p-3 text-center md:p-6">
             <span className="rounded-full border border-secondary-300 bg-neutral-100/80 px-3 py-1 font-ui text-b3 text-secondary-1000 md:text-s4">Speaker</span>
@@ -323,7 +318,7 @@ function ShortCourseSessions({ state }: { state: RegistrationState }) {
   if (isPreview && process.env.NODE_ENV !== "development") return null;
 
   return (
-    <section aria-labelledby="short-course-sessions-title" className="site-container">
+    <section aria-labelledby="short-course-sessions-title" className={shell}>
       <h2 id="short-course-sessions-title" className="text-center font-heading text-h3 text-secondary-1000 md:text-h2">Course Sessions</h2>
       <div className="mt-12 flex flex-col gap-12">
         {sessions.map((session) => <ShortCourseSessionCard key={session.id} session={session} state={state} />)}
@@ -378,7 +373,9 @@ export function ShortCoursePage() {
   milestones.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <main id="main-content" tabIndex={-1} className="relative flex min-h-screen w-full flex-col items-center gap-16 overflow-x-clip bg-neutral-100 pb-20 text-neutral-900 md:gap-24 md:pb-32">
+    <main id="main-content" tabIndex={-1} className="relative isolate flex min-h-screen w-full flex-col items-center gap-12 overflow-x-clip bg-neutral-100 pb-20 text-neutral-900 md:gap-20 md:pb-24">
+      <Image src="/images/events/ioe-talk-background-flow-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1251} className="pointer-events-none absolute left-1/2 top-96 z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain opacity-60 md:w-full" />
+      <Image src="/images/events/ioe-talk-photograph-aquatic.svg" alt="" aria-hidden="true" width={1440} height={1952} className="pointer-events-none absolute left-1/2 top-[30%] z-0 h-auto w-[180%] max-w-none -translate-x-1/2 object-contain opacity-40 md:w-full" />
       <ShortCourseHero state={state} title={!data?.isDemo && event ? event.name : shortCourseContent.title} now={now} demoDeadline={demoDeadline} feedback={<EventRegistrationFeedback
         isPending={isPending && !isFetched}
         isError={isError || (isPending && isFetched)}

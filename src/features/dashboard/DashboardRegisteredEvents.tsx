@@ -6,6 +6,7 @@ import { useDashboardEvents } from '@/hooks/useDashboard';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Button } from '@/components/ui/Button';
 import { formatWibDate } from '@/utils/formatDate';
+import { isHiddenEvent } from '@/lib/eventVisibility';
 
 // API_CONTRACT §3.5 exposes registered membership, session type and date only.
 // Do not derive approval/payment/attendance statuses from this list.
@@ -45,7 +46,7 @@ export function DashboardRegisteredEvents() {
                   <p className="mt-2 wrap-anywhere text-b3 text-neutral-700">Session: {event.sessionType}</p>
                   <p className="mt-1 text-b3 text-neutral-700">Date: <time dateTime={event.date}>{formatWibDate(event.date)} WIB</time></p>
                 </div>
-                <Link href={`/events/${encodeURIComponent(event.slug)}`} aria-label={`See Details: ${event.name}`} className="ui-action ui-action-secondary ui-action-sm shrink-0">See Details</Link>
+                {!isHiddenEvent(event.slug) && <Link href={`/events/${encodeURIComponent(event.slug)}`} aria-label={`See Details: ${event.name}`} className="ui-action ui-action-secondary ui-action-sm shrink-0">See Details</Link>}
               </li>
             ))}
           </ul>

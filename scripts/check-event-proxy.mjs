@@ -40,6 +40,12 @@ try {
       const { eventProxy } = load(path.join(root, "lib/eventProxy.ts"));
       let requests = [];
       globalThis.fetch = async (...args) => { requests.push(args); throw new TypeError("connection refused"); };
+      for (const hidden of ["workshop", "event-workshop"]) {
+        assert.equal((await eventProxy(hidden)).status, 404);
+        const { POST } = load(path.join(root, "app/api/events/[slug]/register/route.ts"));
+        assert.equal((await POST(new Request("http://localhost/api/events/" + hidden + "/register", { method: "POST" }), { params: Promise.resolve({ slug: hidden }) })).status, 404);
+      }
+      assert.equal(requests.length, 0, "hidden event reads and writes never reach Workers");
       for (const slug of [undefined, "talkshow"]) {
         const response = await eventProxy(slug);
         const body = await response.json();
@@ -49,7 +55,10 @@ try {
         assert.equal(response.headers.get("X-IOE-Demo-Data"), demo ? "true" : null);
         assert.equal(response.headers.get("Cache-Control"), "private, no-store");
         if (!demo) assert.equal(body.error.code, "SERVER_ERROR");
-        else assert.ok(slug ? body.data.slug === slug : Array.isArray(body.data));
+        else {
+          assert.ok(slug ? body.data.slug === slug : Array.isArray(body.data));
+          if (!slug) assert.ok(body.data.every(event => event.slug !== "workshop"));
+        }
       }
       const demo = mode === "development" && source !== "real";
       if (!configured || demo) {
@@ -61,6 +70,11 @@ try {
       assert.equal(requests[1][0], "https://upstream.invalid/events/talkshow");
       assert.equal(requests[1][1].headers.Authorization, "Bearer test-token");
       assert.equal(requests[1][1].cache, "no-store");
+      globalThis.fetch = async () => Response.json({ success: true, data: [
+        { id: "event-workshop", slug: "workshop" }, { id: "event-talkshow", slug: "talkshow" },
+        { id: "event-short-course", slug: "short-course" },
+      ] });
+      assert.deepEqual((await (await eventProxy()).json()).data.map(event => event.slug), ["talkshow", "short-course"]);
       globalThis.fetch = async () => new Response("invalid JSON", { status: 200 });
       assert.equal((await eventProxy()).status, 502, "malformed upstream JSON never becomes demo data");
       for (const status of [200, 401, 404, 500, 503]) {

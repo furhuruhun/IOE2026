@@ -83,7 +83,7 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
   if (isShortCourse) {
     return (
       <div className="mx-auto mb-8 flex w-full max-w-[400px] flex-col items-center gap-4">
-        <span className="countdown-date-label flex flex-wrap justify-center gap-2 text-center font-ui text-b3 font-bold text-neutral-100">
+        <span className="countdown-date-label flex flex-wrap justify-center gap-2 text-center font-ui text-b3 font-bold text-secondary-1000">
           <Icon icon="mdi:timer" className="size-5 shrink-0" aria-hidden="true" />
           {formatTargetLabel(targetDate)}
         </span>
@@ -92,8 +92,8 @@ export function CountdownTimer({ targetDate, variant = "default" }: CountdownTim
             <Fragment key={unit.key}>
               {i > 0 && (
                 <div className="flex flex-col gap-3" aria-hidden="true">
-                  <span className="size-2 rounded-full bg-neutral-100" />
-                  <span className="size-2 rounded-full bg-neutral-100" />
+                  <span className="size-2 rounded-full bg-secondary-800" />
+                  <span className="size-2 rounded-full bg-secondary-800" />
                 </div>
               )}
               <div className="aspect-square w-full p-0.5 rounded-full bg-linear-to-br from-primary-300 via-secondary-600 to-tertiary-600 shadow-md">

@@ -20,13 +20,6 @@ const activityContentBySlug: Record<string, EventActivityContent> = {
     rotation: "clockwise",
     detailStatus: "available",
   },
-  workshop: {
-    description: "Sesi belajar praktik untuk mengeksplorasi ide dan solusi maritim bersama. Materi, fasilitator, dan kapasitas akan diperbarui oleh panitia.",
-    icon: "mdi:account-group-outline",
-    palette: "cyan",
-    rotation: "counterclockwise",
-    detailStatus: "available",
-  },
   "short-course": {
     description: "Pembelajaran singkat untuk memperdalam wawasan di bidang maritim. Silabus, durasi, dan pengajar akan diumumkan kemudian.",
     icon: "mdi:school-outline",

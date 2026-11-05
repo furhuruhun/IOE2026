@@ -2,6 +2,8 @@ import { EventDetailPage } from "@/features/events/EventDetailPage";
 import { TalkshowPage } from "@/features/events/TalkshowPage";
 import { ShortCoursePage } from "@/features/events/ShortCoursePage";
 import { publicMetadata } from "@/lib/siteMetadata";
+import { notFound } from "next/navigation";
+import { isHiddenEvent } from "@/lib/eventVisibility";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   return publicMetadata(`/events/${(await params).slug}`);
 }
@@ -14,6 +16,7 @@ export default async function EventDetailsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  if (isHiddenEvent(slug)) notFound();
 
   if (slug === "talkshow") return <TalkshowPage />;
   if (slug === "short-course") return <ShortCoursePage />;
