@@ -7,7 +7,7 @@ import { create } from "zustand";
 import { useCurrentUser, useIsAdmin } from "@/hooks/useAuth";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { getErrorEntry } from "@/constants/errorMessages";
-import { PlaceholderPage } from "@/components/ui/PlaceholderPage";
+import { AdminPanel } from "@/features/admin/AdminPanel";
 import { FormBanner } from "@/components/ui/FormBanner";
 import { Button } from "@/components/ui/Button";
 import { Toast } from "@/components/ui/Toast";
@@ -54,7 +54,5 @@ export function AdminGate() {
   </main>;
   if (!identity.data || !isAdmin) return <main id="main-content" tabIndex={-1} className="site-container section-space"><p role="status">Mengalihkan halaman...</p></main>;
 
-  // UI gate only. No admin API operation or server authorization is implemented here.
-  return <PlaceholderPage title="Admin Panel" fId="F-57–F-58 (TBD)"
-    note="Struktur & fitur belum ditentukan — menunggu sesi requirement gathering terpisah." />;
+  return <AdminPanel />;
 }

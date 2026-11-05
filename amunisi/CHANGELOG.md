@@ -24,6 +24,22 @@
 
 ## Unreleased
 
+### [2026-11-05 16:48] Build admin frontend for existing Workers endpoints
+
+- **Tipe:** Feature
+- **Scope:** Single-route admin workspace and authenticated API proxy.
+- **Ringkasan:** User requested the frontend for the seven inspected admin endpoints. Replaces the placeholder with accessible section tabs, submission review, requirement deadlines, registration lists/CSV export, announcements and participant password resets using existing semantic tokens and shared components.
+- **File diubah:**
+  - `src/features/admin/AdminPanel.tsx` — admin forms, query state, filters, tables and mapped error feedback.
+  - `src/features/auth/AdminGate.tsx` — render workspace after existing identity and role checks.
+  - `src/app/admin/page.tsx` — replace obsolete placeholder comments and name.
+  - `src/app/api/admin/[...path]/route.ts` — allowlisted Workers proxy using httpOnly cookie; stream CSV, preserve status and clear expired cookie.
+  - `src/services/adminService.ts` — typed Workers response data and browser requests.
+  - `scripts/check-admin.mjs` — isolated checks of authentication, forwarding and export behavior.
+- **Terkait requirement:** F-57/F-58; `/admin`; existing seven `/api/admin` Workers endpoints.
+- **Breaking change:** Tidak.
+- **Belum selesai / follow-up:** PRD F-58, ROUTES admin TBD and API_CONTRACT admin placeholder are now out of sync with the user-authorized workspace and need manual documentation updates. No new admin page subroutes or backend contracts introduced. Competition filtering is local to avoid the existing Workers SQL alias defect; review controls only appear for pending submissions with files. Backend CSV escaping remains unresolved. Deadline editing is available on requirements represented by submissions because no admin requirement catalogue endpoint exists. Real backend credentials/configuration required; no successful admin mocks are provided.
+
 ### [2026-11-05] Add environment-safe SEO foundation and frontend admin role gate
 
 - **Tipe:** Feature
