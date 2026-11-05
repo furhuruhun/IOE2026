@@ -10,6 +10,8 @@ import styles from "./HeroCarousel.module.css";
 const COUNT = heroSlides.length;
 const AUTO_ROTATE_MS = 6000;
 const DRAG_THRESHOLD_PX = 40;
+const CARD_SCALE = 0.97;
+const CARD_GAP_PX = 13;
 const renderedSlides = Array.from({ length: 3 }, (_, group) =>
   heroSlides.map((slide, logicalIndex) => ({ slide, physicalIndex: group * COUNT + logicalIndex })),
 ).flat();
@@ -25,44 +27,42 @@ function nearestStep(current: number, target: number) {
 }
 
 function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean }) {
-  const Heading = active ? "h1" : "h2";
   const overview = slide.id === "slide-overview";
   const competition = slide.id === "slide-competition";
   const artwork = overview ? "/images/parent/logo-navibar.png" : competition
     ? "/images/competitions/ioe-oil-rig-design-aquatic.png" : "/images/competitions/ioe-paper-poster-aquatic.png";
   const background = overview ? "/images/parent/Card IOE.png" : competition
     ? "/images/parent/Card 2.png" : "/images/parent/Card 3.png";
+  const titleStyle = { fontWeight: 600, fontSize: "clamp(22px, 3vw, 30px)" };
   return (
-    <div className={styles.poster} data-slide={slide.id} data-active={active}>
-      <Image src={background} alt="" fill unoptimized className={styles.background} data-slide-background
-        sizes="(min-width: 1024px) 1040px, 100vw" loading={active ? "eager" : "lazy"}
-        fetchPriority={active ? "high" : "auto"} />
-      <div className={styles.art} aria-hidden="true">
-        <Image
-          className={styles.subject}
-          src={artwork}
-          alt="" fill sizes="(min-width: 1024px) 600px, (min-width: 640px) 400px, 280px"
-          fetchPriority={active ? "high" : "auto"}
-        />
+    <div
+      className={styles.poster}
+      data-slide={slide.id}
+      style={{
+        borderRadius: "calc(clamp(14px, 2vw, 20px) - 1px)",
+      }}
+    >
+      <Image src={background} alt="" fill unoptimized className={styles.background}
+        sizes="(min-width: 1024px) 1012px, min(100vw, 512px)"
+        loading={active ? "eager" : "lazy"} fetchPriority={active ? "high" : "auto"} />
+      <div className={styles.content}>
+        <span className="font-ui uppercase text-primary-600" style={{ fontSize: "11px", letterSpacing: "0.16em" }}>
+          {slide.eyebrow}
+        </span>
+        {active ? <h1 className="font-heading" style={titleStyle}>{slide.title}</h1>
+          : <h2 className="font-heading" style={titleStyle}>{slide.title}</h2>}
+        <p className="font-body" style={{ fontSize: "14px", lineHeight: 1.6, maxWidth: "380px" }}>
+          {slide.desc}
+        </p>
+        <Link href={slide.cta.href} tabIndex={active ? 0 : -1}
+          className={buttonStyles("secondary", "sm")} style={{ pointerEvents: active ? "auto" : "none" }}>
+          {slide.cta.label}
+        </Link>
       </div>
-      <div className={styles.body}>
-        <Heading className={styles.title} aria-label={slide.title}>
-          {overview ? <><span>Indonesia</span>{" "}<span>Ocean Expo</span>{" "}<span className={styles.year}>2027</span></>
-            : competition ? <><span>Kompetisi</span>{" "}<span>Nasional</span></>
-              : <><span>Rangkaian</span>{" "}<span>Event</span></>}
-        </Heading>
-        <div className={styles.caption}>
-          <p>{slide.desc}</p>
-          <Link href={slide.cta.href} tabIndex={active ? 0 : -1}
-            className={`${buttonStyles("secondary", "sm")} ${styles.slideAction}`}
-            style={{ pointerEvents: active ? "auto" : "none" }}>
-            {slide.cta.label}<span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-      </div>
-      <div className={styles.preview} aria-hidden="true">
-        <div className={styles.previewArt}><Image src={artwork} alt="" fill sizes="220px" /></div>
-        <span>{slide.title}</span>
+      <div className={styles.artwork} aria-hidden="true">
+        <Image src={artwork} alt="" fill className={styles.illustration}
+          sizes="(min-width: 1024px) 400px, (min-width: 640px) 320px, 260px"
+          loading={active ? "eager" : "lazy"} fetchPriority={active ? "high" : "auto"} />
       </div>
     </div>
   );
@@ -87,7 +87,9 @@ export function HeroCarousel() {
   const suppressClickRef = useRef(false);
   const restoreFrameRef = useRef<number | null>(null);
   const active = logicalIndex(physicalIndex);
-  const trackOffset = geometry ? geometry.viewportWidth / 2 - (physicalIndex + 0.5) * geometry.slotWidth : 0;
+  const trackOffset = geometry
+    ? geometry.viewportWidth / 2 - (physicalIndex + 0.5) * geometry.slotWidth - physicalIndex * CARD_GAP_PX
+    : 0;
 
   // offsetWidth is the untransformed Flex slot width; the inner 3D transform cannot change centering.
   useLayoutEffect(() => {
@@ -238,7 +240,7 @@ export function HeroCarousel() {
 
   return (
     <section
-      className={styles.hero}
+      className="relative mx-auto flex min-h-[calc(100svh-3.5rem)] w-full flex-col items-center justify-center py-6 md:min-h-[calc(100svh-5rem)]"
       onFocusCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(true); }}
       aria-roledescription="carousel"
       aria-label="Hero Indonesia Ocean Expo 2027"
@@ -255,12 +257,13 @@ export function HeroCarousel() {
         onPointerCancel={handlePointerUp}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className={`${styles.viewport} relative w-full touch-pan-y overflow-hidden select-none focus-visible:outline-2 focus-visible:outline-secondary-800`}
+        className={`${styles.viewport} relative w-full touch-pan-y overflow-hidden outline-none select-none focus-visible:outline-2 focus-visible:outline-secondary-800`}
       >
         <div
           className="hero-track flex h-full w-max"
           style={{
             transform: `translate3d(${trackOffset}px, 0, 0)`,
+            columnGap: CARD_GAP_PX,
             transition: transitionEnabled && !reducedMotion ? undefined : "none",
             visibility: geometry ? "visible" : "hidden",
           }}
@@ -278,16 +281,17 @@ export function HeroCarousel() {
                 ref={index === 0 ? slotRef : undefined}
                 aria-hidden={!isActive}
                 onClick={() => { if (visibleNeighbor && !suppressClickRef.current) move(Math.sign(distance)); }}
-                className={styles.slot}
+                className="flex h-full w-[min(100vw,512px)] flex-none lg:w-[1012px]"
                 style={{ cursor: visibleNeighbor ? "pointer" : "default", pointerEvents: visibleNeighbor || isActive ? "auto" : "none" }}
               >
                 <div
-                  className={`hero-card-3d ${styles.card}`}
-                  data-position={isActive ? "active" : distance < 0 ? "before" : "after"}
+                  className="hero-card-3d h-full w-full"
                   style={{
                     transformOrigin: "center center",
-                    transform: `perspective(1000px) rotateY(${isActive ? 0 : distance < 0 ? -18 : 18}deg) scale(${isActive ? 1 : 0.84})`,
-                    opacity: isActive ? 1 : visibleNeighbor ? 0.82 : 0,
+                    transform: `perspective(1000px) rotateY(${isActive ? 0 : distance < 0 ? -18 : 18}deg) scale(${isActive ? 1 : CARD_SCALE * 0.88})`,
+                    opacity: isActive ? 1 : 0.6,
+                    borderRadius: "clamp(14px, 2vw, 20px)", padding: "1px",
+                    background: "linear-gradient(155deg, var(--color-tertiary-600) 0%, var(--color-secondary-1000) 45%, var(--color-primary-600) 130%)",
                   }}
                 >
                   <HeroCardContent slide={slide} active={isActive} />
@@ -297,27 +301,20 @@ export function HeroCarousel() {
           })}
         </div>
       </div>
-      <div className={styles.controls}>
-        <nav aria-label="Jelajahi kegiatan IOE" className={styles.discovery}>
-          <Link href="/competitions" className={buttonStyles("primary", "sm")}>Lihat Kompetisi</Link>
-          <Link href="/events" className={buttonStyles("primary", "sm")}>Lihat Event</Link>
-          <Link href="#timeline" className={`text-action ${styles.schedule}`}>Lihat Jadwal</Link>
-        </nav>
-        <div className={styles.pagination}>
-          <div className="flex">
-            {heroSlides.map((slide, index) => (
-              <button
-                key={slide.id}
-                type="button"
-                onClick={() => goTo(index)}
-                aria-label={`Ke slide ${index + 1}: ${slide.title}`}
-                aria-current={index === active ? "true" : undefined}
-                className={styles.pageButton}
-              ><span aria-hidden="true" /></button>
-            ))}
-          </div>
-          <p aria-live="polite" className="font-ui text-b3 text-neutral-700">{active + 1} of {COUNT}</p>
+      <div className={`${styles.pagination} mt-8 flex flex-col items-center gap-1`}>
+        <div className="flex gap-2">
+          {heroSlides.map((slide, index) => (
+            <button
+              key={slide.id}
+              type="button"
+              onClick={() => goTo(index)}
+              aria-label={`Ke slide ${index + 1}: ${slide.title}`}
+              aria-current={index === active ? "true" : undefined}
+              className={`h-2 rounded-full transition-all duration-300 motion-reduce:transition-none md:h-2.5 ${index === active ? "w-8 bg-secondary-800 md:w-[50px]" : "w-4 bg-neutral-400"}`}
+            />
+          ))}
         </div>
+        <p aria-live="polite" className="font-ui text-b3 text-neutral-700">{active + 1} of {COUNT}</p>
       </div>
     </section>
   );
