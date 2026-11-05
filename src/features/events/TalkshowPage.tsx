@@ -1,5 +1,7 @@
 "use client";
 
+import { ParticipantAction } from "@/features/auth/RoleJourney";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
@@ -46,7 +48,11 @@ function registrationState(event: EventSummary | undefined, isDemo: boolean, now
   return { available: true, label: "Register Now", note: "" };
 }
 
-function RegistrationAction({ state, className = "" }: { state: RegistrationState; className?: string }) {
+function RegistrationAction(props: { state: RegistrationState; className?: string }) {
+  return <ParticipantAction><ParticipantRegistrationAction {...props} /></ParticipantAction>;
+}
+
+function ParticipantRegistrationAction({ state, className = "" }: { state: RegistrationState; className?: string }) {
   if (state.available) {
     return (
       <Link href={talkshowContent.registrationHref} className={`${primaryAction} ${className}`}>
@@ -130,7 +136,11 @@ function ScheduleItem({ icon, label, value, className = "" }: { icon: string; la
 
 const detailsActionClass = `${styles.registrationAction} relative inline-flex w-full shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border-0 px-4 py-2 font-ui text-s6 transition-all md:rounded-2xl md:px-5 md:py-3 md:text-s5`;
 
-function DetailsRegistrationAction({ state }: { state: RegistrationState }) {
+function DetailsRegistrationAction(props: { state: RegistrationState }) {
+  return <ParticipantAction><ParticipantDetailsRegistrationAction {...props} /></ParticipantAction>;
+}
+
+function ParticipantDetailsRegistrationAction({ state }: { state: RegistrationState }) {
   const content = <><Icon icon="mdi:door-open" className="size-6 shrink-0" aria-hidden="true" /><span>{state.label}</span></>;
   if (state.available) {
     return <Link href={talkshowContent.registrationHref} className={detailsActionClass}>{content}</Link>;

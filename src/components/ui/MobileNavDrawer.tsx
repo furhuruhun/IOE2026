@@ -10,6 +10,7 @@ import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
 import { UserAvatar } from "@/components/ui/Navbar";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
 import { LogoutButton } from "@/components/ui/LogoutButton";
+import { CommitteeLink } from "@/features/auth/RoleJourney";
 
 // Off-canvas mobile nav (F-02), dibangun di atas Radix Dialog (role="dialog", aria-modal,
 // focus trap, Esc-to-close semua didapat gratis dari primitive-nya) + Radix Accordion
@@ -106,6 +107,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
           </div>
 
           <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-200 p-4">
+            <CommitteeLink />
             {isLoggedIn ? (
               <Link
                 href="/profile"

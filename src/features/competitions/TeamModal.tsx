@@ -12,6 +12,7 @@ import type { Team } from "@/types/team";
 import { TeamModalCreateView } from "./TeamModalCreateView";
 import { TeamModalJoinView } from "./TeamModalJoinView";
 import { TeamModalSuccessView } from "./TeamModalSuccessView";
+import { useCurrentUser } from "@/hooks/useAuth";
 
 type Step = "form" | "success";
 
@@ -21,6 +22,13 @@ type Step = "form" | "success";
 // di page.tsx, dikontrol via useTeamModalStore supaya bisa dibuka dari CTA manapun di
 // halaman (Hero, Join a Team Now) tanpa duplikasi instance modal.
 export function TeamModal() {
+  const identity = useCurrentUser();
+  // Preserve participant edits during a background identity refetch failure.
+  if (identity.data?.role !== "peserta") return null;
+  return <ParticipantTeamModal />;
+}
+
+function ParticipantTeamModal() {
   const router = useRouter();
   const handleError = useErrorHandler();
   const returnFocus = useRef<HTMLElement | null>(null);

@@ -9,7 +9,7 @@ import {
   logoutUser,
   fetchCurrentUser,
 } from "@/services/authService";
-import { getSafeRedirect } from "@/utils/safeRedirect";
+import { getRoleRedirect } from "@/utils/roleJourney";
 import type { User } from "@/types/auth";
 import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 
@@ -32,9 +32,9 @@ function useRedirectAfterAuth() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  return () => {
+  return (user: User) => {
     const redirectTo = searchParams.get("redirect");
-    router.push(getSafeRedirect(redirectTo));
+    router.push(getRoleRedirect(redirectTo, user.role));
   };
 }
 
@@ -46,7 +46,7 @@ export function useLogin() {
     mutationFn: loginUser,
     onSuccess: ({ user }) => {
       queryClient.setQueryData(authKeys.currentUser(), user);
-      redirect();
+      redirect(user);
     },
   });
 }
@@ -72,7 +72,7 @@ export function useGoogleLogin() {
     mutationFn: loginWithGoogle,
     onSuccess: ({ user }) => {
       queryClient.setQueryData(authKeys.currentUser(), user);
-      redirect();
+      redirect(user);
     },
   });
 }

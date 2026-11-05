@@ -6,7 +6,8 @@ import Image from "next/image";
 import { Icon } from "@iconify/react/offline";
 
 import { useCompetition } from "@/hooks/useCompetitions";
-import { useIsLoggedIn } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { ParticipantAction } from "@/features/auth/RoleJourney";
 import { ApiError } from "@/services/authService";
 import { useTeamModalStore } from "@/stores/useTeamModalStore";
 import { competitionLogos } from "./competitionLogos";
@@ -26,7 +27,7 @@ interface CompetitionDetailHeroProps {
 export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isLoggedIn = useIsLoggedIn();
+  const identity = useCurrentUser();
   const openModal = useTeamModalStore((s) => s.open);
   const { data: competition, isLoading, isError, error } = useCompetition(slug);
   const logoSrc = (competitionLogos as Record<string, string>)[slug];
@@ -44,11 +45,11 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
   // (router.replace) supaya tidak re-trigger saat refresh/back (ROUTES.md §Catatan
   // Trade-off: client-state modal memang tidak persist lintas refresh).
   useEffect(() => {
-    if (searchParams.get("openTeamModal") === "1" && isLoggedIn && competition) {
-      openModal({ competitionId: competition.id, slug, competitionName: competition.name });
+    if (searchParams.get("openTeamModal") === "1" && identity.isSuccess && identity.data && competition) {
+      if (identity.data.role === "peserta") openModal({ competitionId: competition.id, slug, competitionName: competition.name });
       router.replace(`/competitions/${slug}`);
     }
-  }, [searchParams, isLoggedIn, competition, slug, openModal, router]);
+  }, [searchParams, identity.isSuccess, identity.data, competition, slug, openModal, router]);
 
   if (isError) {
     if (error instanceof ApiError && error.code === "NOT_FOUND") {
@@ -106,7 +107,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
 
           <div className="mt-2 flex flex-col items-center gap-6 lg:mt-7">
             <div className="flex flex-wrap items-center justify-center gap-4 md:gap-6">
-              <button
+              <ParticipantAction><button
                 type="button"
                 onClick={handleRegisterClick}
                 disabled={isLoading}
@@ -114,7 +115,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
               >
                 Register
                 <Icon icon="mdi:pencil" className="size-5 md:size-6" />
-              </button>
+              </button></ParticipantAction>
 
               <a
                 href="#about"

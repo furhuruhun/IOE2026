@@ -1,5 +1,7 @@
 "use client";
 
+import { ParticipantAction } from "@/features/auth/RoleJourney";
+
 import { Icon } from "@iconify/react/offline";
 import Image from "next/image";
 
@@ -43,7 +45,7 @@ export function CompetitionDetailJoinTeamCTA({ slug }: CompetitionDetailJoinTeam
           <h2 className="font-heading text-h6 leading-tight text-neutral-100 sm:text-h4 md:text-h3 lg:text-h2 xl:text-h1">
             Join a <span className="text-primary-300">Team</span> Now!
           </h2>
-          <Button
+          <ParticipantAction><Button
             variant="primary"
             size="sm"
             onClick={handleRegisterClick}
@@ -51,7 +53,7 @@ export function CompetitionDetailJoinTeamCTA({ slug }: CompetitionDetailJoinTeam
           >
             Join Now
             <Icon icon="mdi:door-open" className="size-5 md:size-6" aria-hidden="true" />
-          </Button>
+          </Button></ParticipantAction>
         </div>
       </div>
     </section>

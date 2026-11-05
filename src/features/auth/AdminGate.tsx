@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { Suspense, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { create } from "zustand";
@@ -11,6 +11,7 @@ import { AdminPanel } from "@/features/admin/AdminPanel";
 import { FormBanner } from "@/components/ui/FormBanner";
 import { Button } from "@/components/ui/Button";
 import { Toast } from "@/components/ui/Toast";
+import { CommitteeNotice } from "./RoleJourney";
 
 // Transient redirect feedback only; no URL-controlled message or persisted role.
 const useAdminNotice = create<{ message: string | null; set: (message: string | null) => void }>(set => ({
@@ -54,5 +55,5 @@ export function AdminGate() {
   </main>;
   if (!identity.data || !isAdmin) return <main id="main-content" tabIndex={-1} className="site-container section-space"><p role="status">Mengalihkan halaman...</p></main>;
 
-  return <AdminPanel />;
+  return <><Suspense fallback={null}><CommitteeNotice /></Suspense><AdminPanel /></>;
 }

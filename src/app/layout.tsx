@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { ManualSimulation } from "@/components/ManualSimulation";
 import { manualSimulationEnabled } from "@/lib/manualSimulation";
+import { RoleJourney } from "@/features/auth/RoleJourney";
 import { AdminAccessNotice } from "@/features/auth/AdminGate";
 
 // Coolvetica (Headline/H1-H6) TIDAK ada di Google Fonts — harus di-self-host dari file
@@ -57,7 +58,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense fallback={null}><SectionScrollNavigation /></Suspense>
           <SessionBootstrap />
           <AdminAccessNotice />
-          <ManualSimulation enabled={manualSimulationEnabled()}>{children}</ManualSimulation>
+          <ManualSimulation enabled={manualSimulationEnabled()}><RoleJourney>{children}</RoleJourney></ManualSimulation>
         </QueryProvider>
       </body>
     </html>

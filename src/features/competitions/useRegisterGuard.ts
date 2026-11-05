@@ -4,7 +4,8 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { ApiError } from "@/services/authService";
-import { useIsLoggedIn } from "@/hooks/useAuth";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { COMMITTEE_DESTINATION } from "@/utils/roleJourney";
 import { fetchMyTeam } from "@/services/teamService";
 import { useTeamModalStore } from "@/stores/useTeamModalStore";
 
@@ -27,11 +28,13 @@ interface RegisterGuardContext {
 export function useRegisterGuard({ competitionId, slug, competitionName }: RegisterGuardContext) {
   const router = useRouter();
   const handleError = useErrorHandler();
-  const isLoggedIn = useIsLoggedIn();
+  const identity = useCurrentUser();
   const openModal = useTeamModalStore((s) => s.open);
 
   return useCallback(async () => {
-    if (!isLoggedIn) {
+    if (!identity.isSuccess) return;
+    if (identity.data?.role === "panitia") { router.push(COMMITTEE_DESTINATION); return; }
+    if (!identity.data) {
       router.push(`/login?redirect=${encodeURIComponent(`/competitions/${slug}?openTeamModal=1`)}`);
       return;
     }
@@ -51,5 +54,5 @@ export function useRegisterGuard({ competitionId, slug, competitionName }: Regis
     }
 
     openModal({ competitionId, slug, competitionName });
-  }, [isLoggedIn, router, competitionId, slug, competitionName, openModal, handleError]);
+  }, [identity.isSuccess, identity.data, router, competitionId, slug, competitionName, openModal, handleError]);
 }

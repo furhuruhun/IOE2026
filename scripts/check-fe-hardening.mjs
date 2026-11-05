@@ -27,7 +27,7 @@ let guardAdapters = false;
 let teamLookupError;
 let modalOpens = 0;
 Module._load = function(request, ...rest) {
-  if (guardAdapters && request === "@/hooks/useAuth") return { useIsLoggedIn: () => true };
+  if (guardAdapters && request === "@/hooks/useAuth") return { useCurrentUser: () => ({ isSuccess: true, data: { role: "peserta" } }) };
   if (guardAdapters && request === "@/services/teamService") return { fetchMyTeam: async () => { if (teamLookupError) throw teamLookupError; return null; } };
   if (guardAdapters && request === "@/stores/useTeamModalStore") return { useTeamModalStore: select => select({ open: () => modalOpens++ }) };
   if (request === "next/headers") return { cookies: async () => ({ get: () => token ? { value: token } : undefined }) };

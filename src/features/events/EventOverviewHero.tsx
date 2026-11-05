@@ -1,5 +1,7 @@
 "use client";
 
+import { ParticipantAction } from "@/features/auth/RoleJourney";
+
 import { Icon } from "@iconify/react/offline";
 import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
@@ -64,10 +66,10 @@ export function EventOverviewHero() {
             <span>Lokasi diumumkan panitia</span>
           </div>
           <div className="grid w-full max-w-96 grid-cols-2 gap-3 lg:gap-4">
-            <a href="#whats-in" className="ui-action ui-action-primary ui-action-sm w-full">
+            <ParticipantAction><a href="#whats-in" className="ui-action ui-action-primary ui-action-sm w-full">
               <SquarePenIcon />
               <span>Register Now</span>
-            </a>
+            </a></ParticipantAction>
             <a href="#about" className="ui-action ui-action-secondary ui-action-sm w-full">
               Tentang Event
             </a>

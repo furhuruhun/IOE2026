@@ -69,7 +69,8 @@ export function AdminPanel() {
       <header className={`${styles.hero} flex flex-wrap items-start justify-between gap-md`}>
         <div><p className="font-ui text-b3 font-bold text-secondary-800">IOE 2027 · Ruang Panitia</p><h1 className="mt-sm font-heading text-h3 md:text-h2">Admin Panel</h1><p className="mt-sm text-b2 text-neutral-800">Kelola persiapan peserta dan informasi kegiatan.</p></div>
         <div className="flex flex-wrap items-center gap-md">
-          <Link href="/dashboard" className="ui-action ui-action-ghost ui-action-sm">Kembali ke dashboard</Link>
+          <Link href="/" className="ui-action ui-action-ghost ui-action-sm">Beranda</Link>
+          <Link href="/profile" className="ui-action ui-action-ghost ui-action-sm">My Profile</Link>
           <LogoutButton />
         </div>
       </header>

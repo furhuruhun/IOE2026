@@ -1,5 +1,7 @@
 "use client";
 
+import { ParticipantAction } from "@/features/auth/RoleJourney";
+
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -46,7 +48,11 @@ function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, 
   return { available: true, label: "Daftar Short Course", deadline };
 }
 
-function RegistrationAction({ state, className = "" }: { state: RegistrationState; className?: string }) {
+function RegistrationAction(props: { state: RegistrationState; className?: string }) {
+  return <ParticipantAction><ParticipantRegistrationAction {...props} /></ParticipantAction>;
+}
+
+function ParticipantRegistrationAction({ state, className = "" }: { state: RegistrationState; className?: string }) {
   if (state.available) {
     return (
       <Link href={shortCourseContent.registrationHref} className={`${buttonStyles("primary", "sm")} ${className}`}>
@@ -57,7 +63,11 @@ function RegistrationAction({ state, className = "" }: { state: RegistrationStat
   return <Button disabled size="sm" className={className}>{state.label}</Button>;
 }
 
-function HeroRegistrationAction({ state }: { state: RegistrationState }) {
+function HeroRegistrationAction(props: { state: RegistrationState }) {
+  return <ParticipantAction><ParticipantHeroRegistrationAction {...props} /></ParticipantAction>;
+}
+
+function ParticipantHeroRegistrationAction({ state }: { state: RegistrationState }) {
   if (state.available) {
     return (
       <Link href={shortCourseContent.registrationHref} className={buttonStyles("primary", "sm")}>

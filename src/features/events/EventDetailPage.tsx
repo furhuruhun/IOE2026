@@ -1,5 +1,7 @@
 "use client";
 
+import { ParticipantAction } from "@/features/auth/RoleJourney";
+
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -112,7 +114,7 @@ export function EventDetailPage({ slug }: { slug: string }) {
               <p id="registration-availability" role="status" className="font-body text-b2 text-neutral-800">{registrationMessage}</p>
               {/* No read contract establishes open/full availability. Keep the CTA
                   disabled until that boundary and the registration form are ready. */}
-              <Button disabled aria-describedby="registration-availability">{registrationLabel}</Button>
+              <ParticipantAction><Button disabled aria-describedby="registration-availability">{registrationLabel}</Button></ParticipantAction>
               <Link href="/events" className={BACK_LINK}>Lihat event lainnya</Link>
             </section>
           </div>

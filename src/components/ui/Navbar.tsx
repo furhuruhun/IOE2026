@@ -12,6 +12,7 @@ import { NavbarDropdown } from "@/components/ui/NavbarDropdown";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LogoutButton } from "@/components/ui/LogoutButton";
+import { CommitteeLink } from "@/features/auth/RoleJourney";
 
 // Shared gradient reference for existing IOE action components.
 export const CTA_GRADIENT =
@@ -83,6 +84,7 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
 
           {/* User / Login pill — desktop only, ≥1280px */}
           <div className="hidden items-center gap-2 xl:flex">
+            <CommitteeLink />
             {isLoggedIn ? (
               <Link href="/profile" className={CTA_PILL}>
                 <UserAvatar avatarUrl={user?.avatarUrl} size="size-[22px]" />
