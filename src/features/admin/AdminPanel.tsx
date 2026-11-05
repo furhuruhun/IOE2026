@@ -42,7 +42,7 @@ export function AdminPanel() {
     }
   }, [submissions.error, registrations.error, handleError]);
   const mutation = useMutation({
-    mutationFn: ({ path, body }: { path: string; body: unknown }) => adminRequest(path, path === "announcements" || path === "users/password" ? "POST" : "PATCH", body),
+    mutationFn: ({ path, body }: { path: string; body: unknown }) => adminRequest(path, path === "users/password" ? "POST" : "PATCH", body),
     onSuccess: () => { setNotice({ text: "Perubahan berhasil disimpan.", error: false }); setReview(null); void client.invalidateQueries({ queryKey: ["admin"] }); },
     onError: report,
   });
@@ -50,7 +50,7 @@ export function AdminPanel() {
     event.preventDefault();
     const form = event.currentTarget;
     setNotice(null);
-    try { await mutation.mutateAsync({ path, body: body(new FormData(form)) }); if (path === "announcements" || path === "users/password") form.reset(); } catch { /* mutation reports mapped errors */ }
+    try { await mutation.mutateAsync({ path, body: body(new FormData(form)) }); if (path === "users/password") form.reset(); } catch { /* mutation reports mapped errors */ }
   }
   const all = submissions.data ?? [];
   const competitions = Array.from(new Map(all.map(item => [item.competition_id, item.competition_name])).entries());
@@ -79,7 +79,7 @@ export function AdminPanel() {
       </div>
       <Tabs.Root value={tab} onValueChange={value => { setTab(value); setNotice(null); }} className="flex min-w-0 flex-col gap-lg">
         <Tabs.List aria-label="Bagian admin" className={`${styles.tabs} grid grid-cols-2 gap-sm rounded-2xl bg-neutral-100 p-sm md:flex md:flex-wrap`}>
-          {[["submissions", "Review berkas"], ["registrations", "Pendaftar"], ["announcements", "Pengumuman"], ["password", "Reset password"]].map(([value, label]) => <Tabs.Trigger key={value} value={value} className="min-h-11 rounded-xl px-md py-sm font-ui text-b3 font-semibold text-secondary-1000 hover:bg-tertiary-100 focus-visible:outline-2 focus-visible:outline-secondary-800 data-[state=active]:bg-primary-200">{label}</Tabs.Trigger>)}
+          {[["submissions", "Review berkas"], ["registrations", "Pendaftar"], ["password", "Reset password"]].map(([value, label]) => <Tabs.Trigger key={value} value={value} className="min-h-11 rounded-xl px-md py-sm font-ui text-b3 font-semibold text-secondary-1000 hover:bg-tertiary-100 focus-visible:outline-2 focus-visible:outline-secondary-800 data-[state=active]:bg-primary-200">{label}</Tabs.Trigger>)}
         </Tabs.List>
         {notice && <FormBanner message={notice.text} variant={notice.error ? "error" : "success"} />}
         <Tabs.Content value="submissions" className="flex flex-col gap-lg">
@@ -120,14 +120,6 @@ export function AdminPanel() {
           {registrations.isPending && <p className="mt-lg" role="status">Memuat pendaftar...</p>}
           {registrations.isError && <p className="mt-lg" role="status">Data belum dapat dimuat. Silakan coba lagi.</p>}
           {registrations.isSuccess && <><RegistrationTable title="Tim kompetisi" headers={["Tim", "Kompetisi / batch", "Ketua", "Tanggal daftar"]} rows={registrations.data.teams.map(team => ({ id: team.team_id, cells: [team.team_name, `${team.competition_name} / ${team.batch_name}`, `${team.leader_name} · ${team.leader_email}`, date(team.created_at)] }))} /><RegistrationTable title="Peserta kegiatan" headers={["Peserta", "Kegiatan / sesi", "Kontak", "Institusi / domisili", "Berkas", "Tanggal daftar"]} rows={registrations.data.eventRegistrations.map(item => ({ id: item.registration_id, cells: [item.participant_name, `${item.event_name} / ${item.session_type}`, `${item.email} · ${item.phone}`, `${item.institution} / ${item.domicile}`, <span key="files" className="flex flex-wrap gap-sm">{item.cv_url && <a className="text-secondary-800 underline" href={item.cv_url} target="_blank" rel="noopener noreferrer">CV</a>}{item.payment_proof_url && <a className="text-secondary-800 underline" href={item.payment_proof_url} target="_blank" rel="noopener noreferrer">Bukti bayar</a>}{!item.cv_url && !item.payment_proof_url && "—"}</span>, date(item.created_at)] }))} /></>}
-        </Tabs.Content>
-        <Tabs.Content value="announcements" className={card}>
-          <h2 className="font-heading text-h4">Buat pengumuman</h2><p className="mt-sm text-b3 text-neutral-800">Kirim informasi untuk seluruh peserta atau satu kompetisi.</p>
-          <form className="mt-lg flex flex-col gap-lg" onSubmit={event => void submit(event, "announcements", data => ({ competitionId: data.get("competitionId") || undefined, body: String(data.get("body")).trim() }))}>
-            <Input id="announcement-competition" name="competitionId" label="ID kompetisi (opsional)" placeholder="Kosongkan untuk semua peserta" />
-            <label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Isi pengumuman<textarea name="body" rows={6} required className={control} /></label>
-            <Button type="submit" loading={mutation.isPending} className="self-start">Terbitkan pengumuman</Button>
-          </form>
         </Tabs.Content>
         <Tabs.Content value="password" className={card}>
           <h2 className="font-heading text-h4">Reset password peserta</h2><p className="mt-sm text-b3 text-neutral-800">Hanya untuk akun peserta. Password akun panitia tidak dapat diubah di sini.</p>
