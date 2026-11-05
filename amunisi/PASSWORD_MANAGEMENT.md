@@ -1,8 +1,9 @@
 # Password management rollout
 
-The frontend controls remain off until `NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED=1`.
-This is a public UI switch, not an authorization boundary. Keep it off against an
-older deployed backend. Changing it requires restarting dev or rebuilding production.
+The frontend controls are enabled by default with the existing `.env.local`.
+Set `NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED=0` against an older deployed backend.
+This is a public UI switch, not an authorization boundary. Changing it requires
+restarting dev or rebuilding production.
 No deployment, cloud migration or real email send is performed by the local checks.
 
 ## Backend preparation
@@ -16,7 +17,7 @@ No deployment, cloud migration or real email send is performed by the local chec
    The origin is server controlled; it is never derived from request headers.
    Do not enable `AUTH_TEST_MODE` on a deployed Worker.
 3. Deploy the updated Worker, then exercise these flows with a designated test account.
-4. Enable `NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED=1` in the frontend environment,
+4. Remove any `NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED=0` override (or set it to `1`),
    restart/rebuild, and verify the frontend against that Worker.
 
 Resend sending API reference: https://resend.com/docs/api-reference/emails/send-email

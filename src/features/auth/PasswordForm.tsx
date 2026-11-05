@@ -10,7 +10,7 @@ import { useManualSimulation } from "@/components/ManualSimulation";
 import { unwrapResponse, ApiError } from "@/services/apiResponse";
 import { useEventRegistrationStore } from "@/stores/useEventRegistrationStore";
 
-export const passwordManagementEnabled = process.env.NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED === "1";
+export const passwordManagementEnabled = process.env.NEXT_PUBLIC_PASSWORD_MANAGEMENT_ENABLED !== "0";
 type Mode = "change-password" | "forgot-password" | "reset-password";
 const titles = { "change-password": "Ubah password", "forgot-password": "Lupa password?", "reset-password": "Reset password" };
 const subscribe = () => () => {};
