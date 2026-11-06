@@ -27,6 +27,9 @@ try {
   delete process.env.WORKERS_API_URL;
   assert.equal((await GET(request(), context("registrations"))).status, 503);
   process.env.WORKERS_API_URL = "https://worker.example/api";
+  globalThis.fetch = async (url, options) => { assert.equal(url, "https://worker.example/api/admin/schedules"); assert.equal(options.headers.Authorization, "Bearer admin-token"); return Response.json({ success: true, data: {} }); };
+  assert.equal((await GET(request(), context("schedules"))).status, 200);
+  globalThis.fetch = async () => { calls++; return new Response("expired", { status: 401 }); };
   assert.equal((await POST(request("POST", "https://foreign.example"), context("announcements"))).status, 403);
   assert.equal(calls, 0);
   const expired = await GET(request(), context("registrations"));

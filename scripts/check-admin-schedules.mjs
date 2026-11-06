@@ -1,0 +1,25 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import ts from "typescript";
+
+const source = await readFile(new URL("../src/features/admin/scheduleDates.ts", import.meta.url), "utf8");
+const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
+const { wibInput, scheduleChanges } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString("base64")}`);
+assert.equal(wibInput("2027-01-01T20:30:45Z"), "2027-01-02T03:30:45");
+assert.equal(wibInput("invalid"), "");
+const record = { id: "event", opensAt: "2027-01-01T00:00:00+07:00", closesAt: "2027-02-01T23:59:00+07:00" };
+const data = new FormData();
+data.set("opensAt", wibInput(record.opensAt));
+data.set("closesAt", wibInput(record.closesAt));
+assert.deepEqual(scheduleChanges(record, data), {});
+data.set("opensAt", "2027-01-01T00:00");
+assert.deepEqual(scheduleChanges(record, data), {});
+data.set("closesAt", "2027-03-01T23:59:00");
+assert.deepEqual(scheduleChanges(record, data), { closesAt: "2027-03-01T23:59:00+07:00" });
+const milestone = { id: "milestone", label: "Final", occursAt: record.closesAt, sortOrder: 0, showInCalendar: 1 };
+const fields = new FormData();
+fields.set("label", " Final "); fields.set("occursAt", wibInput(milestone.occursAt)); fields.set("sortOrder", "0"); fields.set("showInCalendar", "on");
+assert.deepEqual(scheduleChanges(milestone, fields), {});
+fields.delete("showInCalendar"); fields.set("sortOrder", "2");
+assert.deepEqual(scheduleChanges(milestone, fields), { showInCalendar: false, sortOrder: 2 });
+console.log("PASS admin schedule WIB rollover, unchanged dates, partial updates and calendar visibility");

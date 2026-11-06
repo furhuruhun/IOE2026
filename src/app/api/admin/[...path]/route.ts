@@ -7,7 +7,7 @@ async function forward(request: Request, context: { params: Promise<{ path: stri
   if (!token) return fail("UNAUTHORIZED", 401);
   const { path } = await context.params;
   const resource = path.join("/");
-  const allowed = request.method === "GET" ? /^(submissions|registrations|registrations\/export)$/
+  const allowed = request.method === "GET" ? /^(submissions|registrations|registrations\/export|schedules)$/
     : request.method === "POST" ? /^(announcements|users\/password)$/
     : /^((submissions\/[^/]+)|(requirements\/[^/]+\/deadline)|(competition-batches\/[^/]+\/registration-window)|(events\/[^/]+\/registration-window)|(competitions\/[^/]+\/timeline\/[^/]+))$/;
   if (!allowed.test(resource)) return fail("NOT_FOUND", 404);

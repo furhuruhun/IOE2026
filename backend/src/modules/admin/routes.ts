@@ -14,6 +14,17 @@ export const adminRoutes = new Hono<AppContext>();
 
 adminRoutes.use("*", requireAuth, requireRole("panitia"));
 
+// Named records and their current values for the admin schedule editors.
+adminRoutes.get("/schedules", async (c) => {
+  const [competitions, batches, timeline, events] = await Promise.all([
+    c.env.DB.prepare("SELECT id, name FROM competitions ORDER BY name").all(),
+    c.env.DB.prepare("SELECT id, competition_id AS competitionId, name, opens_at AS opensAt, closes_at AS closesAt FROM competition_batches ORDER BY opens_at, id").all(),
+    c.env.DB.prepare("SELECT id, competition_id AS competitionId, label, occurs_at AS occursAt, show_in_calendar AS showInCalendar, sort_order AS sortOrder FROM competition_timeline_items ORDER BY sort_order, id").all(),
+    c.env.DB.prepare("SELECT id, name, registration_opens_at AS opensAt, registration_closes_at AS closesAt FROM events ORDER BY name").all(),
+  ]);
+  return ok(c, { competitions: competitions.results, batches: batches.results, timeline: timeline.results, events: events.results });
+});
+
 const reviewSchema = z.object({
   status: z.enum(["accepted", "rejected"]),
   reason: z.string().optional(),

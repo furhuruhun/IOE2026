@@ -75,6 +75,32 @@ describe("Admin Module", () => {
     expect(body.data.eventRegistrations).toBeDefined();
   });
 
+  it("lists editable schedules only for panitia and persists schedule updates", async () => {
+    const { participantToken, adminToken } = await getTokens();
+    const request = (path: string, token: string, body?: unknown) => app.fetch(new Request(`http://localhost/api/admin/${path}`, {
+      method: body === undefined ? "GET" : "PATCH",
+      headers: { ...authHeader(token), "Content-Type": "application/json" },
+      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    }), env);
+    expect((await request("schedules", participantToken)).status).toBe(403);
+    const list = await request("schedules", adminToken);
+    expect(list.status).toBe(200);
+    const { data } = await list.json() as any;
+    expect(data.competitions.length).toBeGreaterThan(0);
+    const batch = data.batches[0], event = data.events[0], milestone = data.timeline[0];
+    const closesAt = "2028-03-31T23:59:00+07:00";
+    expect((await request(`competition-batches/${batch.id}/registration-window`, adminToken, { closesAt })).status).toBe(200);
+    expect((await request(`events/${event.id}/registration-window`, adminToken, { closesAt })).status).toBe(200);
+    expect((await request(`competitions/${milestone.competitionId}/timeline/${milestone.id}`, adminToken, { label: "Updated milestone", occursAt: closesAt, showInCalendar: false, sortOrder: 7 })).status).toBe(200);
+    expect((await request(`events/${event.id}/registration-window`, adminToken, { opensAt: "2029-01-01T00:00:00+07:00" })).status).toBe(400);
+    expect((await request(`competition-batches/${batch.id}/registration-window`, adminToken, { closesAt: "invalid" })).status).toBe(400);
+    expect((await request(`competitions/${milestone.competitionId}/timeline/missing`, adminToken, { occursAt: closesAt })).status).toBe(404);
+    const refreshed = await (await request("schedules", adminToken)).json() as any;
+    expect(refreshed.data.batches.find((item: any) => item.id === batch.id).closesAt).toBe(closesAt);
+    expect(refreshed.data.events.find((item: any) => item.id === event.id).closesAt).toBe(closesAt);
+    expect(refreshed.data.timeline.find((item: any) => item.id === milestone.id)).toMatchObject({ label: "Updated milestone", occursAt: closesAt, showInCalendar: 0, sortOrder: 7 });
+  });
+
   it("allows panitia to export registrations CSV", async () => {
     const { adminToken } = await getTokens();
 

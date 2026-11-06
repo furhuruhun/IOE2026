@@ -1,5 +1,19 @@
 import { unwrapResponse } from "@/services/apiResponse";
 
+export interface RegistrationWindow {
+  id: string; name: string; opensAt: string; closesAt: string;
+}
+export interface TimelineMilestone {
+  id: string; competitionId: string; label: string; occursAt: string;
+  showInCalendar: number; sortOrder: number;
+}
+export interface AdminSchedules {
+  competitions: { id: string; name: string }[];
+  batches: (RegistrationWindow & { competitionId: string })[];
+  timeline: TimelineMilestone[];
+  events: RegistrationWindow[];
+}
+
 export interface AdminSubmission {
   id: string; status: "pending" | "accepted" | "rejected";
   requirement_id: string; requirement_name: string; due_at: string;
