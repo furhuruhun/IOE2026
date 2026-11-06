@@ -26,7 +26,7 @@ await assert.rejects(unwrapResponse(validation({ phone: "Invalid phone", unknown
 await assert.rejects(unwrapResponse(Response.json({ success: false, error: { code: "QUOTA_FULL", message: "full", fields: { phone: "ignored" } } })), error => error.fields === undefined);
 assert.equal(new ApiError("SERVER_ERROR", "legacy consumer").fields, undefined);
 
-const { getRegistrationEligibility: eligibility } = load("../src/features/events/registrationState.ts");
+const { getRegistrationEligibility: eligibility, isEventFullyRegistered } = load("../src/features/events/registrationState.ts");
 const { talkshowContent } = load("../src/features/events/talkshowContent.ts");
 const { shortCourseContent } = load("../src/features/events/shortCourseContent.ts");
 const event = { id: "event-1", slug: "talkshow", name: "Fixture", deadline: "2027-02-01T00:00:00+07:00", isRegisteredByUser: false };
@@ -49,6 +49,14 @@ try {
     assert.equal(eligibility("talkshow", data, demo, time).available, false);
   }
   assert.equal(eligibility("talkshow", { ...event, isRegisteredByUser: true }, false, now).label, "Sudah terdaftar");
+  for (const sessions of [[], ["day1"], ["day2"]]) {
+    const shortCourse = { ...event, slug: "short-course", isRegisteredByUser: sessions.length > 0, registeredSessions: sessions };
+    assert.equal(isEventFullyRegistered("short-course", shortCourse), false);
+    assert.equal(eligibility("short-course", shortCourse, false, now).available, true);
+  }
+  const completeShortCourse = { ...event, slug: "short-course", isRegisteredByUser: true, registeredSessions: ["day1", "day2"] };
+  assert.equal(isEventFullyRegistered("short-course", completeShortCourse), true);
+  assert.equal(eligibility("short-course", completeShortCourse, false, now).label, "Sudah terdaftar");
   assert.equal(eligibility("talkshow", { ...event, deadline: new Date(now).toISOString() }, false, now).label, "Pendaftaran ditutup");
   shortCourseContent.registrationOpensAt = "2027-01-02T00:00:00+07:00";
   assert.equal(eligibility("short-course", event, false, now).label, "Pendaftaran belum dibuka");

@@ -13,14 +13,16 @@ export function getRegistrationReadiness(slug: string, simulation = false) {
   return true;
 }
 
+export function isEventFullyRegistered(slug: string, event: EventSummary) {
+  if (slug !== "short-course") return event.isRegisteredByUser;
+  const sessions = event.registeredSessions ?? [];
+  return sessions.includes("day1") && sessions.includes("day2");
+}
+
 export function getRegistrationEligibility(slug: string, event: EventSummary | undefined, isDemo: boolean, now: number | null, simulation = false) {
   const unavailable = { available: false, label: "Pendaftaran menyusul", note: REGISTRATION_RECOVERY.unavailable };
   if (!event || isDemo || now === null) return unavailable;
-  const registeredSessions = event.registeredSessions ?? [];
-  const fullyRegistered = slug === "short-course"
-    ? registeredSessions.includes("day1") && registeredSessions.includes("day2")
-    : event.isRegisteredByUser;
-  if (fullyRegistered) return { available: false, label: "Sudah terdaftar", note: REGISTRATION_RECOVERY.registered };
+  if (isEventFullyRegistered(slug, event)) return { available: false, label: "Sudah terdaftar", note: REGISTRATION_RECOVERY.registered };
   const deadline = Date.parse(event.deadline);
   if (!Number.isFinite(deadline)) return unavailable;
   if (deadline <= now) return { available: false, label: "Pendaftaran ditutup", note: getErrorEntry("REGISTRATION_CLOSED").message };

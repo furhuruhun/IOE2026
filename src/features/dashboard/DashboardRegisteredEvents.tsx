@@ -40,7 +40,7 @@ export function DashboardRegisteredEvents() {
         ) : (
           <ul className="flex min-w-0 flex-col gap-4">
             {data.map(event => (
-              <li key={event.eventId} className="flex min-w-0 flex-wrap items-center gap-4 rounded-xl border border-secondary-300 p-4">
+              <li key={`${event.eventId}:${event.sessionType}`} className="flex min-w-0 flex-wrap items-center gap-4 rounded-xl border border-secondary-300 p-4">
                 <div className="min-w-0 flex-1 basis-32">
                   <h3 className="wrap-anywhere font-heading text-h6 text-secondary-1000">{event.name}</h3>
                   <p className="mt-2 wrap-anywhere text-b3 text-neutral-700">Session: {event.sessionType === "day1" ? "Day 1 (22 January 2027)" : event.sessionType === "day2" ? "Day 2 (23 January 2027)" : event.sessionType}</p>

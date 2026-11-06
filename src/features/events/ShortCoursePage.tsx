@@ -12,7 +12,7 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { EventRegistrationFeedback } from "./EventRegistrationFeedback";
 import { useEvents } from "@/hooks/useEvents";
 import { mockEvents } from "@/mocks/events";
-import { getRegistrationReadiness } from "./registrationState";
+import { getRegistrationReadiness, isEventFullyRegistered } from "./registrationState";
 import type { EventSummary } from "@/types/event";
 import { formatWibDate } from "@/utils/formatDate";
 import { shortCourseContent, type ShortCourseMilestone } from "./shortCourseContent";
@@ -32,7 +32,7 @@ type RegistrationState = {
 function getRegistrationState(event: EventSummary | undefined, isDemo: boolean, now: number | null, simulation = false): RegistrationState {
   const unavailable = { available: false, label: "Pendaftaran menyusul", deadline: null };
   if (!event || isDemo || now === null) return unavailable;
-  if (event.isRegisteredByUser) return { available: false, label: "Sudah terdaftar", deadline: null };
+  if (isEventFullyRegistered("short-course", event)) return { available: false, label: "Sudah terdaftar", deadline: null };
   const time = new Date(event.deadline).getTime();
   if (!Number.isFinite(time)) return unavailable;
   const deadline = new Date(time);
