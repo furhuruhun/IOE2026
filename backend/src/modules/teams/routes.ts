@@ -114,19 +114,22 @@ teamRoutes.post("/:id/team/join", requireAuth, async (c) => {
 
   // Find team by code in this competition
   const team = await c.env.DB.prepare(
-    `SELECT t.id, t.batch_id, b.closes_at
+    `SELECT t.id, t.batch_id, b.opens_at, b.closes_at
      FROM teams t
      JOIN competition_batches b ON b.id = t.batch_id
      WHERE t.competition_id = ?1 AND UPPER(t.code) = ?2
      LIMIT 1`
   )
     .bind(comp.id, normalizedCode)
-    .first<{ id: string; batch_id: string; closes_at: string }>();
+    .first<{ id: string; batch_id: string; opens_at: string; closes_at: string }>();
 
   if (!team) {
     throw new AppError("TEAM_CODE_INVALID", 400);
   }
 
+  if (team.opens_at > currentIso) {
+    throw new AppError("REGISTRATION_NOT_OPEN", 400);
+  }
   if (team.closes_at < currentIso) {
     throw new AppError("REGISTRATION_CLOSED", 400);
   }

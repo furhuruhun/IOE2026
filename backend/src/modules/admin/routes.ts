@@ -28,6 +28,19 @@ const deadlineSchema = z.object({
   dueAt: z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), "Format deadline tidak valid"),
 });
 
+const dateInput = z.string().refine((value) => !Number.isNaN(new Date(value).getTime()), "Format tanggal tidak valid");
+const registrationWindowSchema = z.object({
+  opensAt: dateInput.optional(),
+  closesAt: dateInput.optional(),
+}).refine((value) => value.opensAt !== undefined || value.closesAt !== undefined, "Minimal satu tanggal wajib diisi");
+
+const timelineUpdateSchema = z.object({
+  label: z.string().trim().min(1).optional(),
+  occursAt: dateInput.optional(),
+  showInCalendar: z.boolean().optional(),
+  sortOrder: z.number().int().min(0).optional(),
+}).refine((value) => Object.keys(value).length > 0, "Minimal satu perubahan wajib diisi");
+
 const adminPasswordSchema = z.object({
   email: z.string().trim().email("Format email tidak valid").toLowerCase(),
   newPassword: z
@@ -135,6 +148,66 @@ adminRoutes.patch("/requirements/:requirementId/deadline", async (c) => {
     .run();
 
   return ok(c, { requirementId, dueAt });
+});
+
+// PATCH /admin/competition-batches/:batchId/registration-window
+adminRoutes.patch("/competition-batches/:batchId/registration-window", async (c) => {
+  const batchId = c.req.param("batchId");
+  const body = parseBody(registrationWindowSchema, await c.req.json());
+  const existing = await c.env.DB.prepare(
+    "SELECT id, opens_at, closes_at FROM competition_batches WHERE id = ?1 LIMIT 1"
+  ).bind(batchId).first<{ id: string; opens_at: string; closes_at: string }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Batch kompetisi tidak ditemukan");
+
+  const opensAt = toWib(body.opensAt ?? existing.opens_at);
+  const closesAt = toWib(body.closesAt ?? existing.closes_at);
+  if (new Date(opensAt).getTime() > new Date(closesAt).getTime()) {
+    throw new AppError("VALIDATION_ERROR", 400, "Tanggal mulai harus sebelum atau sama dengan tanggal tutup");
+  }
+  await c.env.DB.prepare(
+    "UPDATE competition_batches SET opens_at = ?1, closes_at = ?2 WHERE id = ?3"
+  ).bind(opensAt, closesAt, batchId).run();
+  return ok(c, { batchId, opensAt, closesAt });
+});
+
+// PATCH /admin/events/:eventId/registration-window
+adminRoutes.patch("/events/:eventId/registration-window", async (c) => {
+  const eventId = c.req.param("eventId");
+  const body = parseBody(registrationWindowSchema, await c.req.json());
+  const existing = await c.env.DB.prepare(
+    "SELECT id, registration_opens_at, registration_closes_at FROM events WHERE id = ?1 OR slug = ?1 LIMIT 1"
+  ).bind(eventId).first<{ id: string; registration_opens_at: string; registration_closes_at: string }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Event tidak ditemukan");
+
+  const opensAt = toWib(body.opensAt ?? existing.registration_opens_at);
+  const closesAt = toWib(body.closesAt ?? existing.registration_closes_at);
+  if (new Date(opensAt).getTime() > new Date(closesAt).getTime()) {
+    throw new AppError("VALIDATION_ERROR", 400, "Tanggal mulai harus sebelum atau sama dengan tanggal tutup");
+  }
+  await c.env.DB.prepare(
+    "UPDATE events SET registration_opens_at = ?1, registration_closes_at = ?2 WHERE id = ?3"
+  ).bind(opensAt, closesAt, existing.id).run();
+  return ok(c, { eventId: existing.id, opensAt, closesAt });
+});
+
+// PATCH /admin/competitions/:competitionId/timeline/:timelineId
+adminRoutes.patch("/competitions/:competitionId/timeline/:timelineId", async (c) => {
+  const competitionId = c.req.param("competitionId");
+  const timelineId = c.req.param("timelineId");
+  const body = parseBody(timelineUpdateSchema, await c.req.json());
+  const existing = await c.env.DB.prepare(
+    "SELECT id, label, occurs_at, show_in_calendar, sort_order FROM competition_timeline_items WHERE id = ?1 AND competition_id = ?2 LIMIT 1"
+  ).bind(timelineId, competitionId).first<{ id: string; label: string; occurs_at: string; show_in_calendar: number; sort_order: number }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Timeline kompetisi tidak ditemukan");
+
+  const label = body.label ?? existing.label;
+  const occursAt = toWib(body.occursAt ?? existing.occurs_at);
+  const showInCalendar = body.showInCalendar === undefined ? existing.show_in_calendar : (body.showInCalendar ? 1 : 0);
+  const sortOrder = body.sortOrder ?? existing.sort_order;
+  await c.env.DB.prepare(
+    "UPDATE competition_timeline_items SET label = ?1, occurs_at = ?2, show_in_calendar = ?3, sort_order = ?4 WHERE id = ?5 AND competition_id = ?6"
+  ).bind(label, occursAt, showInCalendar, sortOrder, timelineId, competitionId).run();
+  return ok(c, { competitionId, timelineId, label, occursAt, showInCalendar: Boolean(showInCalendar), sortOrder });
 });
 
 // POST /admin/users/password — admin reset tanpa meminta password lama peserta

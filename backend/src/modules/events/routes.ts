@@ -14,8 +14,8 @@ eventRoutes.get("/", optionalAuth, async (c) => {
   const authUser = c.get("user");
 
   const rows = await c.env.DB.prepare(
-    "SELECT id, slug, name, registration_closes_at FROM events WHERE is_published = 1 ORDER BY created_at ASC"
-  ).all<{ id: string; slug: string; name: string; registration_closes_at: string }>();
+    "SELECT id, slug, name, registration_opens_at, registration_closes_at FROM events WHERE is_published = 1 ORDER BY created_at ASC"
+  ).all<{ id: string; slug: string; name: string; registration_opens_at: string; registration_closes_at: string }>();
 
   const items = await Promise.all(
     rows.results.map(async (ev) => {
@@ -33,6 +33,7 @@ eventRoutes.get("/", optionalAuth, async (c) => {
         id: ev.id,
         slug: ev.slug,
         name: ev.name,
+        registrationOpensAt: toWib(ev.registration_opens_at),
         deadline: toWib(ev.registration_closes_at),
         isRegisteredByUser,
       };
@@ -67,6 +68,7 @@ eventRoutes.get("/:slug", optionalAuth, async (c) => {
     id: ev.id,
     slug: ev.slug,
     name: ev.name,
+    registrationOpensAt: toWib(ev.registration_opens_at),
     deadline: toWib(ev.registration_closes_at),
     isRegisteredByUser,
     speakers: speakers.results,
@@ -80,6 +82,9 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
   const authUser = c.get("user")!;
   const currentIso = nowIsoWib();
 
+  if (ev.registration_opens_at > currentIso) {
+    throw new AppError("REGISTRATION_NOT_OPEN", 400);
+  }
   if (ev.registration_closes_at < currentIso) {
     throw new AppError("REGISTRATION_CLOSED", 400);
   }

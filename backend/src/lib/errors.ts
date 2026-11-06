@@ -9,6 +9,7 @@ export type ErrorCode =
   | "TEAM_FULL"
   | "TEAM_NOT_PUBLIC"
   | "REGISTRATION_CLOSED"
+  | "REGISTRATION_NOT_OPEN"
   | "QUOTA_FULL"
   | "FILE_TOO_LARGE"
   | "INVALID_FILE_FORMAT"
@@ -64,6 +65,10 @@ export const ERROR_CATALOG: Record<ErrorCode, ErrorMeta> = {
   REGISTRATION_CLOSED: {
     status: 400,
     message: "Pendaftaran untuk batch ini sudah ditutup",
+  },
+  REGISTRATION_NOT_OPEN: {
+    status: 400,
+    message: "Pendaftaran belum dibuka",
   },
   QUOTA_FULL: {
     status: 400,

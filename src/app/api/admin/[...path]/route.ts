@@ -9,7 +9,7 @@ async function forward(request: Request, context: { params: Promise<{ path: stri
   const resource = path.join("/");
   const allowed = request.method === "GET" ? /^(submissions|registrations|registrations\/export)$/
     : request.method === "POST" ? /^(announcements|users\/password)$/
-    : /^((submissions\/[^/]+)|(requirements\/[^/]+\/deadline))$/;
+    : /^((submissions\/[^/]+)|(requirements\/[^/]+\/deadline)|(competition-batches\/[^/]+\/registration-window)|(events\/[^/]+\/registration-window)|(competitions\/[^/]+\/timeline\/[^/]+))$/;
   if (!allowed.test(resource)) return fail("NOT_FOUND", 404);
   const base = process.env.WORKERS_API_URL;
   if (!base) return fail("SERVER_ERROR", 503);

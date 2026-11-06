@@ -1,0 +1,1 @@
+ALTER TABLE events ADD COLUMN registration_opens_at TEXT NOT NULL DEFAULT '1970-01-01T00:00:00+07:00';

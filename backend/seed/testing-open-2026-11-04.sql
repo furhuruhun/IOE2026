@@ -25,6 +25,7 @@ SET due_at = '2026-11-30T23:59:59+07:00';
 -- Allow event registration during the same testing window. Event start dates
 -- are intentionally preserved from the approved seed data.
 UPDATE events
-SET registration_closes_at = '2026-11-30T23:59:59+07:00'
+SET registration_opens_at = '2026-11-04T00:00:00+07:00',
+    registration_closes_at = '2026-11-30T23:59:59+07:00'
 WHERE is_published = 1;
 

@@ -19,6 +19,7 @@ export interface EventRow {
   name: string;
   description: string;
   starts_at: string | null;
+  registration_opens_at: string;
   registration_closes_at: string;
   quota: number | null;
   is_paid: number;

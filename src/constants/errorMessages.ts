@@ -37,6 +37,7 @@ export const ERROR_MESSAGES: Record<string, ErrorMessageEntry> = {
   TEAM_FULL: { message: "Tim ini sudah penuh", treatment: "inline-banner" },
   TEAM_NOT_PUBLIC: { message: "Tim ini tidak lagi membuka pendaftaran publik", treatment: "toast" },
   REGISTRATION_CLOSED: { message: "Pendaftaran untuk batch ini sudah ditutup", treatment: "inline-banner" },
+  REGISTRATION_NOT_OPEN: { message: "Pendaftaran belum dibuka", treatment: "inline-banner" },
   QUOTA_FULL: { message: "Kuota sudah penuh", treatment: "inline-banner" },
   FILE_TOO_LARGE: { message: "Ukuran file melebihi 500 KB", treatment: "inline-field" },
   INVALID_FILE_FORMAT: { message: "Format file tidak sesuai", treatment: "inline-field" },

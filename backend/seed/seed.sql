@@ -128,7 +128,7 @@ VALUES
 ('comp-design-req-5', 'comp-design', 'Twibbon and Poster Proof', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5);
 
 -- 2. EVENTS
-INSERT INTO events (id, slug, name, description, starts_at, registration_closes_at, quota, is_paid, price_idr, is_published, created_at)
+INSERT INTO events (id, slug, name, description, starts_at, registration_opens_at, registration_closes_at, quota, is_paid, price_idr, is_published, created_at)
 VALUES
 (
   'event-talkshow',
@@ -136,6 +136,7 @@ VALUES
   'Talkshow Maritim Nasional',
   'Talkshow inspiratif bersama para pakar maritim membahas potensi masa depan industri dan energi laut berkelanjutan di Indonesia.',
   '2027-03-20T09:00:00+07:00',
+  '2027-01-17T00:00:00+07:00',
   '2027-03-05T23:59:00+07:00',
   250,
   0,
@@ -149,6 +150,7 @@ VALUES
   'Workshop Inovasi Maritim',
   'Sesi pelatihan intensif dengan bimbingan praktisi ahli mengenai teknik analisis dan pemodelan maritim digital.',
   '2027-03-25T13:00:00+07:00',
+  '2027-01-17T00:00:00+07:00',
   '2027-03-12T23:59:00+07:00',
   100,
   0,
@@ -162,6 +164,7 @@ VALUES
   'Short Course: Marine Tech 101',
   'Kursus singkat daring bersertifikat mengenai dasar-dasar instrumentasi dan komputasi kelautan modern.',
   '2027-04-01T09:00:00+07:00',
+  '2027-01-17T00:00:00+07:00',
   '2027-03-19T23:59:00+07:00',
   50,
   1,
@@ -175,6 +178,7 @@ VALUES
   'Maritime Innovation Exhibition',
   'Pameran karya riset, teknologi mutakhir, dan portofolio karya mahasiswa serta industri di sektor maritim.',
   '2027-05-08T09:00:00+07:00',
+  '2027-01-17T00:00:00+07:00',
   '2027-03-26T23:59:00+07:00',
   NULL,
   0,
