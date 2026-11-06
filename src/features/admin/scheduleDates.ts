@@ -17,10 +17,8 @@ export function scheduleChanges(record: RegistrationWindow | TimelineMilestone, 
   }
   if ("occursAt" in record) {
     const label = String(data.get("label")).trim();
-    const sortOrder = Number(data.get("sortOrder"));
     const showInCalendar = data.has("showInCalendar");
     if (label !== record.label) changes.label = label;
-    if (sortOrder !== record.sortOrder) changes.sortOrder = sortOrder;
     if (showInCalendar !== Boolean(record.showInCalendar)) changes.showInCalendar = showInCalendar;
   }
   return changes;

@@ -17,7 +17,6 @@ export function AdminSchedulesPanel() {
   const schedules = useQuery({ queryKey: ["admin", "schedules"], queryFn: () => adminRequest<AdminSchedules>("schedules"), retry: false });
   const [competitionId, setCompetitionId] = useState("");
   const [timelineId, setTimelineId] = useState("");
-  const [batchId, setBatchId] = useState("");
   const [eventId, setEventId] = useState("");
   const [saved, setSaved] = useState(false);
   const onSaved = setSaved;
@@ -25,7 +24,7 @@ export function AdminSchedulesPanel() {
   const milestones = data?.timeline.filter(item => item.competitionId === competitionId) ?? [];
   const batches = data?.batches.filter(item => item.competitionId === competitionId) ?? [];
   const milestone = milestones.find(item => item.id === timelineId);
-  const batch = batches.find(item => item.id === batchId);
+  const batch = batches[0];
   const event = data?.events.find(item => item.id === eventId);
   return <div className="flex min-w-0 flex-col gap-lg">
     <section className={card}>
@@ -35,19 +34,20 @@ export function AdminSchedulesPanel() {
       {saved && <div className="mt-md"><FormBanner variant="success" message="Perubahan berhasil disimpan." /></div>}
       {schedules.isPending && <p className="mt-md" role="status">Memuat jadwal...</p>}
       {schedules.isError && <div className="mt-md"><FormBanner variant="error" message="Jadwal belum dapat dimuat. Gunakan Muat ulang jadwal untuk mencoba lagi." /></div>}
-      {data && <div className="mt-lg"><Picker id="schedule-competition" label="Kompetisi" value={competitionId} onChange={value => { setCompetitionId(value); setTimelineId(""); setBatchId(""); }} options={data.competitions} /></div>}
-    </section>
-    {data && <>
-      <section className={card}><h3 className="font-heading text-h4">Timeline kompetisi</h3><p className="mt-sm text-b3 text-neutral-800">Atur milestone dan kalender peserta. Perubahan ini tidak mengubah batas pendaftaran atau deadline berkas.</p>
+      {data && <div className="mt-lg"><Picker id="schedule-competition" label="Kompetisi" value={competitionId} onChange={value => { setCompetitionId(value); setTimelineId(""); }} options={data.competitions} /></div>}
+      {data && competitionId && <>
+        <div className="mt-xl border-t border-neutral-300 pt-xl"><h3 className="font-heading text-h4">Timeline kompetisi</h3><p className="mt-sm text-b3 text-neutral-800">Atur milestone dan kalender peserta. Perubahan ini tidak mengubah batas pendaftaran atau deadline berkas.</p>
         <div className="mt-lg"><Picker id="schedule-milestone" label="Milestone" value={timelineId} onChange={setTimelineId} disabled={!competitionId} options={milestones.map(item => ({ id: item.id, name: item.label }))} /></div>
         {competitionId && milestones.length === 0 && <p className="mt-md" role="status">Belum ada milestone untuk kompetisi ini.</p>}
         {milestone && <ScheduleEditor key={JSON.stringify(milestone)} path={`competitions/${encodeURIComponent(competitionId)}/timeline/${encodeURIComponent(milestone.id)}`} record={milestone} onSaved={onSaved} />}
-      </section>
-      <section className={card}><h3 className="font-heading text-h4">Pendaftaran kompetisi</h3><p className="mt-sm text-b3 text-neutral-800">Atur periode pendaftaran untuk satu batch kompetisi.</p>
-        <div className="mt-lg"><Picker id="schedule-batch" label="Batch" value={batchId} onChange={setBatchId} disabled={!competitionId} options={batches} /></div>
+        </div>
+        <div className="mt-xl border-t border-neutral-300 pt-xl"><h3 className="font-heading text-h4">Pendaftaran kompetisi</h3><p className="mt-sm text-b3 text-neutral-800">Atur periode pendaftaran kompetisi.</p>
         {competitionId && batches.length === 0 && <p className="mt-md" role="status">Belum ada batch untuk kompetisi ini.</p>}
         {batch && <ScheduleEditor key={JSON.stringify(batch)} path={`competition-batches/${encodeURIComponent(batch.id)}/registration-window`} record={batch} onSaved={onSaved} />}
-      </section>
+        </div>
+      </>}
+    </section>
+    {data && <>
       <section className={card}><h3 className="font-heading text-h4">Pendaftaran kegiatan</h3><p className="mt-sm text-b3 text-neutral-800">Atur periode pendaftaran kegiatan. Tanggal pelaksanaan kegiatan tetap terpisah.</p>
         <div className="mt-lg"><Picker id="schedule-event" label="Kegiatan" value={eventId} onChange={setEventId} options={data.events} /></div>
         {data.events.length === 0 && <p className="mt-md" role="status">Belum ada kegiatan.</p>}
@@ -100,7 +100,6 @@ function ScheduleEditor({ path, record, onSaved }: { path: string; record: Regis
   if (timeline) fields = <>
     <Input id={`${record.id}-label`} name="label" label="Label milestone" defaultValue={record.label} required pattern=".*\S.*" />
     <Input id={`${record.id}-occursAt`} name="occursAt" label="Tanggal dan waktu (WIB)" type="datetime-local" step="1" defaultValue={wibInput(record.occursAt)} required />
-    <Input id={`${record.id}-sortOrder`} name="sortOrder" label="Urutan tampilan" type="number" min="0" step="1" defaultValue={record.sortOrder} required />
     <label className="flex min-h-11 items-center gap-sm text-b3"><input name="showInCalendar" type="checkbox" defaultChecked={Boolean(record.showInCalendar)} />Tampilkan di kalender peserta</label>
   </>;
   else fields = <>
