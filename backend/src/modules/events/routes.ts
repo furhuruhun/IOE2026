@@ -10,6 +10,14 @@ import { validateUploadedFile } from "../../lib/files";
 
 export const eventRoutes = new Hono<AppContext>();
 
+async function getRegisteredSessions(db: D1Database, eventId: string, userId?: string): Promise<string[]> {
+  if (!userId) return [];
+  const rows = await db.prepare(
+    "SELECT session_type FROM event_registrations WHERE event_id = ?1 AND user_id = ?2 ORDER BY created_at ASC"
+  ).bind(eventId, userId).all<{ session_type: string }>();
+  return rows.results.map(row => row.session_type);
+}
+
 eventRoutes.get("/", optionalAuth, async (c) => {
   const authUser = c.get("user");
 
@@ -19,15 +27,7 @@ eventRoutes.get("/", optionalAuth, async (c) => {
 
   const items = await Promise.all(
     rows.results.map(async (ev) => {
-      let isRegisteredByUser = false;
-      if (authUser) {
-        const reg = await c.env.DB.prepare(
-          "SELECT 1 FROM event_registrations WHERE event_id = ?1 AND user_id = ?2 LIMIT 1"
-        )
-          .bind(ev.id, authUser.id)
-          .first();
-        isRegisteredByUser = Boolean(reg);
-      }
+      const registeredSessions = await getRegisteredSessions(c.env.DB, ev.id, authUser?.id);
 
       return {
         id: ev.id,
@@ -35,7 +35,8 @@ eventRoutes.get("/", optionalAuth, async (c) => {
         name: ev.name,
         registrationOpensAt: toWib(ev.registration_opens_at),
         deadline: toWib(ev.registration_closes_at),
-        isRegisteredByUser,
+        isRegisteredByUser: registeredSessions.length > 0,
+        registeredSessions,
       };
     })
   );
@@ -48,15 +49,7 @@ eventRoutes.get("/:slug", optionalAuth, async (c) => {
   const ev = await resolveEvent(c.env.DB, slug);
   const authUser = c.get("user");
 
-  let isRegisteredByUser = false;
-  if (authUser) {
-    const reg = await c.env.DB.prepare(
-      "SELECT 1 FROM event_registrations WHERE event_id = ?1 AND user_id = ?2 LIMIT 1"
-    )
-      .bind(ev.id, authUser.id)
-      .first();
-    isRegisteredByUser = Boolean(reg);
-  }
+  const registeredSessions = await getRegisteredSessions(c.env.DB, ev.id, authUser?.id);
 
   const speakers = await c.env.DB.prepare(
     "SELECT id, name FROM event_speakers WHERE event_id = ?1 ORDER BY sort_order ASC"
@@ -70,7 +63,8 @@ eventRoutes.get("/:slug", optionalAuth, async (c) => {
     name: ev.name,
     registrationOpensAt: toWib(ev.registration_opens_at),
     deadline: toWib(ev.registration_closes_at),
-    isRegisteredByUser,
+    isRegisteredByUser: registeredSessions.length > 0,
+    registeredSessions,
     speakers: speakers.results,
   });
 });
@@ -89,16 +83,6 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
     throw new AppError("REGISTRATION_CLOSED", 400);
   }
 
-  const alreadyReg = await c.env.DB.prepare(
-    "SELECT 1 FROM event_registrations WHERE event_id = ?1 AND user_id = ?2 LIMIT 1"
-  )
-    .bind(ev.id, authUser.id)
-    .first();
-
-  if (alreadyReg) {
-    throw new AppError("ALREADY_REGISTERED", 400);
-  }
-
   const formData = await c.req.formData();
   const sessionType = (formData.get("sessionType") as string) || "seminar";
   const speakerId = (formData.get("speakerId") as string) || null;
@@ -107,6 +91,16 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
   const institution = (formData.get("institution") as string)?.trim();
   const domicile = (formData.get("domicile") as string)?.trim();
   const discoverySource = (formData.get("discoverySource") as string)?.trim() || null;
+
+  const existingRegistrations = await getRegisteredSessions(c.env.DB, ev.id, authUser.id);
+  const alreadyRegistered = ev.slug === "short-course"
+    ? existingRegistrations.includes(sessionType)
+    : existingRegistrations.length > 0;
+  if (alreadyRegistered) {
+    throw new AppError("ALREADY_REGISTERED", 400, ev.slug === "short-course"
+      ? `Kamu sudah terdaftar untuk ${sessionType === "day1" ? "Day 1" : "Day 2"}`
+      : undefined);
+  }
 
   const validationFields: Record<string, string> = {};
   if (!phone) validationFields.phone = "Nomor WhatsApp wajib diisi";

@@ -6,6 +6,7 @@ import { REGISTRATION_RECOVERY } from "@/constants/errorMessages";
 const eventDetailSchema = z.object({
   id: z.string().min(1), slug: z.string().min(1), name: z.string().min(1),
   deadline: z.string(), isRegisteredByUser: z.boolean(),
+  registeredSessions: z.array(z.string()).optional(),
   speakers: z.array(z.object({ id: z.string().min(1), name: z.string().min(1) })).optional(),
 });
 

@@ -35,7 +35,10 @@ export function EventDetailPage({ slug }: { slug: string }) {
   const deadline = event ? new Date(event.deadline) : null;
   const hasDeadline = deadline !== null && Number.isFinite(deadline.getTime());
   // Demo fixtures never establish real membership or registration availability.
-  const registered = !isError && !data?.isDemo && event?.isRegisteredByUser === true;
+  const registeredSessions = event?.registeredSessions ?? [];
+  const registered = !isError && !data?.isDemo && (slug === "short-course"
+    ? registeredSessions.includes("day1") && registeredSessions.includes("day2")
+    : event?.isRegisteredByUser === true);
   const closed = !data?.isDemo && hasDeadline && now !== null && deadline!.getTime() <= now;
   const registrationOpen = !isError && Boolean(event) && !registered && !closed;
   const registrationMessage = registered

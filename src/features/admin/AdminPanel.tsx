@@ -31,6 +31,9 @@ export function AdminPanel() {
   const [competition, setCompetition] = useState("");
   const [search, setSearch] = useState("");
   const [review, setReview] = useState<string | null>(null);
+  const [exportCompetition, setExportCompetition] = useState("");
+  const [exportEvent, setExportEvent] = useState("");
+  const [exportSession, setExportSession] = useState("");
   const submissions = useQuery({ queryKey: ["admin", "submissions"], queryFn: () => adminRequest<AdminSubmission[]>("submissions"), retry: false });
   const registrations = useQuery({ queryKey: ["admin", "registrations"], queryFn: () => adminRequest<AdminRegistrations>("registrations"), enabled: tab === "registrations", retry: false });
   const report = (error: unknown) => {
@@ -58,12 +61,28 @@ export function AdminPanel() {
   const all = submissions.data ?? [];
   const competitions = Array.from(new Map(all.map(item => [item.competition_id, item.competition_name])).entries());
   const filtered = all.filter(item => (!status || item.status === status) && (!competition || item.competition_id === competition) && `${item.team_name ?? ""} ${item.participant_name ?? ""} ${item.participant_email ?? ""} ${item.requirement_name}`.toLowerCase().includes(search.toLowerCase()));
-  async function exportCsv() {
+  const teamExportOptions = Array.from(new Map([
+    ["business-case-competition", "Business Case Competition"],
+    ["paper-poster-competition", "Paper & Poster Competition"],
+    ["design-competition", "Design Competition"],
+    ...(registrations.data?.teams ?? []).map(item => [item.competition_name, item.competition_name] as [string, string]),
+  ]).entries());
+  const eventExportOptions = Array.from(new Map([
+    ["talkshow", "Talkshow Maritim Nasional"],
+    ["short-course", "Short Course: Marine Tech 101"],
+    ...(registrations.data?.eventRegistrations ?? []).map(item => [item.event_slug, item.event_name] as [string, string]),
+  ]).entries());
+  const sessionOptions = exportEvent === "short-course" ? [["day1", "Day 1"], ["day2", "Day 2"]] : exportEvent === "talkshow" ? [["seminar", "Talkshow"]] : [];
+  async function exportCsv(kind: "teams" | "events") {
     try {
-      const response = await fetch("/api/admin/registrations/export", { cache: "no-store" });
+      const params = new URLSearchParams({ kind });
+      if (kind === "teams" && exportCompetition) params.set("competition", exportCompetition);
+      if (kind === "events" && exportEvent) params.set("event", exportEvent);
+      if (kind === "events" && exportSession) params.set("session", exportSession);
+      const response = await fetch(`/api/admin/registrations/export?${params.toString()}`, { cache: "no-store" });
       if (!response.ok) { await unwrapResponse(response); return; }
       const url = URL.createObjectURL(await response.blob());
-      const link = document.createElement("a"); link.href = url; link.download = "teams-export.csv"; link.click();
+      const link = document.createElement("a"); link.href = url; link.download = kind === "teams" ? "teams-export.csv" : "events-export.csv"; link.click();
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (error) { report(error); }
   }
@@ -119,7 +138,11 @@ export function AdminPanel() {
           </article>)}
         </Tabs.Content>
         <Tabs.Content value="registrations" className={card}>
-          <div className="flex flex-wrap items-center justify-between gap-md"><div><h2 className="font-heading text-h4">Data pendaftar</h2><p className="mt-sm text-b3 text-neutral-800">Pendaftaran kompetisi dan kegiatan IOE 2027.</p></div><div className="flex flex-wrap gap-sm"><Button variant="ghost" size="sm" loading={registrations.isFetching} onClick={() => void registrations.refetch()}>Muat ulang</Button><Button size="sm" onClick={() => void exportCsv()}>Export tim (.csv)</Button></div></div>
+          <div className="flex flex-wrap items-start justify-between gap-md"><div><h2 className="font-heading text-h4">Data pendaftar</h2><p className="mt-sm text-b3 text-neutral-800">Pendaftaran kompetisi dan kegiatan IOE 2027.</p></div><Button variant="ghost" size="sm" loading={registrations.isFetching} onClick={() => void registrations.refetch()}>Muat ulang</Button></div>
+          <div className="mt-lg grid gap-md rounded-2xl border border-neutral-300 p-md md:grid-cols-2">
+            <label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Export tim kompetisi<select className={control} value={exportCompetition} onChange={event => setExportCompetition(event.target.value)}><option value="">Semua kompetisi</option>{teamExportOptions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select><Button size="sm" className="self-start" onClick={() => void exportCsv("teams")}>Download tim CSV</Button></label>
+            <div className="flex flex-col gap-sm"><label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Export peserta event<select className={control} value={exportEvent} onChange={event => { setExportEvent(event.target.value); setExportSession(""); }}><option value="">Semua event</option>{eventExportOptions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label><label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Sesi<select className={control} value={exportSession} disabled={!exportEvent || sessionOptions.length === 0} onChange={event => setExportSession(event.target.value)}><option value="">Semua sesi</option>{sessionOptions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label><Button size="sm" className="self-start" onClick={() => void exportCsv("events")}>Download event CSV</Button></div>
+          </div>
           {registrations.isPending && <p className="mt-lg" role="status">Memuat pendaftar...</p>}
           {registrations.isError && <p className="mt-lg" role="status">Data belum dapat dimuat. Silakan coba lagi.</p>}
           {registrations.isSuccess && <><RegistrationTable title="Tim kompetisi" headers={["Tim", "Kompetisi / batch", "Ketua", "Tanggal daftar"]} rows={registrations.data.teams.map(team => ({ id: team.team_id, cells: [team.team_name, `${team.competition_name} / ${team.batch_name}`, `${team.leader_name} · ${team.leader_email}`, date(team.created_at)] }))} /><RegistrationTable title="Peserta kegiatan" headers={["Peserta", "Kegiatan / sesi", "Kontak", "Institusi / domisili", "Sumber informasi", "Berkas", "Tanggal daftar"]} rows={registrations.data.eventRegistrations.map(item => ({ id: item.registration_id, cells: [item.participant_name, `${item.event_name} / ${sessionLabel(item.session_type)}`, `${item.email} · ${item.phone}`, `${item.institution} / ${item.domicile}`, (item.discovery_source && discoverySourceLabels[item.discovery_source]) || "—", <span key="files" className="flex flex-wrap gap-sm">{item.cv_url && <a className="text-secondary-800 underline" href={item.cv_url} target="_blank" rel="noopener noreferrer">CV</a>}{item.payment_proof_url && <a className="text-secondary-800 underline" href={item.payment_proof_url} target="_blank" rel="noopener noreferrer">Bukti bayar</a>}{!item.cv_url && !item.payment_proof_url && "—"}</span>, date(item.created_at)] }))} /></>}

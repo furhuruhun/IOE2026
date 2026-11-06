@@ -77,6 +77,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
   const cvFile = useWatch({ control, name: "cvFile" });
   const paymentProof = useWatch({ control, name: "paymentProof" });
   const sessionType = useWatch({ control, name: "sessionType" });
+  const registeredSessions = event.registeredSessions ?? [];
   useEffect(() => {
     if (!busy && focusTarget.current) {
       form.current?.querySelector<HTMLInputElement>(`[name="${focusTarget.current}"]`)?.focus();
@@ -174,7 +175,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
           <legend className="font-bold">Which session do you want to attend?</legend>
           <div className={isShortCourse ? "flex flex-col" : "contents"}>
             {(isShortCourse ? [["day1", "Day 1 (22 January 2027)"], ["day2", "Day 2 (23 January 2027)"]] : [["seminar", "Seminar"], ["workshop", "Workshop"]]).map(([value, label]) => <label key={value} className={`flex items-center gap-sm ${isShortCourse ? "min-h-7" : "min-h-11"}`}>
-              <input type="radio" value={value} aria-describedby={errors.sessionType ? `${id}-session-error` : undefined} {...register("sessionType", { validate: value => !isShortCourse || value === "day1" || value === "day2" || "Pilih hari Short Course" })} />{label}
+              <input type="radio" value={value} disabled={isShortCourse && registeredSessions.includes(value)} aria-describedby={errors.sessionType ? `${id}-session-error` : undefined} {...register("sessionType", { validate: value => !isShortCourse || (value === "day1" || value === "day2") && !registeredSessions.includes(value) || "Pilih hari Short Course yang belum terdaftar" })} />{label}{isShortCourse && registeredSessions.includes(value) && <span className="text-b4 text-neutral-700">(sudah terdaftar)</span>}
             </label>)}
           </div>
           {errors.sessionType && <InlineFieldError id={`${id}-session-error`} message={errors.sessionType.message ?? "Pilih sesi"} />}

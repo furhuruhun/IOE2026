@@ -293,34 +293,82 @@ adminRoutes.get("/registrations", async (c) => {
 
 // GET /admin/registrations/export
 adminRoutes.get("/registrations/export", async (c) => {
-  const compTeams = await c.env.DB.prepare(
-    `SELECT t.id, t.name as team_name, t.code as team_code,
-            c.name as competition_name, b.name as batch_name,
-            u.name as leader_name, u.email as leader_email, t.created_at
-     FROM teams t
-     JOIN competitions c ON c.id = t.competition_id
-     JOIN competition_batches b ON b.id = t.batch_id
-     JOIN users u ON u.id = t.leader_user_id
-     ORDER BY t.created_at DESC`
-  ).all<{
-    id: string;
-    team_name: string;
-    team_code: string;
-    competition_name: string;
-    batch_name: string;
-    leader_name: string;
-    leader_email: string;
-    created_at: string;
-  }>();
-
-  let csv = "Team ID,Competition,Team Name,Team Code,Batch,Leader Name,Leader Email,Created At\n";
-  for (const t of compTeams.results) {
-    csv += `"${t.id}","${t.competition_name}","${t.team_name}","${t.team_code}","${t.batch_name}","${t.leader_name}","${t.leader_email}","${t.created_at}"\n`;
-  }
-
+  const kind = c.req.query("kind") ?? "teams";
+  const competition = c.req.query("competition");
+  const event = c.req.query("event");
+  const session = c.req.query("session");
+  const csvCell = (value: unknown) => `"${String(value ?? "").replace(/"/g, '""')}"`;
   const headers = new Headers();
   headers.set("Content-Type", "text/csv; charset=utf-8");
-  headers.set("Content-Disposition", 'attachment; filename="teams-export.csv"');
+  let csv: string;
+  let filename: string;
+
+  if (kind === "events") {
+    const allowedSessions = new Set(["seminar", "workshop", "day1", "day2"]);
+    if (session && !allowedSessions.has(session)) {
+      throw new AppError("VALIDATION_ERROR", 400, "Sesi event tidak valid");
+    }
+    const conditions: string[] = [];
+    const binds: string[] = [];
+    if (event) {
+      conditions.push(`(e.slug = ?${binds.length + 1} OR e.id = ?${binds.length + 1})`);
+      binds.push(event);
+    }
+    if (session) {
+      conditions.push(`r.session_type = ?${binds.length + 1}`);
+      binds.push(session);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const rows = await c.env.DB.prepare(
+      `SELECT r.id AS registration_id, e.slug AS event_slug, e.name AS event_name,
+              r.session_type, u.name AS participant_name, u.email, r.phone,
+              r.institution, r.domicile, r.discovery_source,
+              CASE WHEN r.cv_key IS NULL THEN 'No' ELSE 'Yes' END AS cv_uploaded,
+              CASE WHEN r.payment_proof_key IS NULL THEN 'No' ELSE 'Yes' END AS payment_proof_uploaded,
+              r.created_at
+       FROM event_registrations r
+       JOIN events e ON e.id = r.event_id
+       JOIN users u ON u.id = r.user_id
+       ${where}
+       ORDER BY e.name, r.session_type, r.created_at DESC`
+    ).bind(...binds).all<Record<string, unknown>>();
+    csv = "Registration ID,Event,Session,Participant,Email,Phone,Institution,Domicile,Discovery Source,CV Uploaded,Payment Proof Uploaded,Created At\n";
+    for (const row of rows.results) {
+      csv += [row.registration_id, row.event_name, row.session_type, row.participant_name, row.email, row.phone, row.institution, row.domicile, row.discovery_source, row.cv_uploaded, row.payment_proof_uploaded, row.created_at].map(csvCell).join(",") + "\n";
+    }
+    const eventPart = event ? event.replace(/[^a-z0-9-]/gi, "-") : "all";
+    const sessionPart = session ? `-${session}` : "";
+    filename = `events-${eventPart}${sessionPart}-export.csv`;
+  } else if (kind === "teams") {
+    const conditions: string[] = [];
+    const binds: string[] = [];
+    if (competition) {
+      conditions.push(`(c.slug = ?${binds.length + 1} OR c.id = ?${binds.length + 1} OR c.name = ?${binds.length + 1})`);
+      binds.push(competition);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+    const compTeams = await c.env.DB.prepare(
+      `SELECT t.id, t.name as team_name, t.code as team_code,
+              c.name as competition_name, b.name as batch_name,
+              u.name as leader_name, u.email as leader_email, t.created_at
+       FROM teams t
+       JOIN competitions c ON c.id = t.competition_id
+       JOIN competition_batches b ON b.id = t.batch_id
+       JOIN users u ON u.id = t.leader_user_id
+       ${where}
+       ORDER BY c.name, t.created_at DESC`
+    ).bind(...binds).all<Record<string, unknown>>();
+    csv = "Team ID,Competition,Team Name,Team Code,Batch,Leader Name,Leader Email,Created At\n";
+    for (const row of compTeams.results) {
+      csv += [row.id, row.competition_name, row.team_name, row.team_code, row.batch_name, row.leader_name, row.leader_email, row.created_at].map(csvCell).join(",") + "\n";
+    }
+    const competitionPart = competition ? competition.replace(/[^a-z0-9-]/gi, "-") : "all";
+    filename = `teams-${competitionPart}-export.csv`;
+  } else {
+    throw new AppError("VALIDATION_ERROR", 400, "Jenis export tidak valid");
+  }
+
+  headers.set("Content-Disposition", `attachment; filename="${filename}"`);
   return new Response(csv, { headers });
 });
 

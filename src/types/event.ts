@@ -5,6 +5,7 @@ export interface EventSummary {
   name: string;
   deadline: string;
   isRegisteredByUser: boolean;
+  registeredSessions?: string[];
 }
 
 export interface EventListResult {
