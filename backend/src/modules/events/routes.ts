@@ -106,14 +106,18 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
   const lineId = (formData.get("lineId") as string)?.trim() || null;
   const institution = (formData.get("institution") as string)?.trim();
   const domicile = (formData.get("domicile") as string)?.trim();
+  const discoverySource = (formData.get("discoverySource") as string)?.trim() || null;
 
   const validationFields: Record<string, string> = {};
   if (!phone) validationFields.phone = "Nomor WhatsApp wajib diisi";
   if (!institution) validationFields.institution = "Institusi wajib diisi";
   if (!domicile) validationFields.domicile = "Domisili wajib diisi";
+  if (["talkshow", "short-course"].includes(ev.slug) && !["INSTAGRAM", "WEBSITE", "FRIENDS", "TIKTOK", "LINKEDIN", "OTHERS"].includes(discoverySource ?? "")) {
+    validationFields.discoverySource = "Pilih sumber informasi acara";
+  }
 
-  if (sessionType !== "seminar" && sessionType !== "workshop") {
-    validationFields.sessionType = "Sesi harus seminar atau workshop";
+  if (ev.slug === "short-course" ? !["day1", "day2"].includes(sessionType) : !["seminar", "workshop"].includes(sessionType)) {
+    validationFields.sessionType = ev.slug === "short-course" ? "Pilih Day 1 atau Day 2" : "Sesi harus seminar atau workshop";
   }
 
   // Check speaker for workshop
@@ -165,8 +169,8 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
   // Atomic insert with quota check
   const insertResult = await c.env.DB.prepare(
     `INSERT INTO event_registrations
-     (id, event_id, user_id, session_type, speaker_id, phone, line_id, institution, domicile, cv_key, payment_proof_key, created_at)
-     SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12
+     (id, event_id, user_id, session_type, speaker_id, phone, line_id, institution, domicile, cv_key, payment_proof_key, created_at, discovery_source)
+     SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13
      WHERE (SELECT quota FROM events WHERE id = ?2) IS NULL
         OR (SELECT COUNT(*) FROM event_registrations WHERE event_id = ?2) < (SELECT quota FROM events WHERE id = ?2)`
   )
@@ -182,7 +186,8 @@ eventRoutes.post("/:id/register", requireAuth, async (c) => {
       domicile,
       cvKey,
       paymentProofKey,
-      currentIso
+      currentIso,
+      discoverySource
     )
     .run();
 

@@ -19,7 +19,7 @@ export interface EventDetail extends EventSummary {
 }
 
 export interface EventRegistrationInput {
-  sessionType: "seminar" | "workshop";
+  sessionType: "seminar" | "workshop" | "day1" | "day2";
   speakerId?: string;
   phone: string;
   lineId?: string;
@@ -27,6 +27,7 @@ export interface EventRegistrationInput {
   domicile: string;
   cvFile?: File | null;
   paymentProof?: File | null;
+  discoverySource?: string;
 }
 
 export interface EventRegistrationResult {

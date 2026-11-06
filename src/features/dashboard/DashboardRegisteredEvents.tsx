@@ -43,7 +43,7 @@ export function DashboardRegisteredEvents() {
               <li key={event.eventId} className="flex min-w-0 flex-wrap items-center gap-4 rounded-xl border border-secondary-300 p-4">
                 <div className="min-w-0 flex-1 basis-32">
                   <h3 className="wrap-anywhere font-heading text-h6 text-secondary-1000">{event.name}</h3>
-                  <p className="mt-2 wrap-anywhere text-b3 text-neutral-700">Session: {event.sessionType}</p>
+                  <p className="mt-2 wrap-anywhere text-b3 text-neutral-700">Session: {event.sessionType === "day1" ? "Day 1 (22 January 2027)" : event.sessionType === "day2" ? "Day 2 (23 January 2027)" : event.sessionType}</p>
                   <p className="mt-1 text-b3 text-neutral-700">Date: <time dateTime={event.date}>{formatWibDate(event.date)} WIB</time></p>
                 </div>
                 {!isHiddenEvent(event.slug) && <Link href={`/events/${encodeURIComponent(event.slug)}`} aria-label={`See Details: ${event.name}`} className="ui-action ui-action-secondary ui-action-sm shrink-0">See Details</Link>}

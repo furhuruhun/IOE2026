@@ -105,7 +105,9 @@ dashboardRoutes.get("/events", requireAuth, async (c) => {
     }>();
 
   const items = rows.results.map((r) => {
-    const rawDate = r.session_at || r.starts_at || nowIsoWib();
+    const rawDate = r.slug === "short-course" && r.session_type === "day2"
+      ? "2027-01-23T00:00:00+07:00"
+      : r.session_at || r.starts_at || nowIsoWib();
     return {
       eventId: r.event_id,
       slug: r.slug,
@@ -145,8 +147,12 @@ dashboardRoutes.get("/calendar", requireAuth, async (c) => {
 
   // 2. Event calendar items
   const eventItems = await c.env.DB.prepare(
-    `SELECT COALESCE(s.session_at, e.starts_at) as date,
-            e.name || CASE WHEN s.name IS NOT NULL THEN ' — ' || s.name ELSE '' END as label,
+    `SELECT CASE WHEN e.slug = 'short-course' AND r.session_type = 'day2'
+              THEN '2027-01-23T00:00:00+07:00'
+              ELSE COALESCE(s.session_at, e.starts_at) END as date,
+            e.name || CASE WHEN e.slug = 'short-course' AND r.session_type = 'day1' THEN ' — Day 1'
+                           WHEN e.slug = 'short-course' AND r.session_type = 'day2' THEN ' — Day 2'
+                           WHEN s.name IS NOT NULL THEN ' — ' || s.name ELSE '' END as label,
             'event' as type,
             e.id as ref_id,
             NULL as logo_url

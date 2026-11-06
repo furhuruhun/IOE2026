@@ -49,6 +49,7 @@ describe("Events Module", () => {
     formData.append("institution", "ITB");
     formData.append("domicile", "Bandung");
     formData.append("sessionType", "seminar");
+    formData.append("discoverySource", "INSTAGRAM");
 
     const res = await app.fetch(
       new Request("http://localhost/api/events/talkshow/register", {
@@ -63,6 +64,9 @@ describe("Events Module", () => {
     const body = (await res.json()) as any;
     expect(body.success).toBe(true);
     expect(body.data.registrationId).toBeDefined();
+    const saved = await env.DB.prepare("SELECT discovery_source FROM event_registrations WHERE id = ?1")
+      .bind(body.data.registrationId).first<{ discovery_source: string }>();
+    expect(saved?.discovery_source).toBe("INSTAGRAM");
   });
 
   it("prevents double registration for the same event", async () => {
@@ -73,6 +77,7 @@ describe("Events Module", () => {
     formData.append("institution", "ITB");
     formData.append("domicile", "Bandung");
     formData.append("sessionType", "seminar");
+    formData.append("discoverySource", "INSTAGRAM");
 
     // First registration
     const res1 = await app.fetch(
@@ -98,5 +103,57 @@ describe("Events Module", () => {
     expect(res2.status).toBe(400);
     const body2 = (await res2.json()) as any;
     expect(body2.error.code).toBe("ALREADY_REGISTERED");
+  });
+
+  it("requires a valid discovery source for talkshow registration", async () => {
+    const user = await createUser("source_event@itb.ac.id", "Peserta Sumber");
+    const formData = new FormData();
+    formData.append("phone", "08123456789");
+    formData.append("institution", "ITB");
+    formData.append("domicile", "Bandung");
+    formData.append("sessionType", "seminar");
+
+    const res = await app.fetch(new Request("http://localhost/api/events/talkshow/register", {
+      method: "POST", headers: authHeader(user.token), body: formData,
+    }), env);
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as any;
+    expect(body.error.fields.discoverySource).toBe("Pilih sumber informasi acara");
+  });
+
+  it("stores the selected Short Course day under the Short Course event", async () => {
+    const user = await createUser("course_event@itb.ac.id", "Peserta Course");
+    const formData = new FormData();
+    formData.append("phone", "08123456789");
+    formData.append("institution", "ITB");
+    formData.append("domicile", "Bandung");
+    formData.append("sessionType", "day2");
+    formData.append("discoverySource", "WEBSITE");
+
+    const res = await app.fetch(new Request("http://localhost/api/events/short-course/register", {
+      method: "POST", headers: authHeader(user.token), body: formData,
+    }), env);
+    expect(res.status).toBe(201);
+    const body = (await res.json()) as any;
+    const saved = await env.DB.prepare("SELECT event_id, session_type, discovery_source FROM event_registrations WHERE id = ?1")
+      .bind(body.data.registrationId).first<{ event_id: string; session_type: string; discovery_source: string }>();
+    expect(saved).toMatchObject({ event_id: "event-short-course", session_type: "day2", discovery_source: "WEBSITE" });
+  });
+
+  it("rejects a seminar session for Short Course", async () => {
+    const user = await createUser("course_invalid@itb.ac.id", "Peserta Course Invalid");
+    const formData = new FormData();
+    formData.append("phone", "08123456789");
+    formData.append("institution", "ITB");
+    formData.append("domicile", "Bandung");
+    formData.append("sessionType", "seminar");
+    formData.append("discoverySource", "WEBSITE");
+
+    const res = await app.fetch(new Request("http://localhost/api/events/short-course/register", {
+      method: "POST", headers: authHeader(user.token), body: formData,
+    }), env);
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as any;
+    expect(body.error.fields.sessionType).toBe("Pilih Day 1 atau Day 2");
   });
 });

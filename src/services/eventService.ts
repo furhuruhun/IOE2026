@@ -36,6 +36,7 @@ export async function registerEvent(slug: string, input: EventRegistrationInput)
   if (input.lineId) body.append("lineId", input.lineId);
   body.append("institution", input.institution);
   body.append("domicile", input.domicile);
+  if (input.discoverySource) body.append("discoverySource", input.discoverySource);
   if (input.cvFile) body.append("cvFile", input.cvFile);
   if (input.paymentProof) body.append("paymentProof", input.paymentProof);
 

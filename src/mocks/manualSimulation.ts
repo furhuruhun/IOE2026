@@ -83,7 +83,8 @@ async function dispatch(request: NextRequest, pathname: string, state: State): P
       for (const name of ['phone', 'institution', 'domicile']) if (typeof form.get(name) !== 'string' || !String(form.get(name)).trim()) fields[name] = 'Required simulation field';
       if (state.scenario === 'validation') fields.phone = 'Synthetic server-side phone rejection';
       const type = form.get('sessionType');
-      if (type !== 'seminar' && type !== 'workshop') fields.sessionType = 'Choose seminar or workshop';
+      if (['talkshow', 'short-course'].includes(event.slug) && !['INSTAGRAM', 'WEBSITE', 'FRIENDS', 'TIKTOK', 'LINKEDIN', 'OTHERS'].includes(String(form.get('discoverySource')))) fields.discoverySource = 'Choose how you heard about this event';
+      if (event.slug === 'short-course' ? type !== 'day1' && type !== 'day2' : type !== 'seminar' && type !== 'workshop') fields.sessionType = event.slug === 'short-course' ? 'Choose Day 1 or Day 2' : 'Choose seminar or workshop';
       if (type === 'workshop' && !event.speakers.some(speaker => speaker.id === form.get('speakerId'))) fields.speakerId = 'Choose a synthetic speaker';
       for (const name of ['cvFile', 'paymentProof']) {
         const upload = form.get(name);

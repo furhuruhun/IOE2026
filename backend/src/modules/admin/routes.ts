@@ -260,7 +260,7 @@ adminRoutes.get("/registrations", async (c) => {
 
   const eventRegs = await c.env.DB.prepare(
     `SELECT r.id as registration_id, e.name as event_name, r.session_type,
-            u.name as participant_name, u.email, r.phone, r.institution, r.domicile,
+            u.name as participant_name, u.email, r.phone, r.institution, r.domicile, r.discovery_source,
             r.cv_key, r.payment_proof_key, r.created_at
      FROM event_registrations r
      JOIN events e ON e.id = r.event_id

@@ -20,7 +20,7 @@ import type { EventRegistrationResult } from "@/types/event";
 import { useManualSimulation } from "@/components/ManualSimulation";
 
 interface FoundationValues {
-  sessionType: "seminar" | "workshop";
+  sessionType: "seminar" | "workshop" | "day1" | "day2" | "";
   speakerId: string;
   phone: string;
   institution: string;
@@ -29,7 +29,14 @@ interface FoundationValues {
   cvFile: File | null;
   paymentProof: File | null;
   consentPdp: boolean;
+  discoverySource: string;
 }
+
+const discoverySources = [
+  ["INSTAGRAM", "Instagram"], ["WEBSITE", "Our Website"],
+  ["FRIENDS", "Friends/Relatives"], ["TIKTOK", "TikTok"],
+  ["LINKEDIN", "LinkedIn"], ["OTHERS", "Other"],
+] as const;
 
 // A mounted form owns its defaults and edits. Query refreshes do not reset it,
 // and event submission never writes these edits back to the Profile cache.
@@ -55,13 +62,16 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
   const [uncertain, setUncertain] = useState(false);
   const [checking, setChecking] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const isTalkshow = slug === "talkshow";
+  const isShortCourse = slug === "short-course";
+  const isSimpleEvent = isTalkshow || isShortCourse;
   const eligibility = getRegistrationEligibility(slug, event, isDemo, now, simulation);
   const unavailable = blocked || !eligibility.available || Boolean(rejection) || uncertain;
   const { register, control, setValue, setError, clearErrors, handleSubmit, formState: { errors } } = useForm<FoundationValues>({
     defaultValues: {
-      sessionType: "seminar", speakerId: "",
+      sessionType: isShortCourse ? "" : "seminar", speakerId: "",
       phone: profile.phone ?? "", institution: profile.institution ?? "",
-      domicile: profile.domicile ?? "", lineId: "", cvFile: null, paymentProof: null, consentPdp: false,
+      domicile: profile.domicile ?? "", lineId: "", cvFile: null, paymentProof: null, consentPdp: false, discoverySource: "",
     },
   });
   const cvFile = useWatch({ control, name: "cvFile" });
@@ -100,7 +110,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
       const latest = await fetchEvent(slug);
       const state = getRegistrationEligibility(slug, latest.event, latest.isDemo, Date.now(), simulation);
       if (!state.available) { setRejection(state.note); return; }
-      if (values.sessionType === "workshop") {
+      if (!isSimpleEvent && values.sessionType === "workshop") {
         const speakers = latest.event.speakers ?? [];
         if ((speakers.length > 1 && !values.speakerId) || (values.speakerId && !speakers.some(speaker => speaker.id === values.speakerId))) {
           setError("speakerId", { message: "Pilih speaker / sesi yang tersedia" });
@@ -111,7 +121,9 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
       // Consent is client-only. A hidden workshop selection must not leak into seminar requests.
       const { consentPdp: consent, ...input } = values;
       if (!consent) { setError("consentPdp", { message: "Persetujuan penggunaan data wajib dicentang" }); return; }
-      result = await registration.mutateAsync({ ...input, speakerId: input.sessionType === "workshop" ? input.speakerId : undefined } satisfies EventRegistrationInput);
+      result = await registration.mutateAsync(isSimpleEvent
+        ? { phone: input.phone, institution: input.institution, domicile: input.domicile, lineId: input.lineId, sessionType: isTalkshow ? "seminar" : input.sessionType as "day1" | "day2", discoverySource: input.discoverySource } satisfies EventRegistrationInput
+        : { ...input, sessionType: input.sessionType as "seminar" | "workshop", speakerId: input.sessionType === "workshop" ? input.speakerId : undefined } satisfies EventRegistrationInput);
     } catch (error) {
       if (error instanceof RegistrationOutcomeUnknownError) {
         setUncertain(true);
@@ -121,7 +133,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
         setRejection(getErrorEntry(error.code).message);
       }
       if (error instanceof ApiError && error.code === "VALIDATION_ERROR" && error.fields) {
-        const fields: (keyof FoundationValues)[] = ["phone", "institution", "domicile", "lineId", "sessionType", "speakerId", "cvFile", "paymentProof"];
+        const fields: (keyof FoundationValues)[] = ["phone", "institution", "domicile", "lineId", "discoverySource", "sessionType", "speakerId", "cvFile", "paymentProof"];
         let first: keyof FoundationValues | undefined;
         for (const field of fields) {
           if (Object.hasOwn(error.fields, field)) {
@@ -154,18 +166,20 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
     <form ref={form} aria-label="Registration details" aria-busy={busy} noValidate onSubmit={event => { void handleSubmit(onSubmit)(event); }} className="flex min-w-0 flex-col gap-lg rounded-3xl border border-secondary-200 bg-neutral-100 p-lg md:p-xl">
       {(unavailable || feedback) && <FormBanner variant={uncertain ? "warning" : feedback || rejection ? "error" : "info"} message={feedback ?? rejection ?? (blocked ? REGISTRATION_RECOVERY.readFailed : eligibility.note)} />}
       {uncertain && <Button type="button" variant="secondary" disabled={checking} onClick={checkStatus}>{checking ? "Memeriksa..." : "Periksa status pendaftaran"}</Button>}
-      <p className="font-body text-b3 text-neutral-800">Data dari My Profile dapat kamu ubah untuk pendaftaran ini. Perubahan di sini tidak mengubah profilmu.</p>
+      {!isSimpleEvent && <p className="font-body text-b3 text-neutral-800">Data dari My Profile dapat kamu ubah untuk pendaftaran ini. Perubahan di sini tidak mengubah profilmu.</p>}
       <fieldset disabled={busy || unavailable} className="flex min-w-0 flex-col gap-lg">
       <legend className="sr-only">Data pendaftaran event</legend>
-      <div className="grid min-w-0 gap-lg md:grid-cols-2">
-        <fieldset aria-invalid={Boolean(errors.sessionType)} className="flex flex-col gap-xs font-body text-b3 text-secondary-1000">
+      {!isTalkshow && <div className="grid min-w-0 gap-lg md:grid-cols-2">
+        <fieldset aria-invalid={Boolean(errors.sessionType)} className={`flex flex-col font-body text-b3 text-secondary-1000 ${isShortCourse ? "gap-md" : "gap-xs"}`}>
           <legend className="font-bold">Which session do you want to attend?</legend>
-          {(["seminar", "workshop"] as const).map(value => <label key={value} className="flex min-h-11 items-center gap-sm">
-            <input type="radio" value={value} aria-describedby={errors.sessionType ? `${id}-session-error` : undefined} {...register("sessionType")} />{value === "seminar" ? "Seminar" : "Workshop"}
-          </label>)}
+          <div className={isShortCourse ? "flex flex-col" : "contents"}>
+            {(isShortCourse ? [["day1", "Day 1 (22 January 2027)"], ["day2", "Day 2 (23 January 2027)"]] : [["seminar", "Seminar"], ["workshop", "Workshop"]]).map(([value, label]) => <label key={value} className={`flex items-center gap-sm ${isShortCourse ? "min-h-7" : "min-h-11"}`}>
+              <input type="radio" value={value} aria-describedby={errors.sessionType ? `${id}-session-error` : undefined} {...register("sessionType", { validate: value => !isShortCourse || value === "day1" || value === "day2" || "Pilih hari Short Course" })} />{label}
+            </label>)}
+          </div>
           {errors.sessionType && <InlineFieldError id={`${id}-session-error`} message={errors.sessionType.message ?? "Pilih sesi"} />}
         </fieldset>
-        {sessionType === "workshop" && <fieldset aria-invalid={Boolean(errors.speakerId)} className="flex flex-col gap-xs font-body text-b3 text-secondary-1000">
+        {!isShortCourse && sessionType === "workshop" && <fieldset aria-invalid={Boolean(errors.speakerId)} className="flex flex-col gap-xs font-body text-b3 text-secondary-1000">
           <legend className="font-bold">Speaker / session</legend>
           {event.speakers?.length ? event.speakers.map(speaker => <label key={speaker.id} className="flex min-h-11 items-center gap-sm">
             <input type="radio" value={speaker.id} aria-describedby={errors.speakerId ? `${id}-speaker-error` : undefined}
@@ -173,7 +187,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
           </label>) : <p>Informasi speaker belum tersedia.</p>}
           {errors.speakerId && <InlineFieldError id={`${id}-speaker-error`} message={errors.speakerId.message ?? "Pilih speaker"} />}
         </fieldset>}
-      </div>
+      </div>}
       <div className="grid min-w-0 gap-lg md:grid-cols-2">
         <Input id={`${id}-phone`} label="Phone Number (WhatsApp) *" type="tel" autoComplete="tel" variant="event" icon="mdi:phone" error={errors.phone?.message} required {...register("phone", { validate: value => Boolean(value.trim()) || "Nomor WhatsApp wajib diisi" })} />
         <Input id={`${id}-institution`} label="Institution / University *" autoComplete="organization" variant="event" icon="mdi:school" error={errors.institution?.message} required {...register("institution", { validate: value => Boolean(value.trim()) || "Institusi wajib diisi" })} />
@@ -181,7 +195,18 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
         <Input id={`${id}-line`} label="LINE ID (Optional)" variant="event" icon="mdi:chat" error={errors.lineId?.message} {...register("lineId")} />
       </div>
 
-      <div className="flex min-w-0 flex-col gap-sm">
+      {isSimpleEvent && <fieldset aria-invalid={Boolean(errors.discoverySource)} className="flex flex-col gap-sm font-body text-b3 text-secondary-1000">
+        <legend className="font-bold">How do you know about this event? *</legend>
+        <div className="flex w-fit max-w-full flex-col">
+          {discoverySources.map(([value, label]) => <label key={value} className="flex min-h-11 items-center gap-sm">
+            <input type="radio" value={value} className="size-4 accent-primary-600" aria-describedby={errors.discoverySource ? `${id}-source-error` : undefined}
+              {...register("discoverySource", { validate: source => Boolean(source) || "Pilih sumber informasi acara" })} />{label}
+          </label>)}
+        </div>
+        {errors.discoverySource && <InlineFieldError id={`${id}-source-error`} message={errors.discoverySource.message ?? "Pilih sumber informasi acara"} />}
+      </fieldset>}
+
+      {!isSimpleEvent && <div className="flex min-w-0 flex-col gap-sm">
         <label htmlFor={`${id}-cv`} className="font-body text-b3 font-bold text-secondary-1000">CV (Optional)</label>
         <p id={`${id}-cv-help`} className="font-body text-b3 text-neutral-800">PDF only, maks 500 KB. File dikirim saat formulir disubmit.</p>
         <input id={`${id}-cv`} name="cvFile" type="file" accept=".pdf,application/pdf" aria-invalid={Boolean(errors.cvFile)}
@@ -198,9 +223,9 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
           <p role="status" className="min-w-0 flex-1 basis-32 font-body text-b3 text-secondary-1000 [overflow-wrap:anywhere]">File dipilih: {cvFile.name}</p>
           <Button type="button" size="sm" variant="secondary" onClick={() => { setValue("cvFile", null, { shouldDirty: true }); clearErrors("cvFile"); }}>Hapus CV</Button>
         </div>}
-      </div>
+      </div>}
 
-      <div className="flex min-w-0 flex-col gap-sm">
+      {!isSimpleEvent && <div className="flex min-w-0 flex-col gap-sm">
         <label htmlFor={`${id}-payment`} className="font-body text-b3 font-bold text-secondary-1000">Payment proof (if required)</label>
         <p id={`${id}-payment-help`} className="font-body text-b3 text-neutral-800">JPG/PNG, maks 500 KB. Sertakan hanya jika diwajibkan oleh informasi resmi panitia. Informasi biaya belum tersedia di formulir ini.</p>
         <input id={`${id}-payment`} name="paymentProof" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
@@ -210,7 +235,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
         {errors.paymentProof && <InlineFieldError id={`${id}-payment-error`} message={errors.paymentProof.message ?? "File tidak valid"} />}
         {paymentProof && <div className="flex flex-wrap items-center gap-sm"><p role="status" className="font-body text-b3 text-secondary-1000">File dipilih: {paymentProof.name}</p>
           <Button type="button" size="sm" variant="secondary" onClick={() => { setValue("paymentProof", null, { shouldDirty: true }); clearErrors("paymentProof"); }}>Hapus bukti pembayaran</Button></div>}
-      </div>
+      </div>}
       <div>
         <label htmlFor={`${id}-consent`} className="flex min-h-11 items-start gap-sm font-body text-b3 text-neutral-800">
           <input id={`${id}-consent`} type="checkbox" required className="mt-xs size-4 shrink-0 accent-primary-600" aria-invalid={Boolean(errors.consentPdp)} aria-describedby={errors.consentPdp ? `${id}-consent-error` : undefined}

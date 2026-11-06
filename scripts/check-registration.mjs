@@ -31,10 +31,17 @@ const { talkshowContent } = load("../src/features/events/talkshowContent.ts");
 const { shortCourseContent } = load("../src/features/events/shortCourseContent.ts");
 const event = { id: "event-1", slug: "talkshow", name: "Fixture", deadline: "2027-02-01T00:00:00+07:00", isRegisteredByUser: false };
 const now = Date.parse("2027-01-01T00:00:00+07:00");
-for (const slug of ["talkshow", "short-course", "workshop", "exhibition"]) assert.equal(eligibility(slug, event, false, now).available, false);
-assert.equal(talkshowContent.registrationFormReady, false);
-assert.equal(shortCourseContent.registrationFormReady, false);
+assert.equal(talkshowContent.registrationFormReady, true);
+assert.equal(shortCourseContent.registrationFormReady, true);
+for (const slug of ["talkshow", "short-course", "workshop", "exhibition"]) assert.equal(eligibility(slug, event, false, now).available, true);
+const originalTalkshowReady = talkshowContent.registrationFormReady;
+const originalShortCourseReady = shortCourseContent.registrationFormReady;
+const originalShortCourseOpening = shortCourseContent.registrationOpensAt;
 try {
+  talkshowContent.registrationFormReady = false;
+  shortCourseContent.registrationFormReady = false;
+  assert.equal(eligibility("talkshow", event, false, now).available, false);
+  assert.equal(eligibility("short-course", event, false, now).available, false);
   talkshowContent.registrationFormReady = true;
   shortCourseContent.registrationFormReady = true;
   assert.equal(eligibility("talkshow", event, false, now).available, true);
@@ -47,17 +54,20 @@ try {
   assert.equal(eligibility("short-course", event, false, now).label, "Pendaftaran belum dibuka");
   assert.equal(eligibility("talkshow", event, false, now).available, true);
 } finally {
-  talkshowContent.registrationFormReady = false; shortCourseContent.registrationFormReady = false; shortCourseContent.registrationOpensAt = null;
+  talkshowContent.registrationFormReady = originalTalkshowReady;
+  shortCourseContent.registrationFormReady = originalShortCourseReady;
+  shortCourseContent.registrationOpensAt = originalShortCourseOpening;
 }
 
 const { registerEvent, RegistrationOutcomeUnknownError } = load("../src/services/eventService.ts");
 const originalFetch = globalThis.fetch;
-const input = { sessionType: "seminar", phone: "123", institution: "ITB", domicile: "Bandung" };
+const input = { sessionType: "seminar", phone: "123", institution: "ITB", domicile: "Bandung", discoverySource: "INSTAGRAM" };
 try {
   globalThis.fetch = async (url, options) => {
     assert.equal(url, "/api/events/a%2Fb/register");
     assert.equal(options.method, "POST");
     assert.equal(options.body.get("phone"), "123");
+    assert.equal(options.body.get("discoverySource"), "INSTAGRAM");
     assert.equal(options.body.has("consentPdp"), false);
     return Response.json({ success: true, data: { registrationId: "reg-fixture" } }, { status: 201 });
   };
