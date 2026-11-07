@@ -14,6 +14,7 @@ import { unwrapResponse } from "@/services/apiResponse";
 import { formatWibDate } from "@/utils/formatDate";
 import styles from "./AdminPanel.module.css";
 import { AdminSchedulesPanel } from "./AdminSchedulesPanel";
+import { AdminSubmissionSettingsPanel } from "./AdminSubmissionSettingsPanel";
 
 const control = "min-h-11 w-full rounded-xl border border-neutral-500 bg-neutral-100 px-md py-sm text-b3 text-secondary-1000 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800";
 const card = `${styles.card} rounded-3xl border border-secondary-200 bg-neutral-100 p-lg md:p-xl`;
@@ -30,6 +31,7 @@ export function AdminPanel() {
   const [status, setStatus] = useState("");
   const [competition, setCompetition] = useState("");
   const [search, setSearch] = useState("");
+  const [stageFilter, setStageFilter] = useState("");
   const [review, setReview] = useState<string | null>(null);
   const [exportCompetition, setExportCompetition] = useState("");
   const [exportEvent, setExportEvent] = useState("");
@@ -60,7 +62,7 @@ export function AdminPanel() {
   }
   const all = submissions.data ?? [];
   const competitions = Array.from(new Map(all.map(item => [item.competition_id, item.competition_name])).entries());
-  const filtered = all.filter(item => (!status || item.status === status) && (!competition || item.competition_id === competition) && `${item.team_name ?? ""} ${item.participant_name ?? ""} ${item.participant_email ?? ""} ${item.requirement_name}`.toLowerCase().includes(search.toLowerCase()));
+  const filtered = all.filter(item => (!status || item.status === status) && (!competition || item.competition_id === competition) && (!stageFilter || item.stage === stageFilter) && `${item.team_name ?? ""} ${item.participant_name ?? ""} ${item.participant_email ?? ""} ${item.requirement_name}`.toLowerCase().includes(search.toLowerCase()));
   const teamExportOptions = Array.from(new Map([
     ["business-case-competition", "Business Case Competition"],
     ["paper-poster-competition", "Paper & Poster Competition"],
@@ -101,15 +103,16 @@ export function AdminPanel() {
       </div>
       <Tabs.Root value={tab} onValueChange={value => { setTab(value); setNotice(null); }} className="flex min-w-0 flex-col gap-lg">
         <Tabs.List aria-label="Bagian admin" className={`${styles.tabs} grid grid-cols-2 gap-sm rounded-2xl bg-neutral-100 p-sm md:flex md:flex-wrap`}>
-          {[["submissions", "Review berkas"], ["registrations", "Pendaftar"], ["schedules", "Jadwal Deadline"], ["password", "Reset password"]].map(([value, label]) => <Tabs.Trigger key={value} value={value} className="min-h-11 rounded-xl px-md py-sm font-ui text-b3 font-semibold text-secondary-1000 hover:bg-tertiary-100 focus-visible:outline-2 focus-visible:outline-secondary-800 data-[state=active]:bg-primary-200">{label}</Tabs.Trigger>)}
+          {[["submissions", "Review berkas"], ["submissionSettings", "Setting Submisi & Final"], ["registrations", "Pendaftar"], ["schedules", "Jadwal Deadline"], ["password", "Reset password"]].map(([value, label]) => <Tabs.Trigger key={value} value={value} className="min-h-11 rounded-xl px-md py-sm font-ui text-b3 font-semibold text-secondary-1000 hover:bg-tertiary-100 focus-visible:outline-2 focus-visible:outline-secondary-800 data-[state=active]:bg-primary-200">{label}</Tabs.Trigger>)}
         </Tabs.List>
         {notice && <FormBanner message={notice.text} variant={notice.error ? "error" : "success"} />}
         <Tabs.Content value="submissions" className="flex flex-col gap-lg">
           <div className={card}>
             <div className="flex flex-wrap items-center justify-between gap-md"><div><h2 className="font-heading text-h4">Review berkas peserta</h2><p className="mt-sm text-b3 text-neutral-800">Periksa dokumen, beri keputusan, dan atur deadline requirement.</p></div><Button variant="ghost" size="sm" loading={submissions.isFetching} onClick={() => void submissions.refetch()}>Muat ulang</Button></div>
-            <div className="mt-lg grid gap-md md:grid-cols-3">
+            <div className="mt-lg grid gap-md md:grid-cols-4">
               <Input id="admin-search" label="Cari peserta atau berkas" value={search} onChange={event => setSearch(event.target.value)} placeholder="Nama, email, atau requirement" />
               <label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Kompetisi<select className={control} value={competition} onChange={event => setCompetition(event.target.value)}><option value="">Semua kompetisi</option>{competitions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
+              <label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Tahap<select className={control} value={stageFilter} onChange={event => setStageFilter(event.target.value)}><option value="">Semua tahap</option><option value="registration">Pendaftaran</option><option value="submission">Submission Hasil Karya</option><option value="final">Tahap Final</option></select></label>
               <label className="flex flex-col gap-sm text-b3 font-bold text-secondary-1000">Status<select className={control} value={status} onChange={event => setStatus(event.target.value)}><option value="">Semua status</option>{Object.entries(statuses).map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
             </div>
           </div>
@@ -118,7 +121,7 @@ export function AdminPanel() {
           {submissions.isSuccess && <p role="status" className="text-b3 text-neutral-800">{filtered.length} berkas ditampilkan</p>}
           {submissions.isSuccess && filtered.length === 0 && <div className={card}><h3 className="font-ui font-bold">Belum ada berkas yang sesuai</h3><p className="mt-sm text-b3 text-neutral-800">Berkas yang dikirim peserta akan muncul di sini. Coba ubah pencarian atau filter.</p></div>}
           {filtered.map(item => <article key={item.id} className={card}>
-            <div className="flex flex-wrap items-start justify-between gap-md"><div className="min-w-0"><p className="text-b3 text-secondary-800">{item.competition_name}</p><h3 className="mt-sm wrap-anywhere font-ui text-s4 font-bold">{item.requirement_name}</h3><p className="mt-sm wrap-anywhere text-b3 text-neutral-800">{item.team_name || item.participant_name || "Peserta"}{item.participant_email && ` · ${item.participant_email}`}</p></div><span className={`rounded-full px-md py-sm text-b3 font-semibold ${item.status === "accepted" ? "bg-success-100 text-success-1000" : item.status === "rejected" ? "bg-error-100 text-error-1000" : "bg-secondary-100 text-secondary-1000"}`}>{statuses[item.status]}</span></div>
+            <div className="flex flex-wrap items-start justify-between gap-md"><div className="min-w-0"><div className="flex flex-wrap items-center gap-sm"><p className="text-b3 text-secondary-800">{item.competition_name}</p><span className={`rounded-full px-sm py-xs text-b4 font-bold ${item.stage === "final" ? "bg-secondary-900 text-neutral-100" : item.stage === "submission" ? "bg-primary-200 text-secondary-1000" : "bg-neutral-200 text-neutral-800"}`}>{item.stage === "final" ? "Tahap Final" : item.stage === "submission" ? "Hasil Karya" : "Pendaftaran"}</span></div><h3 className="mt-sm wrap-anywhere font-ui text-s4 font-bold">{item.requirement_name}</h3><p className="mt-sm wrap-anywhere text-b3 text-neutral-800">{item.team_name || item.participant_name || "Peserta"}{item.participant_email && ` · ${item.participant_email}`}</p></div><span className={`rounded-full px-md py-sm text-b3 font-semibold ${item.status === "accepted" ? "bg-success-100 text-success-1000" : item.status === "rejected" ? "bg-error-100 text-error-1000" : "bg-secondary-100 text-secondary-1000"}`}>{statuses[item.status]}</span></div>
             <p className="mt-md text-b3 text-neutral-800">Deadline: {date(item.due_at)} (WIB)</p>
             {item.rejection_reason && <p className="mt-sm text-b3 text-error-1000">Alasan penolakan: {item.rejection_reason}</p>}
             <div className="mt-lg flex flex-wrap gap-sm">
@@ -136,6 +139,9 @@ export function AdminPanel() {
               <p className="text-b3 text-neutral-800">Perubahan berlaku untuk semua peserta dengan requirement ini.</p><Input id={`deadline-${item.id}`} name="dueAt" label="Deadline baru (WIB)" type="datetime-local" required /><Button className="self-start" type="submit" variant="secondary" loading={mutation.isPending}>Simpan deadline</Button>
             </form></details>
           </article>)}
+        </Tabs.Content>
+        <Tabs.Content value="submissionSettings">
+          <AdminSubmissionSettingsPanel />
         </Tabs.Content>
         <Tabs.Content value="registrations" className={card}>
           <div className="flex flex-wrap items-start justify-between gap-md"><div><h2 className="font-heading text-h4">Data pendaftar</h2><p className="mt-sm text-b3 text-neutral-800">Pendaftaran kompetisi dan kegiatan IOE 2027.</p></div><Button variant="ghost" size="sm" loading={registrations.isFetching} onClick={() => void registrations.refetch()}>Muat ulang</Button></div>

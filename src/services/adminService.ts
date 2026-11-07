@@ -16,10 +16,19 @@ export interface AdminSchedules {
 
 export interface AdminSubmission {
   id: string; status: "pending" | "accepted" | "rejected";
-  requirement_id: string; requirement_name: string; due_at: string;
+  requirement_id: string; requirement_name: string; requirement_type: "group" | "individual"; stage: "registration" | "submission" | "final"; due_at: string;
   competition_id: string; competition_name: string;
   team_name: string | null; participant_name: string | null; participant_email: string | null;
   fileUrl: string | null; file_name: string | null; rejection_reason: string | null;
+}
+export interface AdminRequirement {
+  id: string; competitionId: string; name: string; type: "group" | "individual";
+  stage: "registration" | "submission" | "final"; dueAt: string; instructions: string;
+  acceptedFormats: string[]; sortOrder: number;
+}
+export interface AdminQualification {
+  teamId: string; teamName: string; teamCode: string; leaderName: string;
+  status: "pendaftar" | "peserta" | "finalis" | "pending" | "passed" | "not_passed"; updatedAt: string | null;
 }
 export interface AdminRegistrations {
   teams: { team_id: string; team_name: string; competition_name: string; batch_name: string; leader_name: string; leader_email: string; created_at: string }[];

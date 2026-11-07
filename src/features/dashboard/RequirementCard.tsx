@@ -94,6 +94,9 @@ export function RequirementCard({ item, competitionId }: { item: RequirementItem
         <Accordion.Trigger className="group flex w-full flex-wrap items-center justify-between gap-3 text-left focus-visible:outline-2 focus-visible:outline-primary-600">
           <span className="font-ui text-b2 font-bold text-secondary-1000">{item.name}</span>
           <span className="flex flex-wrap items-center gap-2 text-b4">
+            <span className={`rounded-lg px-3 py-2 font-bold ${item.stage === 'final' ? 'bg-secondary-900 text-neutral-100' : item.stage === 'submission' ? 'bg-primary-200 text-secondary-1000' : 'bg-neutral-200 text-neutral-800'}`}>
+              {item.stage === 'final' ? 'Tahap Final' : item.stage === 'submission' ? 'Hasil Karya' : 'Pendaftaran'}
+            </span>
             <span className="rounded-lg bg-primary-100 px-3 py-2 text-primary-1000">{item.type === 'group' ? 'Group Task' : 'Individual Task'}</span>
             <span className={`rounded-lg px-3 py-2 ${statusStyle}`}>{statusLabel}</span>
             <Icon icon="mdi:chevron-down" className="size-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -130,7 +133,7 @@ export function RequirementCard({ item, competitionId }: { item: RequirementItem
               <Icon icon="mdi:cloud-upload-outline" className="size-12 text-primary-600" />
               <button type="button" disabled={disabled} onClick={() => input.current?.click()} className="text-b3 text-secondary-1000 disabled:cursor-default">Tarik atau pilih file — bukti akan langsung terupload otomatis</button>
             </>}
-            <p className="text-b4 text-neutral-700">{item.acceptedFormats.join(', ').toUpperCase()}, maks 500KB</p>
+            <p className="text-b4 text-neutral-700">{item.acceptedFormats.join(', ').toUpperCase()}, maks 5MB</p>
             {errors.file && <p id={`${item.requirementId}-error`} role="alert" className="text-b3 text-error-1000">{errors.file.message}</p>}
           </div>
           {toast && <><Toast status="error" title={toast} onDismiss={() => setToast(null)} /><Button size="sm" variant="ghost" disabled={disabled} onClick={retry}>Coba lagi</Button></>}

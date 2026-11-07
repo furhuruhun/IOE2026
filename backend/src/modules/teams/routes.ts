@@ -81,8 +81,8 @@ teamRoutes.post("/:id/team", requireAuth, async (c) => {
   // 4. Insert team and leader member
   await c.env.DB.batch([
     c.env.DB.prepare(
-      `INSERT INTO teams (id, competition_id, batch_id, name, code, visibility, leader_user_id, created_at)
-       VALUES (?1, ?2, ?3, ?4, ?5, 'private', ?6, ?7)`
+      `INSERT INTO teams (id, competition_id, batch_id, name, code, visibility, leader_user_id, created_at, status)
+       VALUES (?1, ?2, ?3, ?4, ?5, 'private', ?6, ?7, 'pendaftar')`
     ).bind(
       teamId,
       comp.id,

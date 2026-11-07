@@ -26,7 +26,9 @@ export async function eventProxy(slug?: string) {
   if (process.env.NODE_ENV === "development" && process.env.IOE_DEV_EVENTS_SOURCE !== "real") return demoResponse(slug);
 
   const token = await getTokenFromCookies();
-  const headers = { "Cache-Control": "private, no-store" };
+  const headers = token
+    ? { "Cache-Control": "private, no-store" }
+    : { "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30" };
   if (process.env.WORKERS_API_URL) {
     try {
       const { status, body } = await fetchWorkers<ApiResponse<EventSummary[]>>(slug === undefined ? "/events" : `/events/${encodeURIComponent(slug)}`, { token, cache: "no-store" });

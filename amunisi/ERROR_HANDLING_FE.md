@@ -74,11 +74,13 @@ guidance below. See PHASE6_REGISTRATION.md for verification and limitations.
 | `TEAM_FULL` | 400 | `POST /team/join`, `POST /team/join-public` | **Inline (form-level banner)** di modal Join Team | Modal tetap terbuka, tampilkan CTA alternatif ("cari tim lain" / "buat tim baru") |
 | `TEAM_NOT_PUBLIC` | 400 | `POST /team/join-public` | **Toast** | Kemungkinan besar karena list tim public sudah stale — trigger `refetch()` list tim public setelah toast |
 | `REGISTRATION_CLOSED` | 400 | `POST /events/:id/register`, `POST /competitions/:id/team` | **Inline (form-level banner)** | Sembunyikan/disable tombol submit setelah error ini muncul, supaya user tidak retry percuma |
+| `REGISTRATION_NOT_OPEN` | 400 | `POST /events/:id/register`, `POST /competitions/:id/team` | **Inline (form-level banner)** | Pendaftaran belum dibuka |
 | `QUOTA_FULL` | 400 | `POST /events/:id/register` | **Inline (form-level banner)** | Sama seperti `REGISTRATION_CLOSED` — disable submit setelah muncul |
 | `FILE_TOO_LARGE` | 400 | Semua endpoint upload file | **Inline**, di komponen upload spesifik (bukan form-level) | Tampil tepat di area drag-and-drop, file yang gagal upload tidak masuk state, user bisa langsung coba file lain |
 | `INVALID_FILE_FORMAT` | 400 | Semua endpoint upload file | **Inline**, di komponen upload spesifik | Sama seperti `FILE_TOO_LARGE`; tampilkan juga format yang diterima di pesan (ambil dari `acceptedFormats` response, lihat API_CONTRACT.md) |
 | `REQUIREMENT_LOCKED` | 400 | `POST /competitions/:id/requirements/:id/upload` | **Toast** | Komponen upload seharusnya sudah disabled kalau status `accepted` — toast ini adalah safety net untuk stale state, ikutkan `refetch()` |
 | `DEADLINE_PASSED` | 400 | `POST /competitions/:id/requirements/:id/upload` | **Inline**, di komponen upload spesifik | Setelah error ini muncul, disable komponen upload untuk requirement tsb (mirror behavior BE) |
+| `NOT_QUALIFIED` | 403 | `POST /competitions/:id/requirements/:id/upload` | **Toast** | Tim belum dinyatakan lolos ke tahap final |
 | `NOT_FOUND` | 404 | Semua endpoint dengan `:id`/`:slug` yang tidak ditemukan | **Redirect + pesan** ke halaman index terdekat (`/competitions`, `/events`, dst — tergantung konteks) atau tampilkan halaman 404 kalau route-level (bukan dari aksi form) | Bedakan: 404 dari navigasi (misal slug salah di URL) → tampilkan halaman 404 penuh. 404 dari aksi (misal submit ke resource yang baru dihapus) → toast + redirect |
 | `SERVER_ERROR` | 500 | Semua endpoint | **Toast** dengan tombol "Coba lagi" | Ini juga fallback default untuk error code yang tidak dikenali FE |
 
@@ -138,6 +140,7 @@ export const ERROR_MESSAGES: Record<string, {
   INVALID_FILE_FORMAT: { message: 'Format file tidak sesuai', treatment: 'inline-field' },
   REQUIREMENT_LOCKED: { message: 'Dokumen ini sudah disetujui dan tidak bisa diubah lagi', treatment: 'toast' },
   DEADLINE_PASSED: { message: 'Batas waktu sudah berakhir. File yang sudah kamu kirim tetap tersimpan, tapi tidak bisa diunggah ulang', treatment: 'inline-field' },
+  NOT_QUALIFIED: { message: 'Tim kamu belum lolos ke tahap final', treatment: 'toast' },
   NOT_FOUND: { message: 'Data tidak ditemukan', treatment: 'redirect-message' },
   SERVER_ERROR: { message: 'Terjadi kesalahan, coba lagi nanti', treatment: 'toast' },
 };

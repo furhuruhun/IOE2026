@@ -1,15 +1,26 @@
 import { AppError } from "./errors";
 
-export const MAX_FILE_BYTES = 500 * 1024; // 512,000 bytes
+export const MAX_FILE_BYTES = 500 * 1024;
 
-const MIME_MAP: Record<string, string> = {
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  png: "image/png",
-  pdf: "application/pdf",
+const MIME_MAP: Record<string, string[]> = {
+  jpg: ["image/jpeg"],
+  jpeg: ["image/jpeg"],
+  png: ["image/png"],
+  pdf: ["application/pdf"],
+  pptx: [
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/octet-stream",
+  ],
+  zip: [
+    "application/zip",
+    "application/x-zip-compressed",
+    "application/x-zip",
+    "multipart/x-zip",
+    "application/octet-stream",
+  ],
 };
 
-export function sniffMagicBytes(buf: Uint8Array): "jpg" | "png" | "pdf" | null {
+export function sniffMagicBytes(buf: Uint8Array): "jpg" | "png" | "pdf" | "zip" | null {
   if (buf.length >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
     return "jpg";
   }
@@ -31,6 +42,15 @@ export function sniffMagicBytes(buf: Uint8Array): "jpg" | "png" | "pdf" | null {
   ) {
     return "pdf";
   }
+  if (
+    buf.length >= 4 &&
+    buf[0] === 0x50 &&
+    buf[1] === 0x4b &&
+    (buf[2] === 0x03 || buf[2] === 0x05 || buf[2] === 0x07) &&
+    (buf[3] === 0x04 || buf[3] === 0x06 || buf[3] === 0x08)
+  ) {
+    return "zip";
+  }
   return null;
 }
 
@@ -49,8 +69,8 @@ export async function validateUploadedFile(
     throw new AppError("INVALID_FILE_FORMAT", 400);
   }
 
-  const expectedMime = MIME_MAP[normalizedExt];
-  if (!expectedMime || (file.type && file.type !== expectedMime)) {
+  const expectedMimes = MIME_MAP[normalizedExt];
+  if (!expectedMimes || (file.type && !expectedMimes.includes(file.type))) {
     throw new AppError("INVALID_FILE_FORMAT", 400);
   }
 
@@ -58,13 +78,25 @@ export async function validateUploadedFile(
   const bytes = new Uint8Array(buffer.slice(0, 8));
   const sniffed = sniffMagicBytes(bytes);
 
-  if (!sniffed || sniffed !== normalizedExt) {
+  if (!sniffed || (normalizedExt === "pptx" ? sniffed !== "zip" : sniffed !== normalizedExt)) {
     throw new AppError("INVALID_FILE_FORMAT", 400);
+  }
+
+  if (normalizedExt === "pptx") {
+    const sampleBytes = new Uint8Array(buffer.slice(0, Math.min(buffer.byteLength, 65536)));
+    const sampleText = new TextDecoder().decode(sampleBytes);
+    if (!sampleText.includes("ppt/") && !sampleText.includes("[Content_Types].xml")) {
+      const endBytes = new Uint8Array(buffer.slice(Math.max(0, buffer.byteLength - 65536)));
+      const endText = new TextDecoder().decode(endBytes);
+      if (!endText.includes("ppt/")) {
+        throw new AppError("INVALID_FILE_FORMAT", 400);
+      }
+    }
   }
 
   return {
     ext: normalizedExt,
-    mime: expectedMime,
+    mime: expectedMimes[0],
     buffer,
   };
 }

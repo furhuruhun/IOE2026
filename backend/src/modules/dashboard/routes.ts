@@ -43,9 +43,13 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
       // Check completeness:
       // total templates for comp
       const totalTemplates = await c.env.DB.prepare(
-        "SELECT COUNT(*) as cnt FROM requirement_templates WHERE competition_id = ?1"
+        `SELECT COUNT(*) as cnt
+         FROM requirement_templates t
+         LEFT JOIN competition_qualifications q ON q.competition_id = t.competition_id AND q.team_id = ?2
+         WHERE t.competition_id = ?1
+           AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))`
       )
-        .bind(comp.id)
+        .bind(comp.id, comp.team_id)
         .first<{ cnt: number }>();
 
       // count accepted group submissions for this team + accepted individual submissions for this user
@@ -53,7 +57,9 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
         `SELECT COUNT(*) as cnt
          FROM requirement_submissions s
          JOIN requirement_templates t ON t.id = s.template_id
+         LEFT JOIN competition_qualifications q ON q.competition_id = t.competition_id AND q.team_id = ?2
          WHERE t.competition_id = ?1
+           AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))
            AND s.status = 'accepted'
            AND (
              (t.type = 'group' AND s.team_id = ?2) OR
@@ -195,6 +201,7 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
             c.name as competition_name,
             t.name,
             t.type,
+            t.stage,
             COALESCE(s.status, 'pending') as status,
             t.due_at as due_date,
             t.accepted_formats
@@ -206,7 +213,10 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
          (t.type = 'group' AND s.team_id = m.team_id) OR
          (t.type = 'individual' AND s.user_id = m.user_id)
        )
+     LEFT JOIN competition_qualifications q
+       ON q.competition_id = m.competition_id AND q.team_id = m.team_id
      WHERE m.user_id = ?1
+       AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))
      ORDER BY t.due_at ASC, t.sort_order ASC`
   )
     .bind(authUser.id)
@@ -216,6 +226,7 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
       competition_name: string;
       name: string;
       type: "group" | "individual";
+      stage: "registration" | "final";
       status: "pending" | "accepted" | "rejected";
       due_date: string;
       accepted_formats: string;
@@ -229,6 +240,7 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
       competitionName: r.competition_name,
       name: r.name,
       type: r.type,
+      stage: r.stage,
       status: r.status,
       dueDate: toWib(r.due_date),
       acceptedFormats: JSON.parse(r.accepted_formats),

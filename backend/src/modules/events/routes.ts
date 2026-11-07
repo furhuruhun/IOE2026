@@ -7,8 +7,11 @@ import { resolveEvent } from "../../lib/resolve";
 import { AppError } from "../../lib/errors";
 import { newId } from "../../lib/ids";
 import { validateUploadedFile } from "../../lib/files";
+import { publicReadCache } from "../../middleware/publicCache";
 
 export const eventRoutes = new Hono<AppContext>();
+
+eventRoutes.use("*", publicReadCache);
 
 async function getRegisteredSessions(db: D1Database, eventId: string, userId?: string): Promise<string[]> {
   if (!userId) return [];

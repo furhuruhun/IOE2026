@@ -16,7 +16,8 @@ export interface Team {
   visibility: "private" | "public";
   isLeader: boolean;
   batch?: string;
-  status?: "verified" | "pending";
+  status?: "pendaftar" | "peserta" | "finalis" | "verified" | "pending";
+  qualificationStatus?: "pending" | "passed" | "not_passed" | "pendaftar" | "peserta" | "finalis";
   leader?: { id: string; name: string };
   members?: TeamMember[];
 }

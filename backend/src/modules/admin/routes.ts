@@ -45,6 +45,20 @@ const registrationWindowSchema = z.object({
   closesAt: dateInput.optional(),
 }).refine((value) => value.opensAt !== undefined || value.closesAt !== undefined, "Minimal satu tanggal wajib diisi");
 
+const requirementSchema = z.object({
+  name: z.string().trim().min(1, "Nama submission wajib diisi"),
+  type: z.enum(["group", "individual"]),
+  stage: z.enum(["registration", "submission", "final"]),
+  dueAt: dateInput,
+  instructions: z.string().trim().default(""),
+  acceptedFormats: z.array(z.enum(["jpg", "png", "pdf", "pptx", "zip"])).min(1, "Pilih minimal satu format"),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+const qualificationSchema = z.object({
+  status: z.enum(["pendaftar", "peserta", "finalis", "pending", "passed", "not_passed"]),
+});
+
 const timelineUpdateSchema = z.object({
   label: z.string().trim().min(1).optional(),
   occursAt: dateInput.optional(),
@@ -76,6 +90,7 @@ interface AdminSubmissionRow {
   requirement_id: string;
   requirement_name: string;
   requirement_type: string;
+  stage: "registration" | "submission" | "final";
   due_at: string;
   competition_id: string;
   competition_name: string;
@@ -112,7 +127,7 @@ adminRoutes.get("/submissions", async (c) => {
     `SELECT s.id, s.status, s.file_key, s.file_name, s.file_size, s.file_mime,
             s.rejection_reason, s.submitted_at, s.reviewed_at,
             rt.id AS requirement_id, rt.name AS requirement_name, rt.type AS requirement_type,
-            rt.due_at, c.id AS competition_id, c.name AS competition_name,
+            rt.stage, rt.due_at, c.id AS competition_id, c.name AS competition_name,
             s.team_id, tm.name AS team_name, tm.code AS team_code,
             u.id AS user_id, u.name AS participant_name, u.email AS participant_email
      FROM requirement_submissions s
@@ -138,6 +153,122 @@ adminRoutes.get("/submissions", async (c) => {
   );
 
   return ok(c, submissions);
+});
+
+// GET /admin/competitions/:competitionId/requirements
+adminRoutes.get("/competitions/:competitionId/requirements", async (c) => {
+  const competitionId = c.req.param("competitionId");
+  const rows = await c.env.DB.prepare(
+    `SELECT id, competition_id AS competitionId, name, type, stage, due_at AS dueAt,
+            instructions, accepted_formats AS acceptedFormats, sort_order AS sortOrder
+     FROM requirement_templates WHERE competition_id = ?1 ORDER BY stage, sort_order, id`
+  ).bind(competitionId).all<{
+    id: string; competitionId: string; name: string; type: "group" | "individual";
+    stage: "registration" | "submission" | "final"; dueAt: string; instructions: string;
+    acceptedFormats: string; sortOrder: number;
+  }>();
+  return ok(c, rows.results.map((row) => ({
+    ...row,
+    dueAt: toWib(row.dueAt),
+    acceptedFormats: JSON.parse(row.acceptedFormats),
+  })));
+});
+
+// POST /admin/competitions/:competitionId/requirements
+adminRoutes.post("/competitions/:competitionId/requirements", async (c) => {
+  const competitionId = c.req.param("competitionId");
+  const body = parseBody(requirementSchema, await c.req.json());
+  const competition = await c.env.DB.prepare("SELECT id FROM competitions WHERE id = ?1 LIMIT 1").bind(competitionId).first<{ id: string }>();
+  if (!competition) throw new AppError("NOT_FOUND", 404, "Kompetisi tidak ditemukan");
+  const id = newId("req");
+  const dueAt = toWib(body.dueAt);
+  await c.env.DB.prepare(
+    `INSERT INTO requirement_templates
+      (id, competition_id, name, type, stage, due_at, instructions, accepted_formats, sort_order)
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)`
+  ).bind(id, competitionId, body.name, body.type, body.stage, dueAt, body.instructions, JSON.stringify(body.acceptedFormats), body.sortOrder).run();
+  return created(c, { requirementId: id, competitionId, ...body, dueAt });
+});
+
+// PATCH /admin/requirements/:requirementId
+adminRoutes.patch("/requirements/:requirementId", async (c) => {
+  const requirementId = c.req.param("requirementId");
+  const body = parseBody(requirementSchema.partial(), await c.req.json());
+  const existing = await c.env.DB.prepare(
+    "SELECT id, name, type, stage, due_at, instructions, accepted_formats, sort_order FROM requirement_templates WHERE id = ?1 LIMIT 1"
+  ).bind(requirementId).first<{ id: string; name: string; type: "group" | "individual"; stage: "registration" | "submission" | "final"; due_at: string; instructions: string; accepted_formats: string; sort_order: number }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Submission tidak ditemukan");
+  const values = {
+    name: body.name ?? existing.name,
+    type: body.type ?? existing.type,
+    stage: body.stage ?? existing.stage,
+    dueAt: toWib(body.dueAt ?? existing.due_at),
+    instructions: body.instructions ?? existing.instructions,
+    acceptedFormats: body.acceptedFormats ?? JSON.parse(existing.accepted_formats),
+    sortOrder: body.sortOrder ?? existing.sort_order,
+  };
+  await c.env.DB.prepare(
+    `UPDATE requirement_templates SET name = ?1, type = ?2, stage = ?3, due_at = ?4,
+      instructions = ?5, accepted_formats = ?6, sort_order = ?7 WHERE id = ?8`
+  ).bind(values.name, values.type, values.stage, values.dueAt, values.instructions, JSON.stringify(values.acceptedFormats), values.sortOrder, requirementId).run();
+  return ok(c, { requirementId, ...values });
+});
+
+// DELETE /admin/requirements/:requirementId
+adminRoutes.delete("/requirements/:requirementId", async (c) => {
+  const requirementId = c.req.param("requirementId");
+  const existing = await c.env.DB.prepare(
+    "SELECT id FROM requirement_templates WHERE id = ?1 LIMIT 1"
+  ).bind(requirementId).first<{ id: string }>();
+  if (!existing) throw new AppError("NOT_FOUND", 404, "Submission tidak ditemukan");
+
+  await c.env.DB.prepare("DELETE FROM requirement_templates WHERE id = ?1").bind(requirementId).run();
+  return ok(c, { success: true, message: "Submission berhasil dihapus" });
+});
+
+// GET /admin/competitions/:competitionId/qualifications
+adminRoutes.get("/competitions/:competitionId/qualifications", async (c) => {
+  const competitionId = c.req.param("competitionId");
+  const rows = await c.env.DB.prepare(
+    `SELECT t.id AS teamId, t.name AS teamName, t.code AS teamCode,
+            u.name AS leaderName,
+            COALESCE(t.status, CASE WHEN q.status = 'passed' THEN 'finalis' ELSE 'pendaftar' END) AS status,
+            q.updated_at AS updatedAt
+     FROM teams t JOIN users u ON u.id = t.leader_user_id
+     LEFT JOIN competition_qualifications q ON q.team_id = t.id AND q.competition_id = t.competition_id
+     WHERE t.competition_id = ?1 ORDER BY t.created_at ASC`
+  ).bind(competitionId).all();
+  return ok(c, rows.results);
+});
+
+// PATCH /admin/competitions/:competitionId/qualifications/:teamId
+adminRoutes.patch("/competitions/:competitionId/qualifications/:teamId", async (c) => {
+  const competitionId = c.req.param("competitionId");
+  const teamId = c.req.param("teamId");
+  const body = parseBody(qualificationSchema, await c.req.json());
+  const authUser = c.get("user")!;
+  const team = await c.env.DB.prepare("SELECT id FROM teams WHERE id = ?1 AND competition_id = ?2 LIMIT 1").bind(teamId, competitionId).first<{ id: string }>();
+  if (!team) throw new AppError("NOT_FOUND", 404, "Tim tidak ditemukan");
+  const updatedAt = nowIsoWib();
+  const rawStatus = body.status;
+  const mappedStatus = (rawStatus === "passed" || rawStatus === "finalis")
+    ? "finalis"
+    : rawStatus === "peserta"
+    ? "peserta"
+    : "pendaftar";
+
+
+  await c.env.DB.prepare(
+    `INSERT INTO competition_qualifications (competition_id, team_id, status, updated_by, updated_at)
+     VALUES (?1, ?2, ?3, ?4, ?5)
+     ON CONFLICT(competition_id, team_id) DO UPDATE SET status = excluded.status, updated_by = excluded.updated_by, updated_at = excluded.updated_at`
+  ).bind(competitionId, teamId, mappedStatus === "finalis" ? "passed" : "pending", authUser.id, updatedAt).run();
+
+
+  try {
+    await c.env.DB.prepare("UPDATE teams SET status = ?1 WHERE id = ?2 AND competition_id = ?3").bind(mappedStatus, teamId, competitionId).run();
+  } catch {}
+  return ok(c, { competitionId, teamId, status: mappedStatus, updatedAt });
 });
 
 // PATCH /admin/requirements/:requirementId/deadline

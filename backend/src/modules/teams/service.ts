@@ -1,4 +1,4 @@
-import { AppError } from "../../lib/errors";
+export type TeamStatus = "pendaftar" | "peserta" | "finalis";
 
 export interface TeamMemberDto {
   id: string;
@@ -11,7 +11,7 @@ export interface TeamDto {
   teamName: string;
   teamCode: string;
   batch: string;
-  status: "verified" | "pending";
+  status: TeamStatus;
   visibility: "private" | "public";
   isLeader: boolean;
   leader: { id: string; name: string };
@@ -22,65 +22,30 @@ export async function computeTeamStatus(
   db: D1Database,
   competitionId: string,
   teamId: string
-): Promise<"verified" | "pending"> {
-  // Count group templates and accepted group submissions
-  const groupStats = await db
-    .prepare(
-      `SELECT
-         COUNT(t.id) as total_group_templates,
-         COUNT(s.id) as accepted_group_submissions
-       FROM requirement_templates t
-       LEFT JOIN requirement_submissions s
-         ON s.template_id = t.id AND s.team_id = ?1 AND s.status = 'accepted'
-       WHERE t.competition_id = ?2 AND t.type = 'group'`
-    )
-    .bind(teamId, competitionId)
-    .first<{ total_group_templates: number; accepted_group_submissions: number }>();
-
-  const totalGroup = groupStats?.total_group_templates ?? 0;
-  const acceptedGroup = groupStats?.accepted_group_submissions ?? 0;
-
-  if (totalGroup > 0 && acceptedGroup < totalGroup) {
-    return "pending";
-  }
-
-  // Count individual templates
-  const indTemplates = await db
-    .prepare(
-      `SELECT COUNT(id) as cnt FROM requirement_templates
-       WHERE competition_id = ?1 AND type = 'individual'`
-    )
-    .bind(competitionId)
-    .first<{ cnt: number }>();
-
-  const totalIndTemplates = indTemplates?.cnt ?? 0;
-
-  if (totalIndTemplates > 0) {
-    // Check if every member has accepted submissions for all individual templates
-    const members = await db
-      .prepare("SELECT user_id FROM team_members WHERE team_id = ?1")
+): Promise<TeamStatus> {
+  // 1. Check status in teams table
+  try {
+    const row = await db
+      .prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1")
       .bind(teamId)
-      .all<{ user_id: string }>();
+      .first<{ status?: string }>();
+    if (row?.status === "finalis") return "finalis";
+    if (row?.status === "peserta") return "peserta";
+    if (row?.status === "pendaftar") return "pendaftar";
+  } catch {}
 
-    for (const m of members.results) {
-      const acceptedCount = await db
-        .prepare(
-          `SELECT COUNT(s.id) as cnt
-           FROM requirement_templates t
-           JOIN requirement_submissions s
-             ON s.template_id = t.id AND s.user_id = ?1 AND s.status = 'accepted'
-           WHERE t.competition_id = ?2 AND t.type = 'individual'`
-        )
-        .bind(m.user_id, competitionId)
-        .first<{ cnt: number }>();
+  // 2. Check qualification table fallback
+  try {
+    const qual = await db
+      .prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1")
+      .bind(competitionId, teamId)
+      .first<{ status?: string }>();
+    if (qual?.status === "passed" || qual?.status === "finalis") return "finalis";
+    if (qual?.status === "peserta") return "peserta";
+  } catch {}
 
-      if ((acceptedCount?.cnt ?? 0) < totalIndTemplates) {
-        return "pending";
-      }
-    }
-  }
-
-  return "verified";
+  // Default is always pendaftar
+  return "pendaftar";
 }
 
 export async function loadTeamForUser(

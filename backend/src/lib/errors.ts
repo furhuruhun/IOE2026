@@ -18,7 +18,8 @@ export type ErrorCode =
   | "NOT_FOUND"
   | "SERVER_ERROR"
   | "ALREADY_IN_TEAM"
-  | "ALREADY_REGISTERED";
+  | "ALREADY_REGISTERED"
+  | "NOT_QUALIFIED";
 
 export interface ErrorMeta {
   status: number;
@@ -106,6 +107,10 @@ export const ERROR_CATALOG: Record<ErrorCode, ErrorMeta> = {
   ALREADY_REGISTERED: {
     status: 400,
     message: "Kamu sudah terdaftar di event ini",
+  },
+  NOT_QUALIFIED: {
+    status: 403,
+    message: "Tim kamu belum lolos ke tahap final",
   },
 };
 

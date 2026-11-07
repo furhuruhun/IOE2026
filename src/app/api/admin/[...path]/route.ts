@@ -7,10 +7,16 @@ async function forward(request: Request, context: { params: Promise<{ path: stri
   if (!token) return fail("UNAUTHORIZED", 401);
   const { path } = await context.params;
   const resource = path.join("/");
-  const allowed = request.method === "GET" ? /^(submissions|registrations|registrations\/export|schedules)$/
-    : request.method === "POST" ? /^(announcements|users\/password)$/
-    : /^((submissions\/[^/]+)|(requirements\/[^/]+\/deadline)|(competition-batches\/[^/]+\/registration-window)|(events\/[^/]+\/registration-window)|(competitions\/[^/]+\/timeline\/[^/]+))$/;
-  if (!allowed.test(resource)) return fail("NOT_FOUND", 404);
+  const allowed = request.method === "GET"
+    ? /^(submissions|registrations|registrations\/export|schedules|competitions\/[^/]+\/requirements|competitions\/[^/]+\/qualifications)$/
+    : request.method === "POST"
+    ? /^(announcements|users\/password|competitions\/[^/]+\/requirements)$/
+    : request.method === "PATCH"
+    ? /^((submissions\/[^/]+)|(requirements\/[^/]+\/deadline)|(requirements\/[^/]+)|(competition-batches\/[^/]+\/registration-window)|(events\/[^/]+\/registration-window)|(competitions\/[^/]+\/timeline\/[^/]+)|(competitions\/[^/]+\/qualifications\/[^/]+))$/
+    : request.method === "DELETE"
+    ? /^(requirements\/[^/]+)$/
+    : false;
+  if (!allowed || !allowed.test(resource)) return fail("NOT_FOUND", 404);
   const base = process.env.WORKERS_API_URL;
   if (!base) return fail("SERVER_ERROR", 503);
   if (request.method !== "GET") {
@@ -21,7 +27,7 @@ async function forward(request: Request, context: { params: Promise<{ path: stri
     const upstream = await fetch(`${base}/admin/${path.map(encodeURIComponent).join("/")}${new URL(request.url).search}`, {
       method: request.method,
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-      body: request.method === "GET" ? undefined : await request.text(),
+      body: request.method === "GET" || request.method === "DELETE" ? undefined : await request.text(),
       cache: "no-store",
     });
     const headers = new Headers({ "Cache-Control": "no-store" });
@@ -38,3 +44,4 @@ async function forward(request: Request, context: { params: Promise<{ path: stri
 export const GET = forward;
 export const POST = forward;
 export const PATCH = forward;
+export const DELETE = forward;

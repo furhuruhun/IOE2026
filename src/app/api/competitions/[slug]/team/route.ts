@@ -38,6 +38,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
         token,
         body: { teamName },
       });
+      console.error("[DEBUG_CREATE_TEAM_ERROR]", { id, status, body });
       const response = NextResponse.json(body, { status });
       if (status === 401) response.cookies.set(COOKIE_NAME, '', CLEAR_AUTH_COOKIE_OPTIONS);
       return response;

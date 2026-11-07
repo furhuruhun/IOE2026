@@ -4,6 +4,7 @@ export interface RequirementItem {
   requirementId: string;
   name: string;
   type: 'group' | 'individual';
+  stage: 'registration' | 'submission' | 'final';
   status: 'pending' | 'accepted' | 'rejected';
   dueDate: string;
   instructions: string;

@@ -15,7 +15,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   if (process.env.WORKERS_API_URL) {
     try {
       const { status, body } = await fetchWorkers<ApiResponse<CompetitionDetail>>(`/competitions/${slug}`);
-      return NextResponse.json(body, { status });
+      return NextResponse.json(body, { status, headers: { "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=30" } });
     } catch { return failure(502); }
   }
   if (process.env.NODE_ENV !== "development") return failure(503);

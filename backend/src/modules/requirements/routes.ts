@@ -16,6 +16,7 @@ interface TemplateRow {
   competition_id: string;
   name: string;
   type: "group" | "individual";
+  stage: "registration" | "submission" | "final";
   due_at: string;
   instructions: string;
   accepted_formats: string;
@@ -48,13 +49,25 @@ requirementRoutes.get("/:id/requirements", requireAuth, async (c) => {
     throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
   }
 
+  let canViewFinal = false;
+  try {
+    const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
+    if (teamRow?.status === "finalis") canViewFinal = true;
+  } catch {}
+  if (!canViewFinal) {
+    try {
+      const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
+      if (qualification?.status === "passed" || qualification?.status === "finalis") canViewFinal = true;
+    } catch {}
+  }
+
   const templates = await c.env.DB.prepare(
-    `SELECT id, competition_id, name, type, due_at, instructions, accepted_formats
+    `SELECT id, competition_id, name, type, stage, due_at, instructions, accepted_formats
      FROM requirement_templates
-     WHERE competition_id = ?1
-     ORDER BY sort_order ASC`
+     WHERE competition_id = ?1 AND (stage != 'final' OR (stage = 'final' AND ?2 = 1))
+     ORDER BY CASE stage WHEN 'registration' THEN 1 WHEN 'submission' THEN 2 WHEN 'final' THEN 3 ELSE 4 END ASC, sort_order ASC`
   )
-    .bind(comp.id)
+    .bind(comp.id, canViewFinal ? 1 : 0)
     .all<TemplateRow>();
 
   const items = await Promise.all(
@@ -95,6 +108,7 @@ requirementRoutes.get("/:id/requirements", requireAuth, async (c) => {
         requirementId: tmpl.id,
         name: tmpl.name,
         type: tmpl.type,
+        stage: tmpl.stage,
         status: sub?.status ?? "pending",
         dueDate: toWib(tmpl.due_at),
         instructions: tmpl.instructions,
@@ -120,7 +134,7 @@ requirementRoutes.post(
     const origin = new URL(c.req.url).origin;
 
     const tmpl = await c.env.DB.prepare(
-      `SELECT id, competition_id, name, type, due_at, instructions, accepted_formats
+      `SELECT id, competition_id, name, type, stage, due_at, instructions, accepted_formats
        FROM requirement_templates
        WHERE id = ?1 AND competition_id = ?2 LIMIT 1`
     )
@@ -139,6 +153,23 @@ requirementRoutes.post(
 
     if (!mem) {
       throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
+    }
+
+    if (tmpl.stage === "final") {
+      let isFinalis = false;
+      try {
+        const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
+        if (teamRow?.status === "finalis") isFinalis = true;
+      } catch {}
+      if (!isFinalis) {
+        try {
+          const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
+          if (qualification?.status === "passed" || qualification?.status === "finalis") isFinalis = true;
+        } catch {}
+      }
+      if (!isFinalis) {
+        throw new AppError("NOT_QUALIFIED", 403, "Tim kamu belum lolos ke tahap final");
+      }
     }
 
     // Check deadline
@@ -256,6 +287,7 @@ requirementRoutes.post(
       requirementId: tmpl.id,
       name: tmpl.name,
       type: tmpl.type,
+      stage: tmpl.stage,
       status: "pending",
       dueDate: toWib(tmpl.due_at),
       instructions: tmpl.instructions,
@@ -280,7 +312,7 @@ requirementRoutes.delete(
     const authUser = c.get("user")!;
 
     const tmpl = await c.env.DB.prepare(
-      `SELECT id, competition_id, name, type, due_at, instructions, accepted_formats
+      `SELECT id, competition_id, name, type, stage, due_at, instructions, accepted_formats
        FROM requirement_templates
        WHERE id = ?1 AND competition_id = ?2 LIMIT 1`
     )
@@ -299,6 +331,23 @@ requirementRoutes.delete(
 
     if (!mem) {
       throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
+    }
+
+    if (tmpl.stage === "final") {
+      let isFinalis = false;
+      try {
+        const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
+        if (teamRow?.status === "finalis") isFinalis = true;
+      } catch {}
+      if (!isFinalis) {
+        try {
+          const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
+          if (qualification?.status === "passed" || qualification?.status === "finalis") isFinalis = true;
+        } catch {}
+      }
+      if (!isFinalis) {
+        throw new AppError("NOT_QUALIFIED", 403, "Tim kamu belum lolos ke tahap final");
+      }
     }
 
     // Check deadline

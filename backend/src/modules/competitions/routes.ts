@@ -4,8 +4,11 @@ import { optionalAuth } from "../../middleware/auth";
 import { ok } from "../../lib/response";
 import { toWib, nowIsoWib } from "../../lib/time";
 import { resolveCompetition, type CompetitionRow } from "../../lib/resolve";
+import { publicReadCache } from "../../middleware/publicCache";
 
 export const competitionRoutes = new Hono<AppContext>();
+
+competitionRoutes.use("*", publicReadCache);
 
 function formatCurrency(amount: number | null | undefined): string {
   if (!amount) return "Rp 0";

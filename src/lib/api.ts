@@ -38,6 +38,7 @@ export async function fetchWorkers<T = unknown>(
   }
 
   const { token, headers, body, ...rest } = options;
+  const signal = rest.signal ?? AbortSignal.timeout(8000);
 
   const res = await fetch(`${WORKERS_API_URL}${path}`, {
     ...rest,
@@ -47,6 +48,7 @@ export async function fetchWorkers<T = unknown>(
       ...headers,
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    signal,
   });
 
   let json: T;
