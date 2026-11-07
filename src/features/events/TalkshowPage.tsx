@@ -223,7 +223,7 @@ function TalkshowFaq() {
           <h2 id="talkshow-faq-title" className="font-heading text-h3 text-secondary-1000 md:text-h2">Need more help?</h2>
           <p className="mt-2 font-body text-b2 text-neutral-800">Informasi yang sudah tersedia tentang pendaftaran Talkshow.</p>
         </div>
-        <Image src="/images/events/Bubblechat-event.png" alt="" aria-hidden="true" width={224} height={224} className="hidden size-56 shrink-0 object-contain lg:block" />
+        <Image src="/images/events/Bubblechat-event.webp" alt="" aria-hidden="true" width={224} height={224} className="hidden size-56 shrink-0 object-contain lg:block" />
       </div>
       {talkshowFaqs.length > 0 ? <Accordion items={talkshowFaqs} /> : <p className="mt-8 text-center font-body text-b2 text-neutral-800">FAQ resmi menyusul.</p>}
     </section>

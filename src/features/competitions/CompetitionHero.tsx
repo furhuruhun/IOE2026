@@ -44,7 +44,7 @@ export function CompetitionHero() {
     <section
       className="relative w-full overflow-hidden pt-8 pb-16 md:max-lg:pb-10 md:pt-16 lg:pt-[95px]"
       style={{
-        backgroundImage: "url('/images/competitions/hero_section.png')",
+        backgroundImage: "url('/images/competitions/hero_section.webp')",
         backgroundPosition: "center top",
         backgroundSize: "cover",
       }}

@@ -67,7 +67,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
       className="relative w-full overflow-hidden pt-8 pb-16 md:max-lg:pb-10 md:pt-16 lg:pt-[95px]"
       style={{
         backgroundImage:
-          "linear-gradient(to bottom, transparent 40%, var(--color-background) 100%), url('/images/competitions/hero_section.png')",
+          "linear-gradient(to bottom, transparent 40%, var(--color-background) 100%), url('/images/competitions/hero_section.webp')",
         backgroundPosition: "center top",
         backgroundSize: "cover",
       }}

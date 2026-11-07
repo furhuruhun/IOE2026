@@ -46,7 +46,7 @@ function FooterBrand() {
   return (
     <Link href="/" className="shrink-0" aria-label="IOE 2027 — beranda">
       <Image
-        src="/images/parent/logo-navibar.png"
+        src="/images/parent/logo-navibar.webp"
         alt="IOE 2027"
         width={1920}
         height={1080}

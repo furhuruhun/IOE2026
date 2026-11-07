@@ -24,7 +24,7 @@ export function CompetitionDetailFAQSection({ slug }: CompetitionDetailFAQSectio
             </p>
           </div>
           <Image
-            src="/images/competitions/Bubblechat-Faq.png"
+            src="/images/competitions/Bubblechat-Faq.webp"
             alt=""
             aria-hidden="true"
             width={224}

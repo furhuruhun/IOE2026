@@ -53,10 +53,10 @@ export const shortCourseContent = {
   // The registration form and backend endpoint are now available.
   registrationFormReady: true,
   benefits: [
-    { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "/images/events/Maskot_Variance_1.png" },
-    { id: "personal-branding", title: "Personal Branding Mentorship", illustrationSrc: "/images/events/Maskot_Variance_2.png" },
-    { id: "career-guidance", title: "Career Guidance", illustrationSrc: "/images/events/Maskot_Variance_4.png" },
-    { id: "industry-portfolio", title: "Industry Level Portofolio", illustrationSrc: "/images/events/Maskot_Variance_5.png" },
+    { id: "real-case", title: "Real-Case Project Exposure", illustrationSrc: "/images/events/Maskot_Variance_1.webp" },
+    { id: "personal-branding", title: "Personal Branding Mentorship", illustrationSrc: "/images/events/Maskot_Variance_2.webp" },
+    { id: "career-guidance", title: "Career Guidance", illustrationSrc: "/images/events/Maskot_Variance_4.webp" },
+    { id: "industry-portfolio", title: "Industry Level Portofolio", illustrationSrc: "/images/events/Maskot_Variance_5.webp" },
   ] as ShortCourseBenefit[],
   milestones: [] as ShortCourseMilestone[],
   // Layout preview from the supplied timeline reference. These are not IOE dates.

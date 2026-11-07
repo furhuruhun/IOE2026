@@ -152,7 +152,7 @@ try {
         assert.equal(layout.overflow, false, "page has no horizontal overflow");
         assert.equal(layout.h1, 1, "one active hero heading");
         assert.equal(layout.radius, 24, "structured carousel uses a shared rounded silhouette");
-        assert.deepEqual(layout.background,{src:['/images/parent/Card IOE.png','/images/parent/Card 2.png','/images/parent/Card 3.png'][slide],fit:'cover',covers:true},"correct existing background covers each slide without stretching");
+        assert.deepEqual(layout.background,{src:['/images/parent/Card IOE.webp','/images/parent/Card 2.webp','/images/parent/Card 3.webp'][slide],fit:'cover',covers:true},"correct existing background covers each slide without stretching");
         if (slide === 0) assert.ok(layout.imagery.some(src=>src.includes('logo-navibar')), "overview retains its main brand illustration");
         assert.ok(await evaluate("!document.querySelector('[aria-roledescription=carousel] [class*=masthead], [aria-roledescription=carousel] [data-program], [aria-roledescription=carousel] [class*=previewNumber]')"), "card headers and numbered footers are removed");
         assert.ok(layout.imagery.every(src=>['logo-navibar','ioe-oil-rig-design-aquatic','ioe-paper-poster-aquatic'].some(asset=>src.includes(asset))), "existing blue illustration family only; no masks or ribbons");

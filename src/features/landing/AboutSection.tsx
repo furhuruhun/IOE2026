@@ -19,7 +19,7 @@ export function AboutSection() {
 
       <div className="flex w-full">
         <div className="relative hidden w-1/3 shrink-0 self-stretch overflow-hidden lg:block">
-          <Image src="/images/parent/Maskot-about-IOE.png" alt="Maskot IOE 2027" fill sizes="(min-width: 1440px) 400px, 33vw" className="-translate-x-[15%] scale-125 object-contain object-center" />
+          <Image src="/images/parent/Maskot-about-IOE.webp" alt="Maskot IOE 2027" fill sizes="(min-width: 1440px) 400px, 33vw" className="-translate-x-[15%] scale-125 object-contain object-center" />
         </div>
 
         <div className="flex w-full flex-col gap-md lg:w-2/3">

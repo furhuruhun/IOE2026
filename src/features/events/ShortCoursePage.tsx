@@ -104,7 +104,7 @@ function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state:
           </div>
           <div className="w-full flex items-center justify-center">
             <div className="w-full max-w-[400px] h-auto relative">
-              <Image src="/images/events/ShortCourse-Logo.png" alt="Logo Short Course IOE" width={1536} height={1024} sizes="(max-width: 767px) 90vw, 400px" className="h-auto w-full object-contain" />
+              <Image src="/images/events/ShortCourse-Logo.webp" alt="Logo Short Course IOE" width={1536} height={1024} sizes="(max-width: 767px) 90vw, 400px" className="h-auto w-full object-contain" />
             </div>
           </div>
         </div>
