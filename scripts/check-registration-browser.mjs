@@ -110,7 +110,6 @@ try {
   await send("Page.enable"); await send("Runtime.enable"); await send("Network.enable");
   await send("Fetch.enable", { patterns: [{ urlPattern: origin + "/api/*" }] });
   await send("Network.setCookie", { name: "ioe_token", value: "fixture", url: origin });
-  await send("Page.addScriptToEvaluateOnNewDocument", { source: "localStorage.setItem('ioe-theme','light')" });
   for (const width of [320, 768, 1440]) {
     await send("Emulation.setDeviceMetricsOverride", { width, height: 950, deviceScaleFactor: 1, mobile: false });
     registered = false; deadline = "2030-01-01T00:00:00+07:00"; mode = "success";

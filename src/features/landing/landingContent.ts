@@ -76,8 +76,8 @@ export interface TimelineItem {
   dateTime?: string;
 }
 
-// F-10 — development placeholders. Belum ada delapan milestone dan tanggal resmi
-// dari panitia; ganti data di sini ketika jadwal resmi tersedia.
+// F-10 — placeholder sementara. Belum ada delapan milestone dan tanggal resmi
+// dari panitia; ganti data di sini sebelum jadwal diumumkan.
 export const timelineItems: TimelineItem[] = [
   { id: "milestone-01", title: "Milestone 01" },
   { id: "milestone-02", title: "Milestone 02" },

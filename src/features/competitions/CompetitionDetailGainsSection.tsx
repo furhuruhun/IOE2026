@@ -14,11 +14,11 @@ export function CompetitionDetailGainsSection({ slug }: CompetitionDetailGainsSe
   if (gains.length === 0) return null;
 
   return (
-    <section className="flex w-full flex-col items-center gap-2xl px-8 py-16 md:px-20">
-      <h2 className="text-h4 text-secondary-1000 md:text-h2">
+    <section className="mt-24 w-full overflow-clip sm:mt-28 md:mt-32 lg:mt-0 lg:overflow-visible lg:px-20 lg:py-16">
+      <h2 className="px-6 text-center text-h4 text-secondary-1000 md:text-h2">
         What You&apos;ll <span className="text-primary-600">Gain</span>
       </h2>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full lg:mt-2xl lg:overflow-x-auto">
         <TiltedCard items={gains} />
       </div>
     </section>

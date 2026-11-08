@@ -10,7 +10,6 @@ import { buttonStyles } from "@/components/ui/Button";
 import { MobileNavDrawer } from "@/components/ui/MobileNavDrawer";
 import { NavbarDropdown } from "@/components/ui/NavbarDropdown";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { LogoutButton } from "@/components/ui/LogoutButton";
 import { CommitteeLink } from "@/features/auth/RoleJourney";
 
@@ -80,8 +79,6 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
         </div>
 
         <div className="flex items-center gap-4">
-          <ThemeToggle />
-
           {/* User / Login pill — desktop only, ≥1280px */}
           <div className="hidden items-center gap-2 xl:flex">
             <CommitteeLink />

@@ -54,7 +54,7 @@ const html = render(GlobalError, { error, retry: () => {} });
 assert.match(html, /<html lang="id"/);
 assert.match(html, /<body/);
 assert.match(html, /system-ui/);
-assert.match(html, /ioe-theme/);
+assert.match(html, /data-theme="light"/);
 assert.doesNotMatch(html, /PRIVATE_ERROR|private-digest/);
 console.log("PASS event feedback states, cached warning, retry disabled state, all boundary markup and independent global document");
 

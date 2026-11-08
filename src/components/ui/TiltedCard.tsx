@@ -23,10 +23,10 @@ interface TiltedCardProps {
 //
 // Konten icon+title+caption (bukan galeri foto seperti referensi Framer asli spec ini) —
 // belum ada aset foto kompetisi dari klien. Dicatat sebagai adaptasi di CHANGELOG.md.
-const FOCUS_TRANSITION = "transform 520ms cubic-bezier(.2,.8,.2,1), opacity 520ms cubic-bezier(.2,.8,.2,1)";
+const FOCUS_TRANSITION = "transform 540ms cubic-bezier(.25,.1,.25,1), opacity 540ms cubic-bezier(.25,.1,.25,1)";
 
 const HOLD_MS = 3000;
-const ROTATE_MS = 500;
+const ROTATE_MS = 540;
 function subscribeMotion(callback: () => void) {
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   media.addEventListener('change', callback);
@@ -40,8 +40,8 @@ function slotFor(index: number, active: number, count: number) {
   const center = Math.floor(count / 2);
   return ((index - active + count + center) % count) - center;
 }
-function pose(slot: number, depth = 0, scale = 1, y = Math.abs(slot) * 8) {
-  return `translate(-50%, -50%) translate(calc(${slot} * var(--gain-offset)), ${y}px) translateZ(${depth}px) rotate(${slot * 10}deg) scale(${scale})`;
+function pose(slot: number, depth = 0, scale: number | string = slot === 0 ? 1 : "var(--gain-side-scale)", y = 0) {
+  return `translate(-50%, -50%) translate(calc(${slot} * var(--gain-offset)), calc(${slot === 0 ? "0px" : "var(--gain-side-y)"} + ${y}px)) translateZ(${depth}px) rotate(${slot * 10}deg) scale(${scale})`;
 }
 export function TiltedCard({ items }: TiltedCardProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ export function TiltedCard({ items }: TiltedCardProps) {
 
   useEffect(() => {
     if (reducedMotion || !documentVisible) { releaseAnimations(); return; }
-    if (!inView || hoveredId || activeFocusId || items.length < 2 || animations.current.length) return;
+    if (!inView || hoveredId || activeFocusId || focusedId || items.length < 2 || animations.current.length) return;
     const timer = window.setTimeout(() => {
       const next = (activeIndex + 1) % items.length;
       const cycle = ++generation.current;
@@ -105,7 +105,7 @@ export function TiltedCard({ items }: TiltedCardProps) {
     }, HOLD_MS);
     // Let an already-started transition finish when pointer/focus enters; pause the next hold.
     return () => window.clearTimeout(timer);
-  }, [activeIndex, activeFocusId, documentVisible, hoveredId, inView, items, reducedMotion, releaseAnimations]);
+  }, [activeIndex, activeFocusId, documentVisible, focusedId, hoveredId, inView, items, reducedMotion, releaseAnimations]);
 
   const handlePointerMove = useCallback((e: PointerEvent<HTMLDivElement>) => {
     if (reducedMotion) return;
@@ -132,7 +132,7 @@ export function TiltedCard({ items }: TiltedCardProps) {
       role="region" aria-roledescription="carousel" aria-label="What you will gain" aria-live="off"
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="relative mx-auto h-[34rem] w-full min-w-[48rem] max-w-[72rem] [--gain-offset:12rem] sm:[--gain-offset:13.5rem] lg:h-[42rem] lg:min-w-[72rem] lg:[--gain-offset:18rem]"
+      className="relative mx-auto h-[340px] w-full overflow-clip [--gain-offset:clamp(110px,30vw,130px)] [--gain-side-scale:0.94] [--gain-side-y:0px] [--gain-focus-scale:1] [--gain-hover-center-scale:1] [--gain-hover-side-scale:0.94] [--gain-focused-lift:0px] sm:h-[390px] sm:[--gain-offset:clamp(110px,30vw,158px)] md:h-[500px] md:[--gain-offset:clamp(110px,30vw,230px)] lg:h-[42rem] lg:min-w-[72rem] lg:max-w-[72rem] lg:overflow-visible lg:[--gain-offset:18rem] lg:[--gain-side-scale:1] lg:[--gain-side-y:8px] lg:[--gain-focus-scale:1.08] lg:[--gain-hover-center-scale:1.02] lg:[--gain-hover-side-scale:1.02] lg:[--gain-focused-lift:28px]"
       style={{ perspective: "1200px", isolation: "isolate" }}
     >
       {items.map((item, index) => {
@@ -142,9 +142,9 @@ export function TiltedCard({ items }: TiltedCardProps) {
         const isRevealed = hoveredId === item.id || activeFocusId === item.id;
 
         const x = `calc(${relative} * var(--gain-offset))`;
-        const y = Math.abs(relative) * 8 + (isFocused ? -28 : 0);
+        const y = isFocused ? "calc(0px - var(--gain-focused-lift))" : relative === 0 ? "0px" : "var(--gain-side-y)";
         const staticRotate = relative * 10;
-        const baseScale = isFocused ? 1.08 : isRevealed ? 1.02 : 1;
+        const baseScale = isFocused ? "var(--gain-focus-scale)" : isRevealed ? relative === 0 ? "var(--gain-hover-center-scale)" : "var(--gain-hover-side-scale)" : relative === 0 ? 1 : "var(--gain-side-scale)";
 
         return (
           <button
@@ -158,10 +158,15 @@ export function TiltedCard({ items }: TiltedCardProps) {
             onMouseLeave={() => setHoveredId((id) => (id === item.id ? null : id))}
             onFocus={() => setActiveFocusId(item.id)}
             onBlur={() => setActiveFocusId((id) => (id === item.id ? null : id))}
-            onClick={() => setFocusedId((id) => (id === item.id ? null : item.id))}
-            className="absolute left-1/2 top-1/2 grid min-h-88 w-64 grid-rows-[auto_minmax(6rem,1fr)_auto] items-center gap-6 overflow-hidden rounded-3xl border p-6 text-center shadow-2xl outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:min-h-104 sm:w-72 lg:min-h-128 lg:w-96 lg:rounded-[40px] lg:p-10"
+            onClick={() => {
+              releaseAnimations();
+              if (relative !== 0) setActiveIndex(index);
+              setFocusedId((id) => relative === 0 && id === item.id ? null : item.id);
+            }}
+            aria-label={`${item.title}. ${item.caption}`}
+            className="absolute left-1/2 top-1/2 flex aspect-[3/4] w-[42vw] max-w-36 flex-col items-center justify-center gap-1 overflow-hidden rounded-3xl border p-2 text-center shadow-2xl outline-none focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 sm:max-w-44 sm:gap-2 sm:p-3 md:max-w-64 md:p-4 lg:grid lg:aspect-auto lg:min-h-128 lg:w-96 lg:max-w-none lg:grid-rows-[auto_minmax(6rem,1fr)_auto] lg:gap-6 lg:rounded-[40px] lg:p-10"
             style={{
-              transform: `translate(-50%, -50%) translate(${x}, ${y}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${staticRotate}deg) scale(${baseScale})`,
+              transform: `translate(-50%, -50%) translate(${x}, ${y}) rotateX(${tiltX}deg) rotateY(${tiltY}deg) rotate(${staticRotate}deg) scale(${baseScale})`,
               transition: reducedMotion ? "none" : FOCUS_TRANSITION,
               zIndex: items.length - Math.abs(relative),
               opacity: isDimmed ? 0.46 : 1,
@@ -179,14 +184,14 @@ export function TiltedCard({ items }: TiltedCardProps) {
               }}
             />
 
-            <h3 className="relative z-10 w-full wrap-anywhere font-heading text-h6 leading-tight text-[color:var(--inverse-foreground)] lg:text-h5">
+            <h3 className="relative z-10 w-full wrap-anywhere font-heading text-b4 leading-tight text-[color:var(--inverse-foreground)] sm:text-b3 md:text-h6 lg:text-h5">
               {item.title}
             </h3>
-            <div className="relative z-10 flex min-h-24 items-center justify-center">
-              <Icon icon={item.icon} className="size-20 shrink-0 text-[color:var(--inverse-foreground)] lg:size-28" />
+            <div className="relative z-10 flex items-center justify-center lg:min-h-24">
+              <Icon icon={item.icon} className="size-10 shrink-0 text-[color:var(--inverse-foreground)] sm:size-12 md:size-16 lg:size-28" />
             </div>
             <span
-              className="relative z-10 w-full wrap-anywhere text-center font-body text-b3 leading-relaxed sm:text-b2"
+              className="relative z-10 w-full wrap-anywhere text-center font-body text-[9px] leading-[1.25] sm:text-[10px] md:text-b4 lg:text-b2 lg:leading-relaxed"
               style={{ color: 'var(--tiltedcard-caption-text)' }}
             >
               {item.caption}

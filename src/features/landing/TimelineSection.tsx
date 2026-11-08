@@ -59,7 +59,6 @@ export function TimelineSection() {
     <section id="timeline" aria-labelledby="timeline-title" className="site-container section-space bg-neutral-100">
       <div className="mx-auto max-w-[1000px]">
         <TimelineHeader />
-        {process.env.NODE_ENV === "development" && <>
         <ol className={`${styles.timeline} mt-lg`}>
           {timelineItems.map((item, index) => {
             const side = index % 2 === 0 ? "left" : "right";
@@ -70,7 +69,7 @@ export function TimelineSection() {
               </li>
             );
           })}
-        </ol></>}
+        </ol>
       </div>
     </section>
   );
