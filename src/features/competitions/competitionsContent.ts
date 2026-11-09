@@ -15,7 +15,7 @@ export const aboutDescription =
 
 // PLACEHOLDER — CompetitionSummary tidak punya field prizePool (gap API_CONTRACT.md,
 // dicatat di CHANGELOG). Angka di bawah murni dummy sampai ada konfirmasi klien/BE.
-export const totalPrizePool = "Rp 50.000.000";
+export const totalPrizePool = "Rp 50.000.000++";
 
 export interface CompetitionBlurb {
   slug: string;
@@ -42,7 +42,7 @@ export const competitionBlurbs: CompetitionBlurb[] = [
   {
     slug: "design-competition",
     description:
-      "Rancang solusi visual/desain kreatif yang menjawab tantangan energi, ekonomi, dan inovasi digital di sektor kelautan.",
+      "Engineer innovative, stable, and structurally safe floating offshore wind turbine designs tailored to harness Indonesia's offshore renewable energy potential. ",
     imageUrl: competitionLogos["design-competition"],
   },
 ];
