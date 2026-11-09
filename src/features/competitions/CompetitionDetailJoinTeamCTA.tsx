@@ -43,7 +43,7 @@ export function CompetitionDetailJoinTeamCTA({ slug }: CompetitionDetailJoinTeam
 
         <div className="col-span-3 flex flex-col items-start gap-3 text-center sm:gap-4 md:gap-5 lg:gap-6 xl:gap-8">
           <h2 className="font-heading text-h6 leading-tight text-neutral-100 sm:text-h4 md:text-h3 lg:text-h2 xl:text-h1">
-            Join a <span className="text-primary-300">Team</span> Now!
+            Register <span className="text-primary-300">Your Team</span> Now!
           </h2>
           <ParticipantAction><Button
             variant="primary"

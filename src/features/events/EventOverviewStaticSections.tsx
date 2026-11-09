@@ -29,7 +29,7 @@ export function EventOverviewContact() {
             <div className="relative z-10 mx-auto my-auto flex h-full w-full max-w-[768px] flex-col items-center justify-center p-7 text-center">
               <div data-contact-content className="mx-auto my-auto flex w-full flex-col items-center justify-center gap-1">
                 <h2 id="events-contact-title" className="font-heading text-h4 font-medium text-secondary-1000 md:text-h3">Contact Person</h2>
-                <p className="font-body text-b2 font-normal text-neutral-800 md:text-b1">Ada pertanyaan seputar rangkaian event? Hubungi kami melalui LINE.</p>
+                <p className="font-body text-b2 font-normal text-neutral-800 md:text-b1">Have any questions regarding the event series? Contact us by email or via LINE!</p>
                 <div data-contact-actions className="mt-5 flex w-full items-center justify-center gap-3 max-md:flex-col md:mt-8 md:gap-6">
                   {eventOverviewContactActions.map((action) => (
                     <a key={action.id} href={action.href} target="_blank" rel="noopener noreferrer" aria-label={`Hubungi ${action.name} melalui LINE (buka di tab baru)`} className={`${contactStyles.surface} relative inline-block w-full cursor-pointer whitespace-nowrap rounded-xl bg-transparent px-4 py-2 p-0! font-ui text-s6 font-bold text-secondary-1000 ring-2 ring-secondary-900 outline-none transition-all hover:bg-secondary-100/20 active:bg-secondary-300/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary-800 md:rounded-2xl md:px-5 md:py-3 md:text-s5`}>

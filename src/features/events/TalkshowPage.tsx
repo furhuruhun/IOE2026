@@ -209,8 +209,8 @@ function TalkshowRegistrationRecall({ state }: { state: RegistrationState }) {
         <Image src="/images/events/ioe-talk-recall-bg-aquatic.svg" alt="" aria-hidden="true" width={1280} height={535} className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[60%_center] md:object-center" />
         <div className="relative z-10 flex flex-col items-center justify-between gap-8 px-4 py-8 text-center sm:flex-row sm:text-left md:gap-12 md:px-10 md:py-16 lg:px-14 xl:px-20">
           <div className="flex w-full min-w-0 flex-col items-center gap-4 sm:max-w-[464px] sm:flex-1 sm:items-start">
-            <h2 id="talkshow-recall-title" className="font-heading text-h4 md:text-h3 lg:text-h2">{state.available ? "Sudah siap mengikuti Talkshow IOE 2027?" : "Sampai jumpa di Talkshow IOE 2027"}</h2>
-            <p className="font-body text-b2">{state.available ? "Daftarkan dirimu melalui formulir resmi Talkshow." : state.note}</p>
+            <h2 id="talkshow-recall-title" className="font-heading text-h4 md:text-h3 lg:text-h2">{state.available ? "Ready to Be Part of IOE 2027?" : "Sampai jumpa di Talkshow IOE 2027"}</h2>
+            <p className="font-body text-b2">{state.available ? "Secure your spot today by filling out our official registration form." : state.note}</p>
             <RegistrationAction state={state} className="w-full max-w-[20rem] rounded-xl px-4 py-2 md:rounded-2xl md:px-5 md:py-3" />
           </div>
           <OceanVisual compact />

@@ -12,6 +12,6 @@ export const eventContacts: EventContact[] = [];
 
 // LINE IDs supplied for the Events contact card.
 export const eventOverviewContactActions = [
-  { id: "farhan-line", name: "Farhan", label: "Farhan — mufarhans", href: "https://line.me/ti/p/~mufarhans" },
-  { id: "hakim-line", name: "Hakim", label: "Hakim — CintaAmbaruwo", href: "https://line.me/ti/p/~CintaAmbaruwo" },
+  { id: "IOE-line", name: "OA Line", label: "OA LINE — @637iwugv ", href: "https://line.me/ti/p/~@637iwugv" },
+  { id: "IOE-email", name: "Email", label: "Email IOE2027 — info@ioe2027.com", href: "mailto:info@ioe2027.com" },
 ] as const;

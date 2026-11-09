@@ -30,19 +30,19 @@ export const competitionBlurbs: CompetitionBlurb[] = [
   {
     slug: "business-case-competition",
     description:
-      "Test your business analysis and digital strategy skills by solving real-world case studies in maritime operations, supply chain efficiency, and green port management.",
+      "A case-based competition where participants propose innovative and sustainable solutions to real-world challenges in the maritime and energy industries through proposal submission, presentation, and online pitching.",
     imageUrl: competitionLogos["business-case-competition"],
   },
   {
     slug: "paper-poster-competition",
     description:
-      "Present your scientific papers and innovative visual posters addressing critical challenges in coastal resilience, eco-friendly dredging, and marine environmental conservation.",
+      "An academic competition encouraging students and researchers to showcase innovative ideas and scientific contributions in maritime engineering through abstract submission, full paper development, and online presentation.",
     imageUrl: competitionLogos["paper-poster-competition"],
   },
   {
     slug: "design-competition",
     description:
-      "Engineer innovative, stable, and structurally safe floating offshore wind turbine designs tailored to harness Indonesia's offshore renewable energy potential. ",
+      "An engineering design competition challenging participants to develop innovative floating offshore wind turbine (FOWT) concepts through data analysis, engineering design, and prototype development.",
     imageUrl: competitionLogos["design-competition"],
   },
 ];

@@ -23,7 +23,7 @@ export const mockCompetitions: CompetitionSummary[] = [
   {
     id: "comp-design",
     slug: "design-competition",
-    name: "Design Competition",
+    name: "Floating Offshore Wind Turbine Design Competition",
     deadline: "2027-03-20T23:59:00+07:00",
     isRegisteredByUser: false,
   },

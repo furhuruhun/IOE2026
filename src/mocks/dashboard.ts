@@ -16,7 +16,7 @@ export const mockJourney: JourneyItem[] = [
   {
     competitionId: "comp-design",
     slug: "design-competition",
-    name: "Design Competition",
+    name: "Floating Offshore Wind Turbine Design Competition",
     logoUrl: null,
     status: "in_progress",
     dueDate: "2027-03-20T23:59:00+07:00",
@@ -42,7 +42,7 @@ export const mockCalendar: CalendarItem[] = [
   },
   {
     date: "2026-09-05T09:00:00+07:00",
-    label: "Design Competition – Batas Submit Karya",
+    label: "Floating Offshore Wind Turbine Design Competition – Batas Submit Karya",
     type: "competition",
     refId: "comp-design",
     logoUrl: null,

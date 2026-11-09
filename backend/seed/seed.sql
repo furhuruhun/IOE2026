@@ -45,7 +45,7 @@ VALUES
 (
   'comp-design',
   'design-competition',
-  'FOWT Design Competition',
+  'Floating Offshore Wind Turbine Design Competition',
   'Design Competition mengajak peserta merancang solusi visual/desain kreatif yang menjawab tantangan energi, ekonomi, dan inovasi digital di sektor kelautan. Fokus penilaian ada pada orisinalitas ide, kekuatan visual, dan relevansi solusi terhadap isu maritim.',
   NULL,
   NULL,
