@@ -1,7 +1,12 @@
 {
   "name": "ioe2027-fe",
+  "main": ".open-next/worker.js",
   "compatibility_date": "2026-11-04",
-  "pages_build_output_dir": ".vercel/output/static",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
   "vars": {
     "IOE_ALLOW_INDEXING": "1",
     "IOE_DEV_EVENTS_SOURCE": "real",
