@@ -1,7 +1,5 @@
 -- seed/seed.sql
 
--- Clean up existing
-
 -- 1. COMPETITIONS
 INSERT INTO competitions (id, slug, name, description, guidebook_url, logo_url, total_prize_pool_idr, max_team_members, is_published, created_at)
 VALUES
@@ -40,14 +38,28 @@ VALUES
   5,
   1,
   '2026-08-01T00:00:00+07:00'
-);
+)
+ON CONFLICT(id) DO UPDATE SET 
+  slug = excluded.slug,
+  name = excluded.name,
+  description = excluded.description,
+  guidebook_url = excluded.guidebook_url,
+  logo_url = excluded.logo_url,
+  total_prize_pool_idr = excluded.total_prize_pool_idr,
+  max_team_members = excluded.max_team_members,
+  is_published = excluded.is_published;
 
 -- Batches
 INSERT INTO competition_batches (id, competition_id, name, opens_at, closes_at, sort_order)
 VALUES
 ('batch-bc-1', 'comp-business-case', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-15T23:59:00+07:00', 1),
 ('batch-pp-1', 'comp-paper-poster', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-10T23:59:00+07:00', 1),
-('batch-ds-1', 'comp-design', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-20T23:59:00+07:00', 1);
+('batch-ds-1', 'comp-design', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-20T23:59:00+07:00', 1)
+ON CONFLICT(id) DO UPDATE SET 
+  name = excluded.name,
+  opens_at = excluded.opens_at,
+  closes_at = excluded.closes_at,
+  sort_order = excluded.sort_order;
 
 -- Prizes
 INSERT INTO competition_prizes (id, competition_id, label, amount_idr, sort_order)
@@ -62,7 +74,11 @@ VALUES
 
 ('prize-ds-1', 'comp-design', 'Juara 1', 8000000, 1),
 ('prize-ds-2', 'comp-design', 'Juara 2', 5000000, 2),
-('prize-ds-3', 'comp-design', 'Juara 3', 2000000, 3);
+('prize-ds-3', 'comp-design', 'Juara 3', 2000000, 3)
+ON CONFLICT(id) DO UPDATE SET 
+  label = excluded.label,
+  amount_idr = excluded.amount_idr,
+  sort_order = excluded.sort_order;
 
 -- Timeline Items
 INSERT INTO competition_timeline_items (id, competition_id, label, occurs_at, show_in_calendar, sort_order)
@@ -73,7 +89,7 @@ VALUES
 ('tl-bc-4', 'comp-business-case', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
 ('tl-bc-5', 'comp-business-case', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
 ('tl-bc-6', 'comp-business-case', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
-('tl-bc-7', 'comp-business-case', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
+('tl-bc-7', 'comp-business-case', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7),
 
 ('tl-pp-1', 'comp-paper-poster', 'Early Registration', '10 - 15 Nov 2026', 1, 1),
 ('tl-pp-2', 'comp-paper-poster', 'Normal Registration', '16 - 30 Nov 2026', 1, 2),
@@ -81,7 +97,7 @@ VALUES
 ('tl-pp-4', 'comp-paper-poster', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
 ('tl-pp-5', 'comp-paper-poster', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
 ('tl-pp-6', 'comp-paper-poster', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
-('tl-pp-7', 'comp-paper-poster', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
+('tl-pp-7', 'comp-paper-poster', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7),
 
 ('tl-ds-1', 'comp-design', 'Early Registration', '10 - 15 Nov 2026', 1, 1),
 ('tl-ds-2', 'comp-design', 'Normal Registration', '16 - 30 Nov 2026', 1, 2),
@@ -89,10 +105,15 @@ VALUES
 ('tl-ds-4', 'comp-design', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
 ('tl-ds-5', 'comp-design', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
 ('tl-ds-6', 'comp-design', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
-('tl-ds-7', 'comp-design', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
+('tl-ds-7', 'comp-design', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7)
+ON CONFLICT(id) DO UPDATE SET 
+  label = excluded.label,
+  occurs_at = excluded.occurs_at,
+  show_in_calendar = excluded.show_in_calendar,
+  sort_order = excluded.sort_order;
 
 
--- Requirement Templates (5 standar per kompetisi)
+-- Requirement Templates
 -- Business Case
 INSERT INTO requirement_templates (id, competition_id, name, type, due_at, instructions, accepted_formats, sort_order)
 VALUES
@@ -100,25 +121,28 @@ VALUES
 ('comp-business-case-req-2', 'comp-business-case', 'Identity Card', 'individual', '2027-03-15T23:59:00+07:00', 'Unggah foto Kartu Tanda Mahasiswa (KTM) yang masih berlaku.', '["jpg","png"]', 2),
 ('comp-business-case-req-3', 'comp-business-case', 'Passport Photo', 'individual', '2027-03-15T23:59:00+07:00', 'Unggah pas foto formal terbaru dengan latar belakang bebas.', '["jpg","png"]', 3),
 ('comp-business-case-req-4', 'comp-business-case', 'Active Student Status Letter', 'individual', '2027-03-15T23:59:00+07:00', 'Unggah Surat Keterangan Mahasiswa Aktif dari universitas/fakultas terkait.', '["jpg","png"]', 4),
-('comp-business-case-req-5', 'comp-business-case', 'Twibbon and Poster Proof', 'individual', '2027-03-15T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5);
+('comp-business-case-req-5', 'comp-business-case', 'Twibbon and Poster Proof', 'individual', '2027-03-15T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5),
 
 -- Paper & Poster
-INSERT INTO requirement_templates (id, competition_id, name, type, due_at, instructions, accepted_formats, sort_order)
-VALUES
 ('comp-paper-poster-req-1', 'comp-paper-poster', 'Payment Proof Document', 'group', '2027-03-10T23:59:00+07:00', 'Transfer ke Rekening BNI 1234567890 a.n. KMKL ITB. Unggah bukti transfer yang jelas.', '["jpg","png"]', 1),
 ('comp-paper-poster-req-2', 'comp-paper-poster', 'Identity Card', 'individual', '2027-03-10T23:59:00+07:00', 'Unggah foto Kartu Tanda Mahasiswa (KTM) yang masih berlaku.', '["jpg","png"]', 2),
 ('comp-paper-poster-req-3', 'comp-paper-poster', 'Passport Photo', 'individual', '2027-03-10T23:59:00+07:00', 'Unggah pas foto formal terbaru dengan latar belakang bebas.', '["jpg","png"]', 3),
 ('comp-paper-poster-req-4', 'comp-paper-poster', 'Active Student Status Letter', 'individual', '2027-03-10T23:59:00+07:00', 'Unggah Surat Keterangan Mahasiswa Aktif dari universitas/fakultas terkait.', '["jpg","png"]', 4),
-('comp-paper-poster-req-5', 'comp-paper-poster', 'Twibbon and Poster Proof', 'individual', '2027-03-10T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5);
+('comp-paper-poster-req-5', 'comp-paper-poster', 'Twibbon and Poster Proof', 'individual', '2027-03-10T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5),
 
 -- Design
-INSERT INTO requirement_templates (id, competition_id, name, type, due_at, instructions, accepted_formats, sort_order)
-VALUES
 ('comp-design-req-1', 'comp-design', 'Payment Proof Document', 'group', '2027-03-20T23:59:00+07:00', 'Transfer ke Rekening BNI 1234567890 a.n. KMKL ITB. Unggah bukti transfer yang jelas.', '["jpg","png"]', 1),
 ('comp-design-req-2', 'comp-design', 'Identity Card', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah foto Kartu Tanda Mahasiswa (KTM) yang masih berlaku.', '["jpg","png"]', 2),
 ('comp-design-req-3', 'comp-design', 'Passport Photo', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah pas foto formal terbaru dengan latar belakang bebas.', '["jpg","png"]', 3),
 ('comp-design-req-4', 'comp-design', 'Active Student Status Letter', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah Surat Keterangan Mahasiswa Aktif dari universitas/fakultas terkait.', '["jpg","png"]', 4),
-('comp-design-req-5', 'comp-design', 'Twibbon and Poster Proof', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5);
+('comp-design-req-5', 'comp-design', 'Twibbon and Poster Proof', 'individual', '2027-03-20T23:59:00+07:00', 'Unggah tangkapan layar bukti unggah Twibbon dan Poster IOE 2027 di media sosial.', '["jpg","png"]', 5)
+ON CONFLICT(id) DO UPDATE SET 
+  name = excluded.name,
+  type = excluded.type,
+  due_at = excluded.due_at,
+  instructions = excluded.instructions,
+  accepted_formats = excluded.accepted_formats,
+  sort_order = excluded.sort_order;
 
 -- 2. EVENTS
 INSERT INTO events (id, slug, name, description, starts_at, registration_opens_at, registration_closes_at, quota, is_paid, price_idr, is_published, created_at)
@@ -178,10 +202,25 @@ VALUES
   0,
   1,
   '2026-08-01T00:00:00+07:00'
-);
+)
+ON CONFLICT(id) DO UPDATE SET 
+  slug = excluded.slug,
+  name = excluded.name,
+  description = excluded.description,
+  starts_at = excluded.starts_at,
+  registration_opens_at = excluded.registration_opens_at,
+  registration_closes_at = excluded.registration_closes_at,
+  quota = excluded.quota,
+  is_paid = excluded.is_paid,
+  price_idr = excluded.price_idr,
+  is_published = excluded.is_published;
 
 -- Speakers for Workshop
 INSERT INTO event_speakers (id, event_id, name, session_at, sort_order)
 VALUES
 ('spk-ws-1', 'event-workshop', 'Dr. Ir. Maritime Expert, M.Eng.', '2027-03-25T13:00:00+07:00', 1),
-('spk-ws-2', 'event-workshop', 'Capt. Ocean Navigator, Ph.D.', '2027-03-25T15:30:00+07:00', 2);
+('spk-ws-2', 'event-workshop', 'Capt. Ocean Navigator, Ph.D.', '2027-03-25T15:30:00+07:00', 2)
+ON CONFLICT(id) DO UPDATE SET 
+  name = excluded.name,
+  session_at = excluded.session_at,
+  sort_order = excluded.sort_order;
