@@ -29,7 +29,7 @@ export function CompetitionAboutSection() {
         className="pointer-events-none absolute left-0 top-0 z-0 h-auto w-full max-w-none opacity-60 md:-top-16 md:max-lg:top-12"
       />
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-col items-center px-4 md:px-8 xl:px-[92px]">
-        <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Tentang Competition Overview</h2>
+        <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">About IOE 2027 Competitions</h2>
 
         <p className="mt-4 w-full max-w-[1200px] text-center font-body text-[18px] leading-[1.5] font-semibold text-neutral-700 md:max-lg:max-w-[740px] md:text-b1 lg:text-h5 lg:leading-[1.5]">
           {aboutDescription}

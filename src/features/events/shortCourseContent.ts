@@ -46,7 +46,7 @@ export interface ShortCoursePhoto {
 export const shortCourseContent = {
   title: "Short Course",
   description:
-    "Short Course merupakan bagian dari rangkaian IOE 2027 yang berfokus pada wawasan maritim, energi, ekonomi, dan inovasi digital.",
+    "The IOE 2027 Professional Short Course is an expert-led learning program designed to equip aspiring engineers and professionals with practical insights into emerging maritime technologies. Featuring two specialized fields, Floating Solar PV and Green Ports, it bridges academic theory with industry practice through case-based learning and direct expert engagement.",
   registrationHref: "/events/short-course/register",
   // Set only after the organizer confirms an opening timestamp with timezone.
   registrationOpensAt: null as string | null,
@@ -76,9 +76,9 @@ export const shortCourseContent = {
       topic: "Topik pembelajaran akan diumumkan",
       instructorName: "Pembicara akan diumumkan",
       instructorRole: "Speaker",
-      date: "Tanggal menyusul",
+      date: "22 January 2027 (Day 1)",
       time: "Waktu menyusul",
-      location: "Lokasi menyusul",
+      location: "Online Via Zoom (Day 1)",
       agenda: [
         { id: "opening", label: "Tahap 01", title: "Pembukaan" },
         { id: "introduction", label: "Tahap 02", title: "Pengantar materi" },
@@ -95,9 +95,9 @@ export const shortCourseContent = {
       instructorName: "Pembicara seminar menyusul",
       instructorRole: "Speaker",
       moderator: { name: "Moderator menyusul", role: "Moderator" },
-      date: "Tanggal menyusul",
+      date: "23 January 2027 (Day 2)",
       time: "Waktu menyusul",
-      location: "Lokasi menyusul",
+      location: "East Campus Center ITB and Auditorium SBM ITB (Day 2)",
       agenda: [
         { id: "opening", label: "Tahap 01", title: "Pembukaan" },
         { id: "presentation", label: "Tahap 02", title: "Pemaparan materi" },

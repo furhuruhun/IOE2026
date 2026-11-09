@@ -11,7 +11,7 @@ import { competitionLogos } from "./competitionLogos";
 // CHANGELOG.md bahwa PRD_IOE_2027_v4.md & ROUTES.md perlu direview manusia untuk sinkronisasi.
 
 export const aboutDescription =
-  "Competition Overview adalah rangkaian kompetisi nasional Indonesia Ocean Expo 2027 — ruang bagi mahasiswa/pelajar se-Indonesia untuk mengasah kemampuan analisis bisnis, riset ilmiah, dan desain kreatif seputar isu maritim, energi, dan inovasi digital.";
+  "The IOE 2027 Competition Series serves as a global platform for undergraduate students to tackle real-world challenges in the maritime sector. Featuring three international challenges: Floating Offshore Wind Turbine (FOWT) Design, Business Case, and Paper & Poster. It empowers participants to hone their technical engineering, strategic business analysis, and scientific research skills in marine energy, smart logistics, and coastal sustainability.";
 
 // PLACEHOLDER — CompetitionSummary tidak punya field prizePool (gap API_CONTRACT.md,
 // dicatat di CHANGELOG). Angka di bawah murni dummy sampai ada konfirmasi klien/BE.
@@ -30,13 +30,13 @@ export const competitionBlurbs: CompetitionBlurb[] = [
   {
     slug: "business-case-competition",
     description:
-      "Uji kemampuan analisis bisnis dan strategi digitalmu dengan menyelesaikan studi kasus nyata seputar ekonomi dan industri maritim.",
+      "Test your business analysis and digital strategy skills by solving real-world case studies in maritime operations, supply chain efficiency, and green port management.",
     imageUrl: competitionLogos["business-case-competition"],
   },
   {
     slug: "paper-poster-competition",
     description:
-      "Tuangkan gagasan ilmiahmu dalam bentuk karya tulis atau poster inovatif seputar keberlanjutan ekosistem maritim Indonesia.",
+      "Present your scientific papers and innovative visual posters addressing critical challenges in coastal resilience, eco-friendly dredging, and marine environmental conservation.",
     imageUrl: competitionLogos["paper-poster-competition"],
   },
   {

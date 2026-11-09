@@ -84,14 +84,14 @@ export function CompetitionHero() {
                 href="#our-competition"
                 className="ui-action ui-action-primary ui-action-sm rounded-xl px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
-                Lihat Semua Kompetisi
+                View All Competition
               </a>
 
               <a
                 href="#timeline"
                 className="ui-action ui-action-secondary ui-action-sm rounded-xl border-transparent bg-secondary-1000/8 px-4 py-2 text-s6 text-secondary-1000 md:rounded-2xl md:px-5 md:py-3 md:text-s5"
               >
-                Lihat Timeline
+                View Timeline
               </a>
             </div>
           </div>

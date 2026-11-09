@@ -47,7 +47,7 @@ export const heroSlides: HeroSlide[] = [
 
 // F-09 — sumber: PRD_IOE_2027_v4.md §1 Overview (dikutip, bukan dikarang).
 export const aboutDescription =
-  'Website Indonesia Ocean Expo (IOE) 2027 dengan tema "Towards a Smart and Sustainable Maritime Ecosystem: Energy, Economy, and Digital Innovation" adalah platform digital resmi event yang diselenggarakan oleh KMKL ITB. Website ini menjadi single source of truth bagi calon peserta untuk mendapatkan informasi dan mendaftar ke seluruh rangkaian kompetisi dan event.';
+  'Indonesia Ocean Expo (IOE) 2027 is the premier maritime gathering hosted by KMKL ITB, connecting the next generation of engineers with industry practitioners. Focusing on Energy, Economy, and Innovation, IOE 2027 empowers participants to shape the future of offshore energy, smart logistics, and coastal resilience through rigorous international challenges and collaborative summits.';
 
 // F-09 — daftar sponsor: PLACEHOLDER, klien belum kirim daftar sponsor final
 // (PRD §8 Assumptions & Dependencies).
