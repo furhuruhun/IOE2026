@@ -49,7 +49,7 @@ export function CompetitionDetailAboutSection({ slug }: CompetitionDetailAboutSe
         ) : (
           <>
             <h2 className="relative z-10 max-w-full text-center font-heading text-h4 text-secondary-1000 sm:text-h3 md:text-h2 xl:text-h1">
-              Tentang {competition.name}
+              About {competition.name}
             </h2>
             <p className="relative z-10 w-full max-w-[36rem] text-center font-body text-b2 text-neutral-800 md:text-b1 lg:max-w-[36rem] xl:max-w-[42rem] 2xl:max-w-[48rem]">
               {competition.description}
@@ -60,7 +60,7 @@ export function CompetitionDetailAboutSection({ slug }: CompetitionDetailAboutSe
 
       <div className="z-10 col-span-2 flex h-full min-w-0 flex-col items-center justify-center gap-4 md:gap-8 lg:col-start-1 lg:row-start-1">
         <h2 className="text-center font-heading text-h6 text-secondary-1000 sm:text-h5 md:text-h4 xl:text-h3 2xl:text-h2">
-          Batas pendaftaran
+          Registration Deadline
         </h2>
         {isLoading || !competition ? (
           <div className="h-28 w-full max-w-[26rem] animate-pulse rounded-lg bg-neutral-200" aria-hidden="true" />
