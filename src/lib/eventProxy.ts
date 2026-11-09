@@ -3,6 +3,7 @@ import { fetchWorkers, getTokenFromCookies, COOKIE_NAME, CLEAR_AUTH_COOKIE_OPTIO
 import { mockEvents } from "@/mocks/events";
 import { getErrorEntry } from "@/constants/errorMessages";
 import { isHiddenEvent } from "@/lib/eventVisibility";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 import type { ApiResponse } from "@/types/auth";
 import type { EventSummary } from "@/types/event";
 
@@ -22,6 +23,7 @@ function demoResponse(slug?: string) {
 // Development defaults to demos. Only an explicit server-side opt-in reads Workers.
 // The development selector has no effect in production.
 export async function eventProxy(slug?: string) {
+  if (!EVENTS_ENABLED) return failure("NOT_FOUND", 404);
   if (slug !== undefined && isHiddenEvent(slug)) return failure("NOT_FOUND", 404);
   if (process.env.NODE_ENV === "development" && process.env.IOE_DEV_EVENTS_SOURCE !== "real") return demoResponse(slug);
 

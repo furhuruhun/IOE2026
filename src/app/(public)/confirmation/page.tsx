@@ -1,6 +1,7 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { RegistrationConfirmation } from "@/features/events/RegistrationConfirmation";
 import { privateMetadata } from "@/lib/siteMetadata";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 export const metadata = privateMetadata("Status Pendaftaran");
 
@@ -11,6 +12,7 @@ export default async function ConfirmationPage({
 }: {
   searchParams: Promise<{ from?: string }>;
 }) {
+  if (!EVENTS_ENABLED) notFound();
   const { from } = await searchParams;
 
   if (from !== "registration") {

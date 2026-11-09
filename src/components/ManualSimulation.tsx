@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
-import Link from "next/link";
 
 const SimulationContext = createContext(false);
 export const useManualSimulation = () => useContext(SimulationContext);
@@ -20,7 +19,6 @@ export function ManualSimulation({ enabled, children }: { enabled: boolean; chil
     {enabled && <aside aria-label="Local simulation controls" className="site-container mt-14 flex flex-wrap items-center gap-sm py-4 text-b4 md:mt-20">
       <strong>LOCAL SIMULATION — synthetic data only</strong>
       <span>Login: participant@example.test / Simulation123!</span>
-      <Link className="ui-action ui-action-secondary ui-action-sm" href="/events/talkshow/register">Test registration</Link>
       <label>Scenario <select defaultValue="" onChange={event => { if (event.target.value) void control("scenario", event.target.value); }}>
         <option value="" disabled>Select scenario</option>
         {['success', 'validation', 'closed', 'full', 'already-registered', 'expired', 'before-commit', 'after-commit', 'dashboard-error'].map(value => <option key={value} value={value}>{value}</option>)}

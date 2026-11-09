@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isHiddenEvent } from "@/lib/eventVisibility";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 import {
   CLEAR_AUTH_COOKIE_OPTIONS,
   COOKIE_NAME,
@@ -14,6 +15,7 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  if (!EVENTS_ENABLED) return failure("NOT_FOUND", "Event tidak ditemukan", 404);
   const { slug } = await params;
   if (isHiddenEvent(slug)) return failure("NOT_FOUND", "Event tidak ditemukan", 404);
   const token = await getTokenFromCookies();

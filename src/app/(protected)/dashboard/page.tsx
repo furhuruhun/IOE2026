@@ -16,6 +16,7 @@ import { Navbar } from '@/components/ui/Navbar';
 import { Footer } from '@/components/ui/Footer';
 import type { DashboardTab } from "@/features/dashboard/dashboardTabs";
 import dashboardLayout from "@/features/dashboard/DashboardLayout.module.css";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 // Route: /dashboard — Protected (src/middleware.ts, F-52). Edge Middleware
 // dipakai agar kompatibel dengan OpenNext Cloudflare; lihat catatan di file itu.
@@ -60,7 +61,7 @@ export default function DashboardPage() {
 
           {/* Both participant tabs keep the dashboard URL. */}
           <RadixTabs.Content value="profile" className="min-w-0"><ProfileForm /></RadixTabs.Content>
-          <RadixTabs.Content value="events" className="min-w-0"><DashboardRegisteredEvents /></RadixTabs.Content>
+          {EVENTS_ENABLED && <RadixTabs.Content value="events" className="min-w-0"><DashboardRegisteredEvents /></RadixTabs.Content>}
         </div>
       </main>
     </RadixTabs.Root>

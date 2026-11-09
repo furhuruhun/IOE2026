@@ -4,12 +4,14 @@ import { mockDashboardEvents } from '@/mocks/dashboard';
 import { ERROR_MESSAGES } from '@/constants/errorMessages';
 import type { ApiResponse } from '@/types/auth';
 import type { RegisteredEventItem } from '@/types/dashboard';
+import { EVENTS_ENABLED } from '@/lib/eventAvailability';
 
 function failure(code: string, status: number) {
   return NextResponse.json({ success: false, error: { code, message: ERROR_MESSAGES[code]?.message ?? ERROR_MESSAGES.SERVER_ERROR.message } }, { status });
 }
 
 export async function GET() {
+  if (!EVENTS_ENABLED) return failure('NOT_FOUND', 404);
   const token = await getTokenFromCookies();
   if (!token) return failure('UNAUTHORIZED', 401);
 

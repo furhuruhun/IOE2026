@@ -11,7 +11,6 @@ import { profileRoutes } from "./modules/profile/routes";
 import { competitionRoutes } from "./modules/competitions/routes";
 import { teamRoutes } from "./modules/teams/routes";
 import { requirementRoutes } from "./modules/requirements/routes";
-import { eventRoutes } from "./modules/events/routes";
 import { dashboardRoutes } from "./modules/dashboard/routes";
 import { fileRoutes } from "./modules/files/routes";
 import { adminRoutes } from "./modules/admin/routes";
@@ -42,7 +41,8 @@ api.route("/profile", profileRoutes);
 api.route("/competitions", competitionRoutes);
 api.route("/competitions", teamRoutes);
 api.route("/competitions", requirementRoutes);
-api.route("/events", eventRoutes);
+// Public event endpoints are temporarily unavailable. Keep the module for reactivation.
+api.use("/dashboard/events", (c) => fail(c, "NOT_FOUND", 404, "Endpoint tidak ditemukan"));
 api.route("/dashboard", dashboardRoutes);
 api.route("/files", fileRoutes);
 api.route("/admin", adminRoutes);

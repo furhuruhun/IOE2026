@@ -9,6 +9,7 @@ import { useUser } from "@/hooks/useAuth";
 
 import type { DashboardTab } from "./dashboardTabs";
 import dashboardLayout from "./DashboardLayout.module.css";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 // Sidebar nav Home/My Profile/Registered Events = Radix Tabs (client-state, /dashboard
 // URL tidak berubah) — keputusan eksplisit user mengikuti referensi COMPFEST persis,
@@ -20,7 +21,7 @@ import dashboardLayout from "./DashboardLayout.module.css";
 const TAB_ITEMS: { value: DashboardTab; label: string; icon: string }[] = [
   { value: "home", label: "Home", icon: "mdi:home-variant" },
   { value: "profile", label: "My Profile", icon: "mdi:account" },
-  { value: "events", label: "Registered Events", icon: "mdi:gift-outline" },
+  ...(EVENTS_ENABLED ? [{ value: "events" as const, label: "Registered Events", icon: "mdi:gift-outline" }] : []),
 ];
 
 const TAB_TRIGGER_CLASS =

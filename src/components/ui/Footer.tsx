@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 // Spec: design_system_final.md §Footer. F-04 (PRD_IOE_2027_v4.md).
 //
@@ -30,7 +31,7 @@ import { Icon } from "@iconify/react/offline";
 
 const FOOTER_LINKS = [
   { label: "Competitions", href: "/competitions" },
-  { label: "Events", href: "/events" },
+  ...(EVENTS_ENABLED ? [{ label: "Events", href: "/events" }] : []),
 ];
 
 const SOCIAL_LINKS = [

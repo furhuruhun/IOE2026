@@ -26,9 +26,7 @@ export function getSiteConfig() {
 export const publicPages = [
   { path: "/", title: "Indonesia Ocean Expo 2027", description },
   { path: "/competitions", title: "Competitions", description: "Business Case, Paper & Poster, Design Competition — IOE 2027." },
-  { path: "/events", title: "Events", description: "Talkshow, Exhibition, Short Course — IOE 2027." },
   ...navigationCategories.flatMap(category => category.children.map(item => ({ path: item.href, title: item.label, description: `${item.label} — Indonesia Ocean Expo 2027, KMKL ITB.` }))),
-  { path: "/events/exhibition", title: "Exhibition", description: "Exhibition — Indonesia Ocean Expo 2027, KMKL ITB." },
 ];
 
 export function rootMetadata(): Metadata {
@@ -70,5 +68,5 @@ export function siteSitemap(): MetadataRoute.Sitemap {
 export function siteRobots(): MetadataRoute.Robots {
   const site = getSiteConfig();
   if (!site.indexable || !site.origin) return { rules: { userAgent: "*", disallow: "/" } };
-  return { rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin", "/dashboard", "/profile", "/change-password", "/login", "/register", "/forgot-password", "/reset-password", "/confirmation", "/events/*/register"] }, sitemap: `${site.origin}/sitemap.xml` };
+  return { rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/admin", "/dashboard", "/profile", "/change-password", "/login", "/register", "/forgot-password", "/reset-password", "/confirmation", "/events"] }, sitemap: `${site.origin}/sitemap.xml` };
 }

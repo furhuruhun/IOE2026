@@ -7,6 +7,7 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { Button } from '@/components/ui/Button';
 import { formatWibDate } from '@/utils/formatDate';
 import { isHiddenEvent } from '@/lib/eventVisibility';
+import { EVENTS_ENABLED } from '@/lib/eventAvailability';
 
 // API_CONTRACT §3.5 exposes registered membership, session type and date only.
 // Do not derive approval/payment/attendance statuses from this list.
@@ -36,7 +37,7 @@ export function DashboardRegisteredEvents() {
             </Button>
           </div>
         ) : !data?.length ? (
-          <div className="flex flex-col items-start gap-3"><p role="status" className="text-b3 text-neutral-800">No registered events yet.</p><Link href="/events" className="ui-action ui-action-secondary ui-action-sm">Events</Link></div>
+          <div className="flex flex-col items-start gap-3"><p role="status" className="text-b3 text-neutral-800">No registered events yet.</p>{EVENTS_ENABLED && <Link href="/events" className="ui-action ui-action-secondary ui-action-sm">Events</Link>}</div>
         ) : (
           <ul className="flex min-w-0 flex-col gap-4">
             {data.map(event => (
@@ -46,7 +47,7 @@ export function DashboardRegisteredEvents() {
                   <p className="mt-2 wrap-anywhere text-b3 text-neutral-700">Session: {event.sessionType === "day1" ? "Day 1 (22 January 2027)" : event.sessionType === "day2" ? "Day 2 (23 January 2027)" : event.sessionType}</p>
                   <p className="mt-1 text-b3 text-neutral-700">Date: <time dateTime={event.date}>{formatWibDate(event.date)} WIB</time></p>
                 </div>
-                {!isHiddenEvent(event.slug) && <Link href={`/events/${encodeURIComponent(event.slug)}`} aria-label={`See Details: ${event.name}`} className="ui-action ui-action-secondary ui-action-sm shrink-0">See Details</Link>}
+                {EVENTS_ENABLED && !isHiddenEvent(event.slug) && <Link href={`/events/${encodeURIComponent(event.slug)}`} aria-label={`See Details: ${event.name}`} className="ui-action ui-action-secondary ui-action-sm shrink-0">See Details</Link>}
               </li>
             ))}
           </ul>

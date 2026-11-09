@@ -1,4 +1,5 @@
 import { competitionLogos } from "@/features/competitions/competitionLogos";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 export type NavigationCategory = {
   id: string;
@@ -22,7 +23,7 @@ export const navigationCategories: NavigationCategory[] = [
       { id: "design", label: "Design Competition", href: "/competitions/design-competition", imageSrc: competitionLogos["design-competition"] },
     ],
   },
-  {
+  ...(EVENTS_ENABLED ? [{
     id: "events",
     label: "Events",
     parentLabel: "All Events",
@@ -32,5 +33,5 @@ export const navigationCategories: NavigationCategory[] = [
       { id: "talkshow", label: "Talkshow", href: "/events/talkshow" },
       { id: "short-course", label: "Short Course", href: "/events/short-course" },
     ],
-  },
+  }] : []),
 ];

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { manualSimulationEnabled, SIMULATION_COOKIE } from "@/lib/manualSimulation";
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
 
 // OpenNext Cloudflare memerlukan Edge Middleware; proxy.ts di Next.js 16 berjalan
 // di runtime Node.js dan belum didukung adapter. Aturan akses tetap sama.
@@ -26,6 +27,16 @@ function isProtectedPath(pathname: string): boolean {
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  if (!EVENTS_ENABLED && (
+    pathname === "/events" || pathname.startsWith("/events/") ||
+    pathname === "/api/events" || pathname.startsWith("/api/events/") ||
+    pathname === "/api/dashboard/events"
+  )) {
+    const headers = { "Cache-Control": "no-store" };
+    return pathname.startsWith("/api/")
+      ? NextResponse.json({ success: false, error: { code: "NOT_FOUND", message: "Endpoint tidak ditemukan" } }, { status: 404, headers })
+      : new NextResponse(null, { status: 404, headers });
+  }
   const simulation = manualSimulationEnabled();
   if (simulation && (pathname === "/api" || pathname.startsWith("/api/"))) {
     const origin = req.headers.get("origin");

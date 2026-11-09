@@ -1,3 +1,5 @@
+import { EVENTS_ENABLED } from "@/lib/eventAvailability";
+
 // Konten statis/hardcoded untuk Landing Page — sengaja diizinkan (halaman ini tidak
 // fetch dari BE sama sekali). Sesuai PRD_IOE_2027_v4.md §8 Assumptions & §13 Awareness A6:
 // klien belum kirim copywriting/aset final, jadi konten di bawah PLACEHOLDER kecuali
@@ -36,13 +38,13 @@ export const heroSlides: HeroSlide[] = [
     desc: "Business Case, Paper & Poster, Design Competition:       Test your ideas and skills against participants from all over Indonesia.",
     cta: { label: "View Competitions", href: "/competitions#our-competition" },
   },
-  {
+  ...(EVENTS_ENABLED ? [{
     id: "slide-event",
     eyebrow: "Event",
     title: "Event Series",
     desc: "Talkshow, Exhibition, Short Course:           Expand your insights on Indonesia's maritime sector through the IOE 2027 event series.",
     cta: { label: "View Events", href: "/events#events" },
-  },
+  }] : []),
 ];
 
 // F-09 — sumber: PRD_IOE_2027_v4.md §1 Overview (dikutip, bukan dikarang).
