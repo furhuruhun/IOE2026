@@ -14,7 +14,7 @@ export function AboutSection() {
   return (
     <section className="site-container section-space flex flex-col items-center gap-2xl">
       <div className="flex items-center">
-        <h2 className="text-h4 text-secondary-1000 md:text-h2">Apa itu IOE 2027?</h2>
+        <h2 className="text-h4 text-secondary-1000 md:text-h2">What is IOE 2027?</h2>
       </div>
 
       <div className="flex w-full">
@@ -27,8 +27,8 @@ export function AboutSection() {
           <div className="rounded-3xl p-0.5" style={{ background: GRADIENT_BORDER }}>
             <div className="flex flex-col gap-sm rounded-[22px] bg-neutral-100 px-8 py-5 md:px-16 md:py-10">
               <h3 className="text-h5 text-neutral-900 md:text-h4">
-                Menuju Ekosistem Maritim{" "}
-                <span className="text-h5 text-secondary-1000 md:text-h3">Cerdas dan Berkelanjutan</span>
+                Towards a Smart and{" "}
+                <span className="text-h5 text-secondary-1000 md:text-h3">Sustainable Maritime Ecosystem</span>
               </h3>
               <p className="text-b3 text-neutral-700 md:text-b2">{aboutDescription}</p>
 
