@@ -1,0 +1,14 @@
+{
+  "name": "ioe2027-fe",
+  "compatibility_date": "2026-11-04",
+  "pages_build_output_dir": ".vercel/output/static",
+  "vars": {
+    "IOE_ALLOW_INDEXING": "1",
+    "IOE_DEV_EVENTS_SOURCE": "real",
+    "IOE_PUBLIC_ORIGIN": "https://ioe2027.com",
+    "IOE_SITE_ENV": "production",
+    "NEXT_PUBLIC_GOOGLE_CLIENT_ID": "666002747702-v548nhigf2c6g03h1gliu5ro4h5komnl.apps.googleusercontent.com",
+    "NEXT_PUBLIC_WORKERS_API_URL": "https://api.ioe2027.com/api",
+    "WORKERS_API_URL": "https://api.ioe2027.com/api"
+  }
+}
