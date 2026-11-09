@@ -14,7 +14,7 @@ import { Icon } from "@iconify/react/offline";
 // Catatan cakupan lama (masih berlaku):
 // - Link "Privacy & Policy" SENGAJA tidak dibuat — tidak ada route di ROUTES.md maupun
 //   requirement di F-04.
-// - 4 social icon PLACEHOLDER eksplisit (klien belum kirim data final).
+// - Tujuan tautan sosial masih placeholder sampai URL resmi tersedia.
 //
 // [2026-08-31] Kontak panitia (email + WhatsApp) DIHAPUS atas instruksi literal user.
 // F-04 (PRD_IOE_2027_v4.md) minta "kontak panitia, tautan media sosial, dan copyright" —
@@ -33,14 +33,12 @@ const FOOTER_LINKS = [
   { label: "Events", href: "/events" },
 ];
 
-// "Icon Instagram (×4)" — literal dari spec, kemungkinan placeholder Figma untuk 4 slot
-// sosial media yang platform aslinya belum ditentukan. Semua 4 pakai mdi:instagram sesuai
-// spec, href placeholder (bukan link sungguhan).
-const SOCIAL_LINKS = Array.from({ length: 4 }, (_, i) => ({
-  label: `Social media IOE 2027 (${i + 1}) — placeholder`,
-  href: "#",
-  icon: "mdi:instagram",
-}));
+const SOCIAL_LINKS = [
+  { label: "Instagram IOE 2027", href: "https://www.instagram.com/ioe2027", icon: "mdi:instagram" },
+  { label: "LinkedIn IOE 2027", href: "https://www.linkedin.com/company/https-www.linkedin.com-ioe2027", icon: "mdi:linkedin" },
+  { label: "TikTok IOE 2027", href: "https://www.tiktok.com/@ioe2027", icon: "tiktok" },
+  { label: "Medium IOE 2027", href: "https://medium.com/@ioe2027", icon: "mdi:medium" },
+];
 
 function FooterBrand() {
   return (
@@ -57,10 +55,16 @@ function FooterBrand() {
 }
 
 function SocialDestinations() {
-  return SOCIAL_LINKS.map((social, i) => social.href !== "#" && /^https?:\/\//.test(social.href) ? (
-    <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="flex size-11 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-secondary-800"><Icon icon={social.icon} className="size-6" /></a>
+  const socialIcon = (icon: string) => icon === "tiktok" ? (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="size-6" aria-hidden="true">
+      <path d="M16.7 2h-3.1v13.2a3.1 3.1 0 1 1-2.7-3.1V9a6.2 6.2 0 1 0 5.8 6.2V8.4a8 8 0 0 0 5.3 1.8V7.1A5.4 5.4 0 0 1 16.7 2Z" />
+    </svg>
+  ) : <Icon icon={icon} className="size-6" aria-hidden="true" />;
+
+  return SOCIAL_LINKS.map((social) => social.href !== "#" && /^https?:\/\//.test(social.href) ? (
+    <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="flex size-11 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-secondary-800">{socialIcon(social.icon)}</a>
   ) : (
-    <span key={i} aria-label={social.label} className="flex flex-col items-center gap-1 font-micro text-b4 text-secondary-1000"><Icon icon={social.icon} className="size-6" aria-hidden="true" /></span>
+    <span key={social.label} role="img" aria-label={social.label} className="flex flex-col items-center gap-1 font-micro text-b4 text-secondary-1000">{socialIcon(social.icon)}</span>
   ));
 }
 

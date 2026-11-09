@@ -1,19 +1,6 @@
 -- seed/seed.sql
 
--- Clean up existing data
-DELETE FROM announcements;
-DELETE FROM notifications;
-DELETE FROM event_registrations;
-DELETE FROM event_speakers;
-DELETE FROM events;
-DELETE FROM requirement_submissions;
-DELETE FROM requirement_templates;
-DELETE FROM team_members;
-DELETE FROM teams;
-DELETE FROM competition_timeline_items;
-DELETE FROM competition_prizes;
-DELETE FROM competition_batches;
-DELETE FROM competitions;
+-- Clean up existing
 
 -- 1. COMPETITIONS
 INSERT INTO competitions (id, slug, name, description, guidebook_url, logo_url, total_prize_pool_idr, max_team_members, is_published, created_at)
@@ -80,24 +67,30 @@ VALUES
 -- Timeline Items
 INSERT INTO competition_timeline_items (id, competition_id, label, occurs_at, show_in_calendar, sort_order)
 VALUES
-('tl-bc-1', 'comp-business-case', 'Pendaftaran Dibuka', '2027-01-17T09:00:00+07:00', 1, 1),
-('tl-bc-2', 'comp-business-case', 'Batas Akhir Pendaftaran', '2027-03-15T23:59:00+07:00', 1, 2),
-('tl-bc-3', 'comp-business-case', 'Studi Kasus Dirilis', '2027-03-22T09:00:00+07:00', 1, 3),
-('tl-bc-4', 'comp-business-case', 'Batas Pengumpulan Jawaban', '2027-04-05T23:59:00+07:00', 1, 4),
-('tl-bc-5', 'comp-business-case', 'Pengumuman Finalis', '2027-04-20T09:00:00+07:00', 1, 5),
-('tl-bc-6', 'comp-business-case', 'Grand Final & Awarding Night', '2027-05-10T19:00:00+07:00', 1, 6),
+('tl-bc-1', 'comp-business-case', 'Early Registration', '10 - 15 Nov 2026', 1, 1),
+('tl-bc-2', 'comp-business-case', 'Normal Registration', '16 - 30 Nov 2026', 1, 2),
+('tl-bc-3', 'comp-business-case', 'Late Registration', '1 - 12 Dec 2026', 1, 3),
+('tl-bc-4', 'comp-business-case', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
+('tl-bc-5', 'comp-business-case', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
+('tl-bc-6', 'comp-business-case', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
+('tl-bc-7', 'comp-business-case', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
 
-('tl-pp-1', 'comp-paper-poster', 'Pendaftaran Dibuka', '2027-01-17T09:00:00+07:00', 1, 1),
-('tl-pp-2', 'comp-paper-poster', 'Batas Akhir Pendaftaran', '2027-03-10T23:59:00+07:00', 1, 2),
-('tl-pp-3', 'comp-paper-poster', 'Batas Pengumpulan Karya', '2027-03-24T23:59:00+07:00', 1, 3),
-('tl-pp-4', 'comp-paper-poster', 'Pengumuman Finalis', '2027-04-15T09:00:00+07:00', 1, 4),
-('tl-pp-5', 'comp-paper-poster', 'Grand Final & Awarding Night', '2027-05-10T19:00:00+07:00', 1, 5),
+('tl-pp-1', 'comp-paper-poster', 'Early Registration', '10 - 15 Nov 2026', 1, 1),
+('tl-pp-2', 'comp-paper-poster', 'Normal Registration', '16 - 30 Nov 2026', 1, 2),
+('tl-pp-3', 'comp-paper-poster', 'Late Registration', '1 - 12 Dec 2026', 1, 3),
+('tl-pp-4', 'comp-paper-poster', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
+('tl-pp-5', 'comp-paper-poster', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
+('tl-pp-6', 'comp-paper-poster', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
+('tl-pp-7', 'comp-paper-poster', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
 
-('tl-ds-1', 'comp-design', 'Pendaftaran Dibuka', '2027-01-17T09:00:00+07:00', 1, 1),
-('tl-ds-2', 'comp-design', 'Batas Akhir Pendaftaran', '2027-03-20T23:59:00+07:00', 1, 2),
-('tl-ds-3', 'comp-design', 'Batas Pengumpulan Karya', '2027-04-03T23:59:00+07:00', 1, 3),
-('tl-ds-4', 'comp-design', 'Pengumuman Finalis', '2027-04-25T09:00:00+07:00', 1, 4),
-('tl-ds-5', 'comp-design', 'Grand Final & Awarding Night', '2027-05-10T19:00:00+07:00', 1, 5);
+('tl-ds-1', 'comp-design', 'Early Registration', '10 - 15 Nov 2026', 1, 1),
+('tl-ds-2', 'comp-design', 'Normal Registration', '16 - 30 Nov 2026', 1, 2),
+('tl-ds-3', 'comp-design', 'Late Registration', '1 - 12 Dec 2026', 1, 3),
+('tl-ds-4', 'comp-design', 'Preliminary Round', '10 - 13 Dec 2026', 1, 4),
+('tl-ds-5', 'comp-design', 'Semifinal Round', '18 Dec - 15 Jan 2027', 1, 5),
+('tl-ds-6', 'comp-design', 'Final Round', '22 Jan - 4 Feb 2027', 1, 6),
+('tl-ds-7', 'comp-design', 'Exhibition & Awarding Night', '5 Feb 2027', 1, 7);
+
 
 -- Requirement Templates (5 standar per kompetisi)
 -- Business Case
