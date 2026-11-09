@@ -92,6 +92,19 @@ function MetadataLine({ icon, children }: { icon: string; children: React.ReactN
   );
 }
 
+function TalkshowDescription({ className }: { className: string }) {
+  return (
+    <div className={className}>
+      <p>{talkshowContent.description}</p>
+      <ul className="mt-4 list-disc space-y-2 pl-6 text-start">
+        {talkshowContent.subThemes.map((theme) => (
+          <li key={theme.title}><strong>{theme.title}:</strong> {theme.description}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback: React.ReactNode }) {
   return (
     <section aria-labelledby="talkshow-title" className={`${shell} flex flex-col items-center gap-8 pt-10 lg:flex-row lg:justify-between`}>
@@ -100,7 +113,7 @@ function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback:
           <h1 id="talkshow-title" className="font-heading text-h3 leading-tight text-secondary-1000 md:text-h1">{talkshowContent.title}</h1>
           <p className="mt-2 font-ui text-b1 font-semibold leading-snug text-secondary-800 md:text-h5">{talkshowContent.subtitle}</p>
         </div>
-        <p className="mt-4 max-w-[38rem] font-body text-b3 leading-relaxed text-neutral-800 md:text-b2">{talkshowContent.description}</p>
+        <TalkshowDescription className="mt-4 max-w-[38rem] font-body text-b3 leading-relaxed text-neutral-800 md:text-b2" />
         <div className="mt-8 grid w-full max-w-[29rem] grid-cols-1 gap-3 min-[380px]:grid-cols-[3fr_2fr] md:gap-6">
           <RegistrationAction state={state} className="w-full" />
           <a href="#talkshow-details" className={`${action} w-full`}>
@@ -117,7 +130,7 @@ function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback:
   );
 }
 
-function ScheduleItem({ icon, label, value, className = "" }: { icon: string; label: string; value: string; className?: string }) {
+function ScheduleItem({ icon, label, value, className = "" }: { icon: string; label: string; value: React.ReactNode; className?: string }) {
   return (
     <div className={`flex min-w-0 items-center justify-center gap-3 text-b3 md:text-b2 lg:justify-start ${className}`}>
       <Icon icon={icon} className="size-5 shrink-0 text-secondary-800" aria-hidden="true" />
@@ -153,10 +166,10 @@ function TalkshowDetails({ state }: { state: RegistrationState }) {
             <div className="relative z-10 grid w-full grid-cols-2 items-center gap-2 rounded-full bg-transparent px-6 py-4 transition-colors lg:flex lg:justify-between lg:gap-4 lg:px-12">
               <ScheduleItem icon="mdi:calendar-range" label="Tanggal" value={talkshowContent.sessionDate ?? "Menyusul"} />
               <ScheduleItem icon="mdi:timer-outline" label="Waktu" value={talkshowContent.sessionTime ?? "Menyusul"} />
-              <ScheduleItem icon="mdi:map-marker" label="Lokasi" value={talkshowContent.venue ?? "Menyusul"} className="col-span-2 lg:col-span-1" />
+              <ScheduleItem icon="mdi:map-marker" label="Lokasi" value={talkshowContent.venue ? <>{talkshowContent.venue}{talkshowContent.venueLocalName && <> (<em>{talkshowContent.venueLocalName}</em>)</>}</> : "Menyusul"} className="col-span-2 lg:col-span-1" />
             </div>
           </div>
-          <p className="text-center font-body text-b3 text-neutral-800 md:text-b2 lg:text-start lg:text-b1">{talkshowContent.description}</p>
+          <TalkshowDescription className="text-center font-body text-b3 text-neutral-800 md:text-b2 lg:text-start lg:text-b1" />
           <div className="relative"><DetailsRegistrationAction state={state} /></div>
         </div>
       </div>
