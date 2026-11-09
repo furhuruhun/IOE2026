@@ -1,12 +1,16 @@
 "use client";
 
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCurrentUser } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 import { FormBanner } from "@/components/ui/FormBanner";
 import { COMMITTEE_DESTINATION, COMMITTEE_NOTICE, isParticipantPath } from "@/utils/roleJourney";
+
+const subscribeHydration = () => () => {};
+const clientHydrated = () => true;
+const serverHydrated = () => false;
 
 // UI journey only. Roles come from /api/auth/me, never from URL/cookie decoding.
 export function RoleJourney({ children }: { children: ReactNode }) {
@@ -32,7 +36,8 @@ export function RoleJourney({ children }: { children: ReactNode }) {
 
 export function ParticipantAction({ children }: { children: ReactNode }) {
   const identity = useCurrentUser();
-  if (!identity.isSuccess) return null;
+  const hydrated = useSyncExternalStore(subscribeHydration, clientHydrated, serverHydrated);
+  if (!hydrated || !identity.isSuccess) return null;
   if (identity.data?.role === "panitia") return <CommitteeLink />;
   return children;
 }

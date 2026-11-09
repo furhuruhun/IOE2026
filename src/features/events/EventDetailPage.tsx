@@ -14,8 +14,6 @@ import { CountdownTimer } from "@/components/ui/CountdownTimer";
 import { Toast } from "@/components/ui/Toast";
 import { formatWibDate } from "@/utils/formatDate";
 
-const BACK_LINK = "inline-flex min-h-12 items-center rounded-lg border border-secondary-300 bg-neutral-100 px-lg py-sm font-ui text-b3 font-bold text-secondary-1000 hover:bg-secondary-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800";
-
 export function EventDetailPage({ slug }: { slug: string }) {
   const { data, isPending, isFetching, isError, error, refetch } = useEvent(slug);
   const now = useCurrentTime();
@@ -51,9 +49,6 @@ export function EventDetailPage({ slug }: { slug: string }) {
 
   return (
     <main id="main-content" tabIndex={-1} className="min-w-0 bg-neutral-100 [overflow-wrap:anywhere]">
-      <div className="site-container py-lg">
-        <Link href="/events" className={BACK_LINK}>Kembali ke daftar event</Link>
-      </div>
       {message && <Toast status="error" title={message} onDismiss={dismiss} />}
 
       {isPending ? (
@@ -128,7 +123,6 @@ export function EventDetailPage({ slug }: { slug: string }) {
                   </Button>
                 )}
               </ParticipantAction>
-              <Link href="/events" className={BACK_LINK}>Lihat event lainnya</Link>
             </section>
           </div>
         </>

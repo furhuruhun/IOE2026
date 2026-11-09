@@ -86,7 +86,6 @@ function ShortCourseHero({ state, title, now, demoDeadline, feedback }: { state:
     <section aria-labelledby="short-course-title" className="relative isolate w-full">
       <Image src="/images/events/desktop-hero-ioe-aquatic-seamless.svg" alt="" aria-hidden="true" fill sizes="100vw" className="pointer-events-none z-0 object-cover object-center" />
       <div className="site-container relative z-10 py-10">
-        <Link href="/events" className="ui-action ui-action-secondary ui-action-sm"><span aria-hidden="true">←</span> Kembali ke daftar event</Link>
         <div className="grid w-full grid-cols-1 items-center gap-8 py-6 text-secondary-1000 md:py-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.8fr)] lg:gap-12">
           <div className="flex min-w-0 flex-col h-full justify-center">
             <div className="w-full self-center h-auto relative items-center py-6 md:py-8">
