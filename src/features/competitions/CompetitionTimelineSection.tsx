@@ -206,7 +206,10 @@ export function CompetitionTimelineTrack({ items, ariaLabel }: { items: OverallT
 }
 
 export function CompetitionTimelineSection() {
-  if (process.env.NODE_ENV !== "development") return <section id="timeline" className="site-container section-space"><h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2><p className="mt-4 text-center text-b3 text-neutral-800">Tanggal bersifat sementara - menunggu jadwal final dari panitia.</p></section>;
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const items = isDevelopment
+    ? overallTimelineItems
+    : overallTimelineItems.slice(0, 4).map((item) => ({ ...item, status: "future" as const }));
 
   return (
     <section
@@ -215,9 +218,10 @@ export function CompetitionTimelineSection() {
     >
       <h2 className="text-center text-h4 text-secondary-1000 md:text-h2">Timeline Kompetisi</h2>
       <CompetitionTimelineTrack
-        items={overallTimelineItems}
+        items={items}
         ariaLabel="Timeline kompetisi, geser untuk melihat jadwal lainnya"
       />
+      {!isDevelopment && <p className="mt-4 text-center font-body text-b3 text-neutral-800">Tanggal masih sementara dan dapat berubah sesuai keputusan panitia.</p>}
     </section>
   );
 }

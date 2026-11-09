@@ -62,16 +62,15 @@ export interface OverallTimelineItem {
 // F-25 — timeline keseluruhan kompetisi (beda dari landingContent.timelineItems yang scope-nya
 // seluruh event IOE 2027, ini spesifik ke rangkaian kompetisi saja). Tanggal PLACEHOLDER.
 export const overallTimelineItems: OverallTimelineItem[] = [
-  { date: "Jan 2027", label: "Pendaftaran Dibuka", status: "done" },
-  { date: "10–20 Mar 2027", label: "Batas Akhir Pendaftaran per Kompetisi", status: "current" },
-  { date: "Apr 2027", label: "Penjurian & Pengumuman Finalis", status: "future" },
-  { date: "Mei 2027", label: "Grand Final & Awarding Night", status: "future" },
+  { date: "10 Nov - 13 Dec 2026", label: "Preliminary Round", status: "current" },
+  { date: "18 Dec 2026 – 15 Jan 2027", label: "Semifinal Round", status: "future" },
+  { date: "22 Jan 2027 - 4 Jan 2027", label: "Final Round", status: "future" },
+  { date: "5 Feb 2027", label: "Finalist Exhibition", status: "future" },
   // 2 item tambahan — QA overflow-x horizontal scroll Horizontal Zig-Zag Timeline
   // (CompetitionTimelineSection.tsx), diminta user langsung utk verifikasi scroll,
   // BUKAN item resmi dari PRD/panitia. Hapus lagi (kembalikan ke 4 item) kalau QA sudah
   // selesai dan tidak dipakai sbg konten permanen.
-  { date: "Jun 2027", label: "Workshop Persiapan Grand Final", status: "future" },
-  { date: "Jul 2027", label: "Closing Ceremony & Awarding", status: "future" },
+  { date: "5 Feb 2027", label: "Awarding Night", status: "future" }
 ];
 
 export interface Testimonial {
