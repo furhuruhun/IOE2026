@@ -4,6 +4,8 @@ import recoverySql from "../migrations/0002_password_recovery.sql?raw";
 import registrationWindowsSql from "../migrations/0003_registration_windows.sql?raw";
 import discoverySourceSql from "../migrations/0004_event_discovery_source.sql?raw";
 import shortCourseDaysSql from "../migrations/0005_short_course_days.sql?raw";
+import submissionStagesSql from "../migrations/0008_submission_stages.sql?raw";
+import teamStatusSql from "../migrations/0009_team_status.sql?raw";
 import seedSql from "../seed/seed.sql?raw";
 
 function cleanStatements(rawSql: string): string[] {
@@ -36,6 +38,14 @@ export async function resetDatabase() {
   const registrationTable = await env.DB.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'event_registrations'").first<{ sql: string }>();
   if (!registrationTable?.sql.includes("'day1'")) {
     for (const stmt of cleanStatements(shortCourseDaysSql)) await env.DB.prepare(stmt).run();
+  }
+  const templateColumns = await env.DB.prepare("PRAGMA table_info(requirement_templates)").all<{ name: string }>();
+  if (!templateColumns.results.some(column => column.name === "stage")) {
+    for (const stmt of cleanStatements(submissionStagesSql)) await env.DB.prepare(stmt).run();
+  }
+  const teamColumns = await env.DB.prepare("PRAGMA table_info(teams)").all<{ name: string }>();
+  if (!teamColumns.results.some(column => column.name === "status")) {
+    for (const stmt of cleanStatements(teamStatusSql)) await env.DB.prepare(stmt).run();
   }
 
   try {

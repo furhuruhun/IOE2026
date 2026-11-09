@@ -8,6 +8,8 @@ import { resolveCompetition } from "../../lib/resolve";
 import { newId } from "../../lib/ids";
 import { validateUploadedFile, sanitizeFileName } from "../../lib/files";
 import { generateSignedFileUrl } from "../../lib/signedUrl";
+import { computeTeamStatus } from "../teams/service";
+import { canAccessRequirementStage, type RequirementStage } from "./stages";
 
 export const requirementRoutes = new Hono<AppContext>();
 
@@ -16,7 +18,7 @@ interface TemplateRow {
   competition_id: string;
   name: string;
   type: "group" | "individual";
-  stage: "registration" | "submission" | "final";
+  stage: RequirementStage;
   due_at: string;
   instructions: string;
   accepted_formats: string;
@@ -49,29 +51,19 @@ requirementRoutes.get("/:id/requirements", requireAuth, async (c) => {
     throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
   }
 
-  let canViewFinal = false;
-  try {
-    const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
-    if (teamRow?.status === "finalis") canViewFinal = true;
-  } catch {}
-  if (!canViewFinal) {
-    try {
-      const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
-      if (qualification?.status === "passed" || qualification?.status === "finalis") canViewFinal = true;
-    } catch {}
-  }
+  const teamStatus = await computeTeamStatus(c.env.DB, comp.id, mem.team_id);
 
   const templates = await c.env.DB.prepare(
     `SELECT id, competition_id, name, type, stage, due_at, instructions, accepted_formats
      FROM requirement_templates
-     WHERE competition_id = ?1 AND (stage != 'final' OR (stage = 'final' AND ?2 = 1))
+     WHERE competition_id = ?1
      ORDER BY CASE stage WHEN 'registration' THEN 1 WHEN 'submission' THEN 2 WHEN 'final' THEN 3 ELSE 4 END ASC, sort_order ASC`
   )
-    .bind(comp.id, canViewFinal ? 1 : 0)
+    .bind(comp.id)
     .all<TemplateRow>();
 
   const items = await Promise.all(
-    templates.results.map(async (tmpl) => {
+    templates.results.filter((tmpl) => canAccessRequirementStage(teamStatus, tmpl.stage)).map(async (tmpl) => {
       let sub: SubmissionRow | null = null;
       if (tmpl.type === "group") {
         sub = await c.env.DB.prepare(
@@ -155,21 +147,11 @@ requirementRoutes.post(
       throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
     }
 
-    if (tmpl.stage === "final") {
-      let isFinalis = false;
-      try {
-        const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
-        if (teamRow?.status === "finalis") isFinalis = true;
-      } catch {}
-      if (!isFinalis) {
-        try {
-          const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
-          if (qualification?.status === "passed" || qualification?.status === "finalis") isFinalis = true;
-        } catch {}
-      }
-      if (!isFinalis) {
-        throw new AppError("NOT_QUALIFIED", 403, "Tim kamu belum lolos ke tahap final");
-      }
+    const teamStatus = await computeTeamStatus(c.env.DB, comp.id, mem.team_id);
+    if (!canAccessRequirementStage(teamStatus, tmpl.stage)) {
+      throw new AppError("NOT_QUALIFIED", 403, tmpl.stage === "final"
+        ? "Tim kamu belum lolos ke tahap final"
+        : "Tim kamu belum berstatus peserta untuk mengumpulkan hasil karya");
     }
 
     // Check deadline
@@ -333,21 +315,11 @@ requirementRoutes.delete(
       throw new AppError("NOT_FOUND", 404, "Kamu belum bergabung di tim untuk kompetisi ini");
     }
 
-    if (tmpl.stage === "final") {
-      let isFinalis = false;
-      try {
-        const teamRow = await c.env.DB.prepare("SELECT status FROM teams WHERE id = ?1 LIMIT 1").bind(mem.team_id).first<{ status?: string }>();
-        if (teamRow?.status === "finalis") isFinalis = true;
-      } catch {}
-      if (!isFinalis) {
-        try {
-          const qualification = await c.env.DB.prepare("SELECT status FROM competition_qualifications WHERE competition_id = ?1 AND team_id = ?2 LIMIT 1").bind(comp.id, mem.team_id).first<{ status: string }>();
-          if (qualification?.status === "passed" || qualification?.status === "finalis") isFinalis = true;
-        } catch {}
-      }
-      if (!isFinalis) {
-        throw new AppError("NOT_QUALIFIED", 403, "Tim kamu belum lolos ke tahap final");
-      }
+    const teamStatus = await computeTeamStatus(c.env.DB, comp.id, mem.team_id);
+    if (!canAccessRequirementStage(teamStatus, tmpl.stage)) {
+      throw new AppError("NOT_QUALIFIED", 403, tmpl.stage === "final"
+        ? "Tim kamu belum lolos ke tahap final"
+        : "Tim kamu belum berstatus peserta untuk mengumpulkan hasil karya");
     }
 
     // Check deadline

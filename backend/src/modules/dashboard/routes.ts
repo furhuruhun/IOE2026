@@ -3,6 +3,8 @@ import type { AppContext } from "../../env";
 import { requireAuth } from "../../middleware/auth";
 import { ok } from "../../lib/response";
 import { toWib, nowIsoWib } from "../../lib/time";
+import { computeTeamStatus } from "../teams/service";
+import { canAccessRequirementStage, type RequirementStage } from "../requirements/stages";
 
 export const dashboardRoutes = new Hono<AppContext>();
 
@@ -30,6 +32,9 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
 
   const items = await Promise.all(
     comps.results.map(async (comp) => {
+      const teamStatus = await computeTeamStatus(c.env.DB, comp.id, comp.team_id);
+      const canSubmitWork = canAccessRequirementStage(teamStatus, "submission") ? 1 : 0;
+      const canSubmitFinal = canAccessRequirementStage(teamStatus, "final") ? 1 : 0;
       // Get deadline
       const batch = await c.env.DB.prepare(
         `SELECT closes_at FROM competition_batches
@@ -45,11 +50,10 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
       const totalTemplates = await c.env.DB.prepare(
         `SELECT COUNT(*) as cnt
          FROM requirement_templates t
-         LEFT JOIN competition_qualifications q ON q.competition_id = t.competition_id AND q.team_id = ?2
          WHERE t.competition_id = ?1
-           AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))`
+           AND (t.stage = 'registration' OR (t.stage = 'submission' AND ?2 = 1) OR (t.stage = 'final' AND ?3 = 1))`
       )
-        .bind(comp.id, comp.team_id)
+        .bind(comp.id, canSubmitWork, canSubmitFinal)
         .first<{ cnt: number }>();
 
       // count accepted group submissions for this team + accepted individual submissions for this user
@@ -57,16 +61,15 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
         `SELECT COUNT(*) as cnt
          FROM requirement_submissions s
          JOIN requirement_templates t ON t.id = s.template_id
-         LEFT JOIN competition_qualifications q ON q.competition_id = t.competition_id AND q.team_id = ?2
          WHERE t.competition_id = ?1
-           AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))
+           AND (t.stage = 'registration' OR (t.stage = 'submission' AND ?4 = 1) OR (t.stage = 'final' AND ?5 = 1))
            AND s.status = 'accepted'
            AND (
              (t.type = 'group' AND s.team_id = ?2) OR
              (t.type = 'individual' AND s.user_id = ?3)
            )`
       )
-        .bind(comp.id, comp.team_id, authUser.id)
+        .bind(comp.id, comp.team_id, authUser.id, canSubmitWork, canSubmitFinal)
         .first<{ cnt: number }>();
 
       const isComplete =
@@ -197,6 +200,8 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
 
   const rows = await c.env.DB.prepare(
     `SELECT t.id as requirement_id,
+            c.id as competition_id,
+            m.team_id,
             c.slug as competition_slug,
             c.name as competition_name,
             t.name,
@@ -213,26 +218,33 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
          (t.type = 'group' AND s.team_id = m.team_id) OR
          (t.type = 'individual' AND s.user_id = m.user_id)
        )
-     LEFT JOIN competition_qualifications q
-       ON q.competition_id = m.competition_id AND q.team_id = m.team_id
      WHERE m.user_id = ?1
-       AND (t.stage != 'final' OR (t.stage = 'final' AND q.status = 'passed'))
      ORDER BY t.due_at ASC, t.sort_order ASC`
   )
     .bind(authUser.id)
     .all<{
       requirement_id: string;
+      competition_id: string;
+      team_id: string;
       competition_slug: string;
       competition_name: string;
       name: string;
       type: "group" | "individual";
-      stage: "registration" | "final";
+      stage: RequirementStage;
       status: "pending" | "accepted" | "rejected";
       due_date: string;
       accepted_formats: string;
     }>();
 
+  const statuses = new Map<string, Awaited<ReturnType<typeof computeTeamStatus>>>();
+  for (const row of rows.results) {
+    if (!statuses.has(row.team_id)) {
+      statuses.set(row.team_id, await computeTeamStatus(c.env.DB, row.competition_id, row.team_id));
+    }
+  }
+
   const filtered = rows.results
+    .filter((r) => canAccessRequirementStage(statuses.get(r.team_id)!, r.stage))
     .filter((r) => statusFilter === "all" || r.status === statusFilter)
     .map((r) => ({
       requirementId: r.requirement_id,
