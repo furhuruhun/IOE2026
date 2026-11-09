@@ -77,14 +77,13 @@ export interface TimelineItem {
 }
 
 // F-10 — placeholder sementara. Belum ada delapan milestone dan tanggal resmi
-// dari panitia; ganti data di sini sebelum jadwal diumumkan.
 export const timelineItems: TimelineItem[] = [
-  { id: "milestone-01", title: "Milestone 01" },
-  { id: "milestone-02", title: "Milestone 02" },
-  { id: "milestone-03", title: "Milestone 03" },
-  { id: "milestone-04", title: "Milestone 04" },
-  { id: "milestone-05", title: "Milestone 05" },
-  { id: "milestone-06", title: "Milestone 06" },
-  { id: "milestone-07", title: "Milestone 07" },
-  { id: "milestone-08", title: "Milestone 08" },
+  { id: "milestone-01", title: "Competition - Early Bird Registration", dateLabel: "10 - 15 Nov 2026" },
+  { id: "milestone-02", title: "Competition - Normal Registration", dateLabel: "16 - 30 Nov 2026"},
+  { id: "milestone-03", title: "Competition - Late Registration", dateLabel: "1 - 12 Dec 2026" },
+  { id: "milestone-04", title: "Competition - Preliminary Round", dateLabel: "10 Nov - 12 Dec 2026" },
+  { id: "milestone-05", title: "Competition - Semifinal Round", dateLabel: "18 Dec - 18 Jan 2027"},
+  { id: "milestone-06", title: "2-Day Professional Short Course", dateLabel: "22 - 23 Jan 2027" },
+  { id: "milestone-07", title: "Competition - Final Round", dateLabel: "4 Feb 2027" },
+  { id: "milestone-08", title: "Grand Summit & Awarding Night", dateLabel: "5 Feb 2027" },
 ];

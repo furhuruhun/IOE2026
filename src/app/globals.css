@@ -1,6 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Montserrat:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap");
 @import "tailwindcss";
 
 html { color-scheme: light; }
+
+/* Coolvetica belum tersedia; heading tetap memakai Montserrat Bold. */
+:root {
+  --font-coolvetica-fallback: "Montserrat";
+  --font-montserrat: "Montserrat";
+  --font-inter: "Inter";
+  --font-plus-jakarta-sans: "Plus Jakarta Sans";
+}
 
 /* Shared layout and actions use the approved palette, spacing, and font roles. */
 @utility site-container {
@@ -264,8 +273,7 @@ html { color-scheme: light; }
 }
 
 /*
- * Font family tokens — reference ke next/font variable yang di-apply lewat className
- * di src/app/layout.tsx, karena itu pakai @theme inline (bukan literal).
+ * Font family tokens — reference ke variabel keluarga font dari :root.
  * Mapping pemakaian (design_system_final.md §Typography):
  *   --font-heading → H1-H6 (Coolvetica, selalu bold)
  *   --font-body    → paragraph & form input (Plus Jakarta Sans)

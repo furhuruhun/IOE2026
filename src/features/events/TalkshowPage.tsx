@@ -37,7 +37,7 @@ function registrationState(event: EventSummary | undefined, isDemo: boolean, now
     return { available: false, label: "Pendaftaran ditutup", note: "Batas pendaftaran Talkshow telah berlalu." };
   }
   if (!getRegistrationReadiness("talkshow", simulation)) {
-    return { available: false, label: "Pendaftaran menyusul", note: "Formulir pendaftaran sedang disiapkan." };
+    return { available: false, label: "Belum dibuka", note: "" };
   }
   if (!event || isDemo || now === null) {
     return { available: false, label: "Pendaftaran menyusul", note: "Status pendaftaran resmi belum tersedia." };
@@ -101,10 +101,6 @@ function TalkshowHero({ state, feedback }: { state: RegistrationState; feedback:
           <p className="mt-2 font-ui text-b1 font-semibold leading-snug text-secondary-800 md:text-h5">{talkshowContent.subtitle}</p>
         </div>
         <p className="mt-4 max-w-[38rem] font-body text-b3 leading-relaxed text-neutral-800 md:text-b2">{talkshowContent.description}</p>
-        <div className="mt-7 flex flex-col gap-3">
-          <MetadataLine icon="mdi:calendar-clock">{talkshowContent.sessionDate && talkshowContent.sessionTime ? `${talkshowContent.sessionDate} · ${talkshowContent.sessionTime}` : "Tanggal dan waktu acara menyusul"}</MetadataLine>
-          <MetadataLine icon="mdi:map-marker-outline">{talkshowContent.venue ?? "Lokasi acara menyusul"}</MetadataLine>
-        </div>
         <div className="mt-8 grid w-full max-w-[29rem] grid-cols-1 gap-3 min-[380px]:grid-cols-[3fr_2fr] md:gap-6">
           <RegistrationAction state={state} className="w-full" />
           <a href="#talkshow-details" className={`${action} w-full`}>
