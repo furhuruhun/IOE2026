@@ -5,7 +5,7 @@ import { AuthEntryShell } from "@/features/auth/AuthEntryShell";
 import { privateMetadata } from "@/lib/siteMetadata";
 export const metadata = privateMetadata("Login");
 
-// Route: /login. Public — redirect ke /dashboard kalau sudah ada sesi (src/proxy.ts).
+// Route: /login. Public — redirect ke /dashboard kalau sudah ada sesi (src/middleware.ts).
 // F-40, F-41.
 //
 // Layout dua kolom (form + panel dekoratif) di-adaptasi dari referensi visual yang user kasih

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { manualSimulationEnabled, SIMULATION_COOKIE } from "@/lib/manualSimulation";
 
-// Next.js 16 mendeprekasi file convention `middleware.ts` → `proxy.ts` (export function
-// `proxy`, bukan `middleware`). Perilaku identik dengan yang dideskripsikan sebagai
-// "middleware.ts" di AUTH_IMPLEMENTATION.md §7 dan TECHNICAL_CONSTRAINTS_FE.md §Struktur
-// Folder — hanya nama file & nama fungsi export yang berubah karena versi Next.js yang
-// ter-install (16.3.1). Lihat CHANGELOG.md untuk catatan dokumen yang jadi tidak sinkron.
+// OpenNext Cloudflare memerlukan Edge Middleware; proxy.ts di Next.js 16 berjalan
+// di runtime Node.js dan belum didukung adapter. Aturan akses tetap sama.
 
 const COOKIE_NAME = "ioe_token";
 
@@ -27,7 +24,7 @@ function isProtectedPath(pathname: string): boolean {
   return EVENT_REGISTER_PATTERN.test(pathname);
 }
 
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const simulation = manualSimulationEnabled();
   if (simulation && (pathname === "/api" || pathname.startsWith("/api/"))) {
@@ -60,7 +57,7 @@ export function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Proxy hanya cek ada/tidaknya cookie (bukan decode role) supaya tidak ada
+// Middleware hanya cek ada/tidaknya cookie (bukan decode role) supaya tidak ada
 // roundtrip ke Workers di tiap request. Validasi role admin dilakukan di komponen
 // lewat useIsAdmin(); Workers tetap return 403 ADMIN_ONLY sebagai safety net.
 export const config = {

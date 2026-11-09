@@ -17,8 +17,8 @@ import { Footer } from '@/components/ui/Footer';
 import type { DashboardTab } from "@/features/dashboard/dashboardTabs";
 import dashboardLayout from "@/features/dashboard/DashboardLayout.module.css";
 
-// Route: /dashboard — Protected (src/proxy.ts, F-52). Next.js 16 mendeprekasi
-// `middleware.ts` → `proxy.ts`, perilaku sama — lihat catatan di file itu.
+// Route: /dashboard — Protected (src/middleware.ts, F-52). Edge Middleware
+// dipakai agar kompatibel dengan OpenNext Cloudflare; lihat catatan di file itu.
 //
 // Sidebar Home/My Profile/Registered Events = Radix Tabs (client-state, URL tetap
 // /dashboard) — keputusan eksplisit user, BUKAN navigasi ke /profile terpisah seperti

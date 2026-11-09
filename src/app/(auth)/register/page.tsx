@@ -5,7 +5,7 @@ import { AuthEntryShell } from "@/features/auth/AuthEntryShell";
 import { privateMetadata } from "@/lib/siteMetadata";
 export const metadata = privateMetadata("Register");
 
-// Route: /register. Public — redirect ke /dashboard kalau sudah ada sesi (src/proxy.ts).
+// Route: /register. Public — redirect ke /dashboard kalau sudah ada sesi (src/middleware.ts).
 // F-40, F-42.
 export default function RegisterPage() {
   return (
