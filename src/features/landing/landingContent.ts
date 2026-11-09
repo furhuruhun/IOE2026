@@ -32,7 +32,7 @@ export const heroSlides: HeroSlide[] = [
   {
     id: "slide-competition",
     eyebrow: "Competition",
-    title: "Kompetisi Nasional",
+    title: "National Competition",
     desc: "Business Case, Paper & Poster, Design Competition:       Test your ideas and skills against participants from all over Indonesia.",
     cta: { label: "View Competitions", href: "/competitions#our-competition" },
   },

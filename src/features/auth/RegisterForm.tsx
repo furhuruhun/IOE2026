@@ -104,8 +104,8 @@ export function RegisterForm() {
         />
         {emailTaken && (
           <InlineFieldError
-            message="Email ini sudah terdaftar, coba login"
-            action={{ label: "Login di sini", href: "/login" }}
+            message="Email ini sudah terdaftar. Jika biasa masuk dengan Google, gunakan tombol Google di bawah. Jika memakai password, silakan"
+            action={{ label: "login di sini", href: "/login" }}
           />
         )}
       </div>
