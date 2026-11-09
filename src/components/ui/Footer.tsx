@@ -59,9 +59,9 @@ function FooterBrand() {
 function SocialDestinations() {
   return SOCIAL_LINKS.map((social, i) => social.href !== "#" && /^https?:\/\//.test(social.href) ? (
     <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="flex size-11 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-secondary-800"><Icon icon={social.icon} className="size-6" /></a>
-  ) : process.env.NODE_ENV === "development" ? (
+  ) : (
     <span key={i} aria-label={social.label} className="flex flex-col items-center gap-1 font-micro text-b4 text-secondary-1000"><Icon icon={social.icon} className="size-6" aria-hidden="true" /></span>
-  ) : null);
+  ));
 }
 
 export function Footer() {
@@ -117,14 +117,14 @@ export function Footer() {
             ))}
           </nav>
 
-          {(process.env.NODE_ENV === "development" || SOCIAL_LINKS.some(social => social.href !== "#" && /^https?:\/\//.test(social.href))) && <div className="flex w-80 flex-col items-start justify-start gap-10">
+          <div className="flex w-80 flex-col items-start justify-start gap-10">
             <p className="font-body text-b1 font-semibold tracking-normal text-neutral-1000">
               For more information, check out our other social media!
             </p>
             <div className="inline-flex items-center justify-start gap-4">
               <SocialDestinations />
             </div>
-          </div>}
+          </div>
         </div>
 
         <div className="flex w-full flex-col items-start justify-center gap-7">
