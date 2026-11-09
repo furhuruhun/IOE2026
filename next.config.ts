@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  optimizeFonts: false,
   // Local browser/IDE and LAN preview hosts; applies only to next dev.
   allowedDevOrigins: ['localhost', '127.0.0.1', '192.168.18.10'],
   images: {

@@ -7,9 +7,21 @@ export type SpeakerEntry = {
   image?: string;
 };
 
+type TalkshowContent = {
+  title: string;
+  subtitle: string;
+  description: string;
+  speakers: SpeakerEntry[];
+  sessionDate?: string;
+  sessionTime?: string;
+  venue?: string;
+  registrationFormReady: boolean;
+  registrationHref: string;
+};
+
 // The event API currently provides only a list summary. Session time, venue,
 // speakers, and contact details have not been supplied by the organizers.
-export const talkshowContent = {
+export const talkshowContent: TalkshowContent = {
   title: "Ocean Talkshow",
   subtitle: "Tema talkshow akan diumumkan oleh panitia",
   description:
