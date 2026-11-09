@@ -7,7 +7,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import * as Accordion from "@radix-ui/react-accordion";
 import { Icon } from "@iconify/react/offline";
 import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
-import { UserAvatar } from "@/components/ui/Navbar";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
 import { LogoutButton } from "@/components/ui/LogoutButton";
 import { CommitteeLink } from "@/features/auth/RoleJourney";
@@ -109,14 +109,21 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
           <div className="flex shrink-0 flex-col gap-4 border-t border-neutral-200 p-4">
             <CommitteeLink />
             {isLoggedIn ? (
-              <Link
-                href="/profile"
-                onClick={close}
-                className="flex items-center gap-2 text-[15px] font-medium text-secondary-1000"
-              >
-                <UserAvatar avatarUrl={user?.avatarUrl} size="size-6" />
-                <span className="truncate">{user?.name ?? "Profile"}</span>
-              </Link>
+              <div className="flex flex-col gap-1">
+                <Link
+                  href="/dashboard"
+                  onClick={close}
+                  className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 font-ui text-b3 text-secondary-1000 hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
+                >
+                  <UserAvatar avatarUrl={user?.avatarUrl} size="size-6" />
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate">{user?.name ?? "Akun"}</span>
+                    <span className="text-b4 text-neutral-700">Dashboard</span>
+                  </span>
+                </Link>
+                <div className="h-px bg-neutral-300" />
+                <LogoutButton appearance="menu" />
+              </div>
             ) : (
               <Link
                 href="/login"
@@ -127,7 +134,6 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
                 Login
               </Link>
             )}
-            {isLoggedIn && <LogoutButton />}
           </div>
         </Dialog.Content>
       </Dialog.Portal>

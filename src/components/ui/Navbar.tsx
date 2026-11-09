@@ -9,8 +9,8 @@ import { useIsLoggedIn, useUser } from "@/hooks/useAuth";
 import { buttonStyles } from "@/components/ui/Button";
 import { MobileNavDrawer } from "@/components/ui/MobileNavDrawer";
 import { NavbarDropdown } from "@/components/ui/NavbarDropdown";
+import { AccountDropdown } from "@/components/ui/AccountDropdown";
 import { navigationCategories } from "@/components/ui/navbarNavigation";
-import { LogoutButton } from "@/components/ui/LogoutButton";
 import { CommitteeLink } from "@/features/auth/RoleJourney";
 
 // Shared gradient reference for existing IOE action components.
@@ -22,16 +22,15 @@ const MENU_PILL =
 
 const CTA_PILL = `${buttonStyles("primary", "sm")} navbar-cta h-[46px] w-auto whitespace-nowrap px-4 py-2 md:px-5 md:rounded-2xl`;
 
-export function UserAvatar({ avatarUrl, size }: { avatarUrl?: string | null; size: "size-6" | "size-[22px]" }) {
-  return avatarUrl ? (
-    // eslint-disable-next-line @next/next/no-img-element -- avatar dari domain eksternal (Google), belum ada next.config remotePatterns
-    <img src={avatarUrl} alt="" className={`${size} shrink-0 rounded-full`} referrerPolicy="no-referrer" />
-  ) : (
-    <Icon icon="mdi:account-circle" className={`${size} shrink-0`} />
-  );
-}
-
-export function Navbar({ appearance = "default" }: { appearance?: "default" | "dashboard" }) {
+export function Navbar({
+  appearance = "default",
+  showMobileMenu = true,
+  showDesktopMenu = true,
+}: {
+  appearance?: "default" | "dashboard";
+  showMobileMenu?: boolean;
+  showDesktopMenu?: boolean;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<{ id: string; pathname: string } | null>(null);
   const desktopMenuRef = useRef<HTMLDivElement>(null);
@@ -72,46 +71,45 @@ export function Navbar({ appearance = "default" }: { appearance?: "default" | "d
           />
         </Link>
 
-        <div ref={desktopMenuRef} className="hidden items-center gap-4 xl:flex">
-          {navigationCategories.map((category) => (
-            <NavbarDropdown key={category.id} category={category} open={openDropdown?.id === category.id && openDropdown.pathname === pathname} onToggle={() => setOpenDropdown(current => current?.id === category.id && current.pathname === pathname ? null : { id: category.id, pathname })} onClose={() => setOpenDropdown(null)} triggerClassName={MENU_PILL} />
-          ))}
-        </div>
+        {showDesktopMenu && (
+          <div ref={desktopMenuRef} className="hidden items-center gap-4 xl:flex">
+            {navigationCategories.map((category) => (
+              <NavbarDropdown key={category.id} category={category} open={openDropdown?.id === category.id && openDropdown.pathname === pathname} onToggle={() => setOpenDropdown(current => current?.id === category.id && current.pathname === pathname ? null : { id: category.id, pathname })} onClose={() => setOpenDropdown(null)} triggerClassName={MENU_PILL} />
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center gap-4">
           {/* User / Login pill — desktop only, ≥1280px */}
           <div className="hidden items-center gap-2 xl:flex">
             <CommitteeLink />
             {isLoggedIn ? (
-              <Link href="/profile" className={CTA_PILL}>
-                <UserAvatar avatarUrl={user?.avatarUrl} size="size-[22px]" />
-                <span className="max-w-[110px] truncate">{user?.name ?? "Profile"}</span>
-                <Icon icon="mdi:chevron-down" className="size-4 shrink-0" />
-              </Link>
+              <AccountDropdown name={user?.name ?? "Akun"} avatarUrl={user?.avatarUrl} triggerClassName={CTA_PILL} />
             ) : (
               <Link href="/login" className={CTA_PILL}>
                 <Icon icon="mdi:account-circle" className="size-4 shrink-0" />
                 Login
               </Link>
             )}
-            {isLoggedIn && <LogoutButton />}
           </div>
 
           {/* F-02: hamburger — mobile only, <1280px. Nutupnya lewat tombol X di dalam
               MobileNavDrawer (Radix Dialog.Close), bukan toggle di tombol ini lagi. */}
-          <button
-            type="button"
-            onClick={() => setMobileOpen(true)}
-            aria-label="Buka menu"
-            aria-expanded={mobileOpen}
-            className="flex size-11 items-center justify-center rounded-lg text-secondary-1000 focus-visible:outline-2 focus-visible:outline-secondary-800 xl:hidden"
-          >
-            <Icon icon="mdi:menu" className="size-5" />
-          </button>
+          {showMobileMenu && (
+            <button
+              type="button"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Buka menu"
+              aria-expanded={mobileOpen}
+              className="flex size-11 items-center justify-center rounded-lg text-secondary-1000 focus-visible:outline-2 focus-visible:outline-secondary-800 xl:hidden"
+            >
+              <Icon icon="mdi:menu" className="size-5" />
+            </button>
+          )}
         </div>
       </nav>
 
-      <MobileNavDrawer open={mobileOpen} onOpenChange={setMobileOpen} />
+      {showMobileMenu && <MobileNavDrawer open={mobileOpen} onOpenChange={setMobileOpen} />}
     </header>
   );
 }

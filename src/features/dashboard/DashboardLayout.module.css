@@ -1,0 +1,41 @@
+.pageGrid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.profileAvatar {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .pageGrid {
+    grid-template-columns: 15rem minmax(0, 1fr);
+  }
+
+  .profileAvatar {
+    width: 9rem;
+    height: 9rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pageGrid {
+    grid-template-columns: 18rem minmax(0, 1fr);
+  }
+
+  .profileAvatar {
+    width: 10rem;
+    height: 10rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .pageGrid {
+    grid-template-columns: 25rem minmax(0, 1fr);
+  }
+
+  .profileAvatar {
+    width: 12.5rem;
+    height: 12.5rem;
+  }
+}

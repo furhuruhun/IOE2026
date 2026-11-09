@@ -8,6 +8,7 @@ import { Icon } from "@iconify/react/offline";
 import { useUser } from "@/hooks/useAuth";
 
 import type { DashboardTab } from "./dashboardTabs";
+import dashboardLayout from "./DashboardLayout.module.css";
 
 // Sidebar nav Home/My Profile/Registered Events = Radix Tabs (client-state, /dashboard
 // URL tidak berubah) — keputusan eksplisit user mengikuti referensi COMPFEST persis,
@@ -23,7 +24,7 @@ const TAB_ITEMS: { value: DashboardTab; label: string; icon: string }[] = [
 ];
 
 const TAB_TRIGGER_CLASS =
-  "flex h-[46px] w-full items-center gap-2.5 rounded-xl px-4 font-ui text-b3 font-bold text-neutral-1000 transition-colors hover:bg-black/10 data-[state=active]:bg-primary-100 data-[state=active]:text-neutral-1000";
+  "flex h-[46px] w-full items-center gap-2.5 rounded-xl px-4 text-left font-ui text-b3 font-bold text-neutral-1000 transition-colors hover:bg-black/10 data-[state=active]:bg-primary-100 data-[state=active]:text-neutral-1000";
 
 export function DashboardSidebar({ activeTab }: { activeTab: DashboardTab }) {
   const user = useUser();
@@ -34,11 +35,11 @@ export function DashboardSidebar({ activeTab }: { activeTab: DashboardTab }) {
   const closeMenu = () => { setMobileMenuOpen(false); menuButton.current?.focus(); };
 
   return (
-    <div onKeyDown={event => { if (event.key === "Escape" && mobileMenuOpen) { event.preventDefault(); closeMenu(); } }} className="flex w-full min-w-0 flex-col gap-4 rounded-3xl bg-neutral-100 p-4 md:gap-6 md:p-6 md:self-start xl:mt-16 xl:min-h-[35rem]">
+    <div onKeyDown={event => { if (event.key === "Escape" && mobileMenuOpen) { event.preventDefault(); closeMenu(); } }} className="flex w-full min-w-0 flex-col gap-4 rounded-3xl bg-neutral-100 p-4 md:gap-6 md:p-6">
       {/* Profile card — F-45/F-46, avatar+nama otomatis dari akun Google */}
-      <div className="flex items-center gap-4 text-left md:flex-col md:gap-5 md:py-4 md:pb-8 md:text-center">
+      <div className="flex items-center gap-4 text-left md:flex-col md:gap-6 md:py-2 md:pb-4 md:text-center">
         <p className="min-w-0 flex-1 wrap-anywhere font-heading text-h6 text-neutral-1000">{user?.name ?? '—'}</p>
-        {user?.avatarUrl ? <Image src={user.avatarUrl} alt="" width={128} height={128} unoptimized referrerPolicy="no-referrer" className="size-10 shrink-0 rounded-full object-cover md:size-28" /> : <Icon icon="mdi:account-circle" className="size-10 shrink-0 text-neutral-1000 md:size-28" />}
+        {user?.avatarUrl ? <Image src={user.avatarUrl} alt="" width={200} height={200} unoptimized referrerPolicy="no-referrer" className={`${dashboardLayout.profileAvatar} shrink-0 rounded-full object-cover`} /> : <Icon icon="mdi:account-circle" className={`${dashboardLayout.profileAvatar} shrink-0 text-neutral-1000`} />}
       </div>
 
       {/* Mobile — dropdown disclosure, cuma tampil <md */}

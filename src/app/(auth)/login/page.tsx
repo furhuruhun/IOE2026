@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { Icon } from "@iconify/react/offline";
 import { LoginForm } from "@/features/auth/LoginForm";
+import { AuthEntryShell } from "@/features/auth/AuthEntryShell";
 import { privateMetadata } from "@/lib/siteMetadata";
 export const metadata = privateMetadata("Login");
 
@@ -18,42 +18,43 @@ export const metadata = privateMetadata("Login");
 // ROUTES/PRD/USER_FLOWS/API_CONTRACT).
 export default function LoginPage() {
   return (
-    <main id="main-content" tabIndex={-1} className="relative flex flex-1 overflow-hidden">
-      <div className="flex flex-1 flex-col justify-center gap-8 px-6 py-16 md:w-1/2 md:flex-none md:px-16 lg:px-24">
-        <Link href="/" className="ui-action ui-action-secondary ui-action-sm self-start"><span aria-hidden="true">←</span> Kembali ke beranda</Link>
-        {/* max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom membayangi container scale
-            bawaan Tailwind untuk key "sm", lihat CHANGELOG. */}
-        <div className="w-full max-w-[24rem]">
-          <h1 className="font-heading text-h4 text-secondary-1000 md:text-h2">Welcome!</h1>
-          <p className="mt-2 text-b3 text-neutral-700 md:text-b2">
-            Masuk untuk melanjutkan pendaftaran IOE 2027.
-          </p>
+    <AuthEntryShell>
+      <main id="main-content" tabIndex={-1} className="relative flex flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col justify-center gap-8 px-6 py-16 md:w-1/2 md:flex-none md:px-16 lg:px-24">
+          {/* max-w-[24rem] (bukan max-w-sm) — --spacing-sm kustom membayangi container scale
+              bawaan Tailwind untuk key "sm", lihat CHANGELOG. */}
+          <div className="w-full max-w-[24rem]">
+            <h1 className="font-heading text-h4 text-secondary-1000 md:text-h2">Welcome!</h1>
+            <p className="mt-2 text-b3 text-neutral-700 md:text-b2">
+              Masuk untuk melanjutkan pendaftaran IOE 2027.
+            </p>
+          </div>
+          {/* useSearchParams (redirect-back, AUTH_IMPLEMENTATION.md) butuh Suspense boundary di App Router */}
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
         </div>
-        {/* useSearchParams (redirect-back, AUTH_IMPLEMENTATION.md) butuh Suspense boundary di App Router */}
-        <Suspense fallback={null}>
-          <LoginForm />
-        </Suspense>
-      </div>
 
-      {/* Panel dekoratif — desktop only, sama pola dengan not-found.tsx: gradient akuatik dari
-          token project (bukan gambar), plus satu icon motif ocean/journey sebagai centerpiece
-          (mdi:sail-boat, sengaja beda dari mdi:compass-off di not-found.tsx). */}
-      <div
-        aria-hidden
-        className="relative hidden flex-1 items-center justify-center overflow-hidden md:flex"
-        style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
-      >
+        {/* Panel dekoratif — desktop only, sama pola dengan not-found.tsx: gradient akuatik dari
+            token project (bukan gambar), plus satu icon motif ocean/journey sebagai centerpiece
+            (mdi:sail-boat, sengaja beda dari mdi:compass-off di not-found.tsx). */}
         <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 25% 25%, color-mix(in oklch, var(--color-primary-600) 40%, transparent) 0%, transparent 55%), radial-gradient(circle at 80% 80%, color-mix(in oklch, var(--color-tertiary-600) 35%, transparent) 0%, transparent 55%)",
-          }}
-        />
-        <div className="relative flex size-64 items-center justify-center rounded-full bg-gradient-to-br from-primary-300 via-secondary-300 to-tertiary-300 opacity-90 shadow-2xl lg:size-80">
-          <Icon icon="mdi:sail-boat" className="size-28 text-secondary-1000 lg:size-36" />
+          aria-hidden
+          className="relative hidden flex-1 items-center justify-center overflow-hidden md:flex"
+          style={{ background: "linear-gradient(180deg, var(--color-neutral-1000), var(--color-secondary-1000) 120%)" }}
+        >
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at 25% 25%, color-mix(in oklch, var(--color-primary-600) 40%, transparent) 0%, transparent 55%), radial-gradient(circle at 80% 80%, color-mix(in oklch, var(--color-tertiary-600) 35%, transparent) 0%, transparent 55%)",
+            }}
+          />
+          <div className="relative flex size-64 items-center justify-center rounded-full bg-gradient-to-br from-primary-300 via-secondary-300 to-tertiary-300 opacity-90 shadow-2xl lg:size-80">
+            <Icon icon="mdi:sail-boat" className="size-28 text-secondary-1000 lg:size-36" />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </AuthEntryShell>
   );
 }

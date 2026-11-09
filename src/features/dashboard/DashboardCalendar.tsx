@@ -16,6 +16,11 @@ const WIB_MONTH_YEAR_FORMATTER = new Intl.DateTimeFormat("id-ID", {
   month: "long",
   year: "numeric",
 });
+const WIB_SHORT_MONTH_YEAR_FORMATTER = new Intl.DateTimeFormat("id-ID", {
+  timeZone: "Asia/Jakarta",
+  month: "short",
+  year: "numeric",
+});
 
 // F-50/F-51 — CalendarWidget. Spec: design_system_final.md §CalendarWidget (baris 761-816).
 // Grid & list bawah adalah 1 sumber data (GET /dashboard/calendar) — sesuai spec "Grid &
@@ -46,7 +51,9 @@ export function DashboardCalendar() {
   }, [items]);
 
   const grid = useMemo(() => buildMonthGrid(cursor.year, cursor.month), [cursor]);
-  const monthLabel = WIB_MONTH_YEAR_FORMATTER.format(new Date(Date.UTC(cursor.year, cursor.month - 1, 1)));
+  const monthDate = new Date(Date.UTC(cursor.year, cursor.month - 1, 1));
+  const monthLabel = WIB_MONTH_YEAR_FORMATTER.format(monthDate);
+  const shortMonthLabel = WIB_SHORT_MONTH_YEAR_FORMATTER.format(monthDate);
 
   const goPrev = () =>
     setCursor((c) => (c.month === 1 ? { year: c.year - 1, month: 12 } : { year: c.year, month: c.month - 1 }));
@@ -57,19 +64,24 @@ export function DashboardCalendar() {
   const nowIso = now.toISOString();
 
   return (
-    <section className="flex w-full min-w-0 flex-col gap-4">
-      <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">Calendar</h2>
+    <section className="flex w-full min-w-0 flex-col">
+      <div className="flex h-16 items-end justify-center py-4 md:h-24 xl:h-30">
+        <h2 className="text-center font-heading text-h4 text-neutral-1000 md:text-h3">Calendar</h2>
+      </div>
 
       <div
-        aria-busy={isFetching} className="flex w-full xl:min-h-[35rem] flex-col gap-6 rounded-3xl bg-neutral-100 p-4 text-secondary-1000 sm:p-5"
-
+        aria-busy={isFetching} className="flex w-full min-w-0 flex-col gap-5 rounded-[24px] border border-primary-200 bg-neutral-100 px-4 py-5 text-secondary-1000 sm:gap-6 sm:px-6 sm:pt-7 sm:pb-6"
       >
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <Icon icon="mdi:calendar-range" className="size-6 sm:size-7" />
-            <p className="font-heading text-b3">{monthLabel}</p>
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-3">
+            <Icon icon="mdi:calendar-range" className="size-6 shrink-0 sm:size-7" />
+            <p className="min-w-0 truncate font-heading text-[18px] sm:text-[20px]" title={monthLabel}>
+              <span className="sr-only">{monthLabel}</span>
+              <span aria-hidden="true" className="sm:hidden">{shortMonthLabel}</span>
+              <span aria-hidden="true" className="hidden sm:inline">{monthLabel}</span>
+            </p>
           </div>
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={goPrev}
@@ -89,10 +101,10 @@ export function DashboardCalendar() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-primary-200 bg-neutral-200/40 p-2">
-          <div className="mb-1.5 grid grid-cols-7 sm:mb-2">
+        <div className="rounded-[24px] border border-primary-200 bg-neutral-200/40 p-3 sm:p-4">
+          <div className="mb-1.5 grid grid-cols-7 gap-0.5 sm:mb-2 sm:gap-1">
             {WEEKDAY_LABELS.map((d) => (
-              <div key={d} className="text-center font-ui text-[10px] font-bold leading-[1.7] sm:text-b4">
+              <div key={d} className="text-center font-ui text-b4 font-bold sm:text-b3">
                 {d}
               </div>
             ))}
@@ -107,7 +119,7 @@ export function DashboardCalendar() {
                   dateTime={cell.key}
                   aria-current={isToday ? "date" : undefined}
                   data-outside-month={!cell.inCurrentMonth || undefined}
-                  className="grid h-9 w-full place-items-center rounded-full text-center font-ui text-b4 font-bold"
+                  className="grid h-9 w-full place-items-center rounded-full text-center font-ui text-b4 font-bold sm:h-10"
                   style={{
                     background: hasSchedule ? "var(--color-secondary-800)" : "transparent",
                     color: hasSchedule ? "var(--color-neutral-100)" : cell.inCurrentMonth ? "var(--color-secondary-1000)" : "var(--color-neutral-800)",
@@ -131,7 +143,7 @@ export function DashboardCalendar() {
             sudah ada di codebase, per-item icon pakai logoUrl (fallback icon per type)
             bukan dot generik — sesuai spec "diferensiasi lewat logo, bukan warna/shape
             generik". */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <p className="font-body text-b3 text-neutral-800">Semua jadwal kompetisi dan event yang kamu ikuti, tidak hanya bulan yang ditampilkan.</p>
           {isError && <div role="status" className="flex min-w-0 flex-col items-start gap-3">
           <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your schedule.{message && <span className="mt-1 block">{message}</span>}</p>
@@ -151,7 +163,7 @@ export function DashboardCalendar() {
               return (
                 <div key={`${item.refId}-${item.date}`} className="grid w-full grid-cols-[3rem_1.25rem_minmax(0,1fr)] gap-x-1">
                   <span className="self-center text-end font-ui text-b4 leading-tight">{formatWibShortDate(item.date)}</span>
-                  <div className="relative flex min-h-10 w-5 justify-center self-stretch">
+                  <div className="relative flex min-h-8 w-5 justify-center self-stretch">
                     {i > 0 && (
                       <span className="absolute top-0 bottom-1/2 w-0.5" style={{ background: connectorColor }} aria-hidden />
                     )}
@@ -171,7 +183,7 @@ export function DashboardCalendar() {
                       )}
                     </span>
                   </div>
-                  <span className="min-w-0 self-center break-words py-1.5 font-ui text-b4 font-bold leading-tight">
+                  <span className="min-w-0 self-center break-words py-1 font-ui text-b4 font-bold leading-tight">
                     {item.label}
                   </span>
                 </div>

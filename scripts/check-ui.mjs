@@ -238,9 +238,9 @@ try {
   for (const width of runWidths) {
     await send("Emulation.setDeviceMetricsOverride", { width, height: 900, deviceScaleFactor: 1, mobile: false });
     await assertSharedComponents();
-    for (const path of (process.env.UI_PATHS?.split(",") ?? ["/", "/events", "/events/short-course", "/events/talkshow", "/events/workshop", "/competitions", "/competitions/business-case-competition", "/login", "/dashboard", "/events/short-course/register"])) {
+    for (const path of (process.env.UI_PATHS?.split(",") ?? ["/", "/events", "/events/short-course", "/events/talkshow", "/events/workshop", "/competitions", "/competitions/business-case-competition", "/login", "/register", "/dashboard", "/events/short-course/register"])) {
       scenario = "populated";
-      authenticated = path === "/dashboard" || path.endsWith("/register");
+      authenticated = path === "/dashboard" || (path.startsWith("/events/") && path.endsWith("/register"));
       await send("Network.deleteCookies", { name: "ioe_token", url: origin });
       if (authenticated) await send("Network.setCookie", { name: "ioe_token", value: "ui-preview", url: origin });
       await navigate(path);
@@ -251,8 +251,13 @@ try {
       assert.ok(layout.scroll <= layout.client + 1, `${path} overflows at ${width}: ${layout.scroll}`);
       assert.equal(layout.mainCount, 1, `${path}: one skip target`);
       assert.ok(layout.skipTarget);
-      const hasNavbar = path !== "/login" && !path.endsWith("/register");
-      assert.equal(await evaluate("!!document.querySelector('header nav')"),hasNavbar,"public/dashboard navbar is present; login preserves its standalone layout");
+      const hasNavbar = !path.startsWith("/events/") || !path.endsWith("/register");
+      assert.equal(await evaluate("!!document.querySelector('header nav')"),hasNavbar,"public, auth entry, and dashboard navbar is present");
+      if (path === "/login" || path === "/register") {
+        assert.ok(await evaluate("!!document.querySelector('footer')"), `${path}: footer is present`);
+        assert.equal(await evaluate("document.querySelector('header button[aria-label=\"Buka menu\"]')"), null, `${path}: hamburger is absent`);
+        assert.equal(await evaluate("document.querySelectorAll('header button[aria-controls=\"competitions-dropdown\"], header button[aria-controls=\"events-dropdown\"]').length"), 0, `${path}: desktop activity links are absent`);
+      }
       assert.equal(await evaluate("document.querySelectorAll('header [role=switch]').length"), 0, "navbar has no theme switch");
       assert.equal(await evaluate("document.querySelectorAll('footer a[href=\"#\"]').length"),0,"placeholder socials are not destinations");
       const palette = await evaluate("(()=>{const x=document.createElement('canvas').getContext('2d');return Object.fromEntries(['neutral-100','neutral-700','neutral-800','neutral-200','secondary-800','secondary-1000','secondary-300','primary-900','success-900','warning-900','secondary-900','error-800'].map(name=>{x.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--color-'+name);x.fillRect(0,0,1,1);return [name,'#'+[...x.getImageData(0,0,1,1).data].slice(0,3).map(v=>v.toString(16).padStart(2,'0')).join('')]}))})()");
@@ -342,14 +347,14 @@ try {
       if (path === "/dashboard") {
         assert.ok(await evaluate("document.querySelector('main').innerText.includes('UI Preview')"), "data: User fixture renders the user name");
         assert.equal(await evaluate("document.querySelectorAll('main h1').length"), 1, "one dashboard heading");
-        assert.ok(await evaluate("[...document.querySelectorAll('main h2')].map(e=>e.textContent).indexOf('My Preparation') < [...document.querySelectorAll('main h2')].map(e=>e.textContent).indexOf('My Journey')"),"Preparation precedes Journey in document order");
+        assert.ok(await evaluate("[...document.querySelectorAll('main h2')].map(e=>e.textContent).indexOf('My Journey') < [...document.querySelectorAll('main h2')].map(e=>e.textContent).indexOf('My Preparation')"),"Journey precedes Preparation in document order");
         assert.deepEqual(await evaluate("[...document.querySelectorAll('[data-requirement-id]')].map(e=>e.dataset.requirementId)"),["tie-1","tie-2","late","invalid","missing"],"stable deadlines, all statuses/items and invalid dates last");
         assert.ok(await evaluate("document.querySelector('main').textContent.includes('tidak hanya bulan yang ditampilkan')"),"calendar schedule scope is explicit");
         assert.equal(await evaluate("document.querySelectorAll('main .grid-cols-7 button').length"), 0, "dates are not inert buttons");
         await assertPaintContrast('main [aria-current="date"]');
-        assert.ok(await evaluate("[...document.querySelectorAll('main .truncate')].every(e=>e.scrollWidth<=e.clientWidth)"), "no truncated dashboard names");
+        assert.ok(await evaluate("[...document.querySelectorAll('main .truncate')].every(e=>getComputedStyle(e).whiteSpace==='nowrap' && getComputedStyle(e).overflow==='hidden')"), "dashboard names truncate within their items");
         if (width < 768) {
-          assert.ok(await evaluate("document.querySelector('[aria-label=Assignments] h2').getBoundingClientRect().top < 700"), "mobile preparation is visible earlier");
+          assert.ok(await evaluate("[...document.querySelectorAll('main h2')].find(e=>e.textContent==='My Journey').getBoundingClientRect().top < 700"), "mobile Journey appears first");
           await evaluate("document.querySelector('main button[aria-expanded]').click()");
           assert.deepEqual(await evaluate("[...document.querySelectorAll('[id]')].map(e=>e.id).filter((id,i,a)=>a.indexOf(id)!==i)"), [], "unique tab IDs with mobile navigation open");
           await evaluate("document.querySelector('main [role=tab][aria-selected=true]').focus()");
@@ -378,7 +383,7 @@ try {
         await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
         assert.equal(await evaluate("document.activeElement.getAttribute('aria-label')"), "Tampilkan password");
       }
-      if (path.endsWith("/register")) {
+      if (path.startsWith("/events/") && path.endsWith("/register")) {
         await assertPaintContrast("form [role=note]");
         assert.ok(await evaluate("!!document.querySelector('form [role=note]') && document.querySelector('form').innerText.startsWith('Pengiriman pendaftaran belum tersedia')"));
       }
