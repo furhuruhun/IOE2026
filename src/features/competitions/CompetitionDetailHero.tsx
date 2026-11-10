@@ -19,8 +19,8 @@ interface CompetitionDetailHeroProps {
 
 // Isi URL guidebook masing-masing kompetisi di sini.
 const guidebookUrls: Record<string, string> = {
-  "business-case-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.0",
-  "paper-poster-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.ai9lpc5hl3oh",
+  "business-case-competition": "https://drive.google.com/file/d/12-Q3lToIjNRoYlvMqVaxMZ8wHJHMH7c0/view?usp=sharing",
+  "paper-poster-competition": "https://drive.google.com/file/d/1Bje8DIHz9SrJ3zhL84MADvnxCc1pJ39m/view?usp=sharing",
   "design-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.m18tpso2mzyi",
 };
 
