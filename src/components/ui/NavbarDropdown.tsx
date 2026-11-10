@@ -32,7 +32,7 @@ export function NavbarDropdown({ category, open, onToggle, onClose, triggerClass
                 <span aria-hidden="true" className={`absolute left-2 top-0 w-px bg-neutral-300 ${index === category.children.length - 1 ? "h-1/2" : "h-full"}`} />
                 <span aria-hidden="true" className="absolute left-2 top-1/2 h-px w-4 bg-neutral-300" />
                 <Link href={child.href} onClick={onClose} className={`${linkClass} gap-2`}>
-                  {child.imageSrc && <Image src={child.imageSrc} alt="" width={32} height={32} sizes="32px" className="size-8 shrink-0 object-contain" />}
+                  {child.imageSrc && <Image src={child.imageSrc} alt="" width={48} height={48} sizes="40px" className="size-10 shrink-0 object-contain" />}
                   <span className="min-w-0">{child.label}</span>
                 </Link>
               </div>

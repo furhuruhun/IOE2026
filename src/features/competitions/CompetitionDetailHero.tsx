@@ -93,9 +93,9 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
                 alt=""
                 width={logoWidth}
                 height={logoHeight}
-                sizes="(min-width: 768px) 128px, 96px"
+                sizes="192px"
                 loading="eager"
-                className="mb-3 h-auto w-24 object-contain md:w-32"
+                className="mb-3 h-auto w-48 object-contain"
               />
             ) : (
               <div

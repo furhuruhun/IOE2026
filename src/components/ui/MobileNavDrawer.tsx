@@ -94,7 +94,7 @@ export function MobileNavDrawer({ open, onOpenChange }: { open: boolean; onOpenC
                             onClick={close}
                             className="flex min-h-11 items-center gap-2 py-2 text-sm text-neutral-800 transition-colors hover:text-secondary-1000"
                           >
-                            {child.imageSrc && <Image src={child.imageSrc} alt="" width={28} height={28} sizes="28px" className="size-7 shrink-0 object-contain" />}
+                            {child.imageSrc && <Image src={child.imageSrc} alt="" width={40} height={40} sizes="40px" className="size-10 shrink-0 object-contain" />}
                             <span className="min-w-0">{child.label}</span>
                           </Link>
                         </li>
