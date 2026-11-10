@@ -52,9 +52,9 @@ ON CONFLICT(id) DO UPDATE SET
 -- Batches
 INSERT INTO competition_batches (id, competition_id, name, opens_at, closes_at, sort_order)
 VALUES
-('batch-bc-1', 'comp-business-case', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-15T23:59:00+07:00', 1),
-('batch-pp-1', 'comp-paper-poster', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-10T23:59:00+07:00', 1),
-('batch-ds-1', 'comp-design', 'Batch 1', '2026-01-01T00:00:00+07:00', '2027-03-20T23:59:00+07:00', 1)
+('batch-bc-1', 'comp-business-case', 'Batch 1', '2026-01-01T00:00:00+07:00', '2026-12-12T23:59:00+07:00', 1),
+('batch-pp-1', 'comp-paper-poster', 'Batch 1', '2026-01-01T00:00:00+07:00', '2026-12-12T23:59:00+07:00', 1),
+('batch-ds-1', 'comp-design', 'Batch 1', '2026-01-01T00:00:00+07:00', '2026-12-12T23:59:00+07:00', 1)
 ON CONFLICT(id) DO UPDATE SET 
   name = excluded.name,
   opens_at = excluded.opens_at,

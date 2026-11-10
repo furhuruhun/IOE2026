@@ -38,7 +38,6 @@ const SOCIAL_LINKS = [
   { label: "Instagram IOE 2027", href: "https://www.instagram.com/ioe2027", icon: "mdi:instagram" },
   { label: "LinkedIn IOE 2027", href: "https://www.linkedin.com/company/https-www.linkedin.com-ioe2027", icon: "mdi:linkedin" },
   { label: "TikTok IOE 2027", href: "https://www.tiktok.com/@ioe2027", icon: "tiktok" },
-  { label: "Medium IOE 2027", href: "https://medium.com/@ioe2027", icon: "mdi:medium" },
 ];
 
 function FooterBrand() {

@@ -22,8 +22,8 @@ export const mockCompetitionDetails: CompetitionDetail[] = [
     description:
       "The Business Case Competition challenges undergraduate participants to solve real-world industry problems across port operations, maritime supply chain efficiency, digital transformation, and green logistics. Working in teams, participants develop strategic business proposals and pitch deck solutions aimed at accelerating smart, safe, and sustainable maritime management before an expert jury panel.",
     timeline: [
-      { date: "17 Jan 2027", label: "Pendaftaran Dibuka" },
-      { date: "15 Mar 2027", label: "Batas Akhir Pendaftaran" },
+      { date: "10 Nov 2026", label: "Pendaftaran Dibuka" },
+      { date: "12 Dec 2026", label: "Batas Akhir Pendaftaran" },
       { date: "22 Mar 2027", label: "Studi Kasus Dirilis" },
       { date: "5 Apr 2027", label: "Batas Pengumpulan Jawaban" },
       { date: "20 Apr 2027", label: "Pengumuman Finalis" },
@@ -42,8 +42,8 @@ export const mockCompetitionDetails: CompetitionDetail[] = [
     description:
       "The Paper & Poster Competition provides a platform for undergraduate students to present innovative scientific papers and visual posters addressing critical marine challenges. Focusing on coastal resilience, sedimentary management, circular economy, and eco-friendly dredging, participants present their research and solutions before an expert jury panel and visitors at the Grand Summit exhibition ",
     timeline: [
-      { date: "17 Jan 2027", label: "Pendaftaran Dibuka" },
-      { date: "10 Mar 2027", label: "Batas Akhir Pendaftaran" },
+      { date: "10 Nov 2026", label: "Pendaftaran Dibuka" },
+      { date: "12 Dec 2026", label: "Batas Akhir Pendaftaran" },
       { date: "24 Mar 2027", label: "Batas Pengumpulan Karya" },
       { date: "15 Apr 2027", label: "Pengumuman Finalis" },
       { date: "10 Mei 2027", label: "Grand Final & Awarding Night" },
@@ -62,7 +62,7 @@ export const mockCompetitionDetails: CompetitionDetail[] = [
       "The Floating Offshore Wind Turbine (FOWT) Competition challenges undergraduate students to engineer innovative and structurally safe FOWT designs tailored to Indonesia's offshore wind potential. Participants perform rotor turbine calculations, platform selection, semi-submersible sizing based on DNV standards, and 3D modeling, culminating in prototype development for the final stage.",
     timeline: [
       { date: "17 Jan 2027", label: "Pendaftaran Dibuka" },
-      { date: "20 Mar 2027", label: "Batas Akhir Pendaftaran" },
+      { date: "12 Dec 2026", label: "Batas Akhir Pendaftaran" },
       { date: "3 Apr 2027", label: "Batas Pengumpulan Karya" },
       { date: "25 Apr 2027", label: "Pengumuman Finalis" },
       { date: "10 Mei 2027", label: "Grand Final & Awarding Night" },
