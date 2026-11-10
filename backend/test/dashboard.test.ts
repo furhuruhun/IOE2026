@@ -112,5 +112,9 @@ describe("Dashboard Module", () => {
     expect(body.data[0].date).toBeDefined();
     expect(body.data[0].label).toBeDefined();
     expect(body.data[0].type).toBeDefined();
+    expect(body.data.every((item: { date: string }) => Number.isFinite(Date.parse(item.date)))).toBe(true);
+    expect(body.data.some((item: { date: string; label: string }) =>
+      item.date === "2026-11-10T00:00:00+07:00" && item.label.includes("10 - 15 Nov 2026")
+    )).toBe(true);
   });
 });

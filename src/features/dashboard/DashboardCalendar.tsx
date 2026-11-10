@@ -32,7 +32,7 @@ export function DashboardCalendar() {
   useEffect(() => {
     if (error) handleError(error, { onToast: setMessage, redirectTo: '/login?redirect=%2Fdashboard' });
   }, [error, handleError]);
-  const items = useMemo(() => (isError ? [] : (data ?? [])), [isError, data]);
+  const items = useMemo(() => (isError ? [] : (data ?? []).filter(item => Number.isFinite(Date.parse(item.date)))), [isError, data]);
 
   const now = useMemo(() => new Date(), []);
   const todayKey = wibDateKey(now);

@@ -3,6 +3,7 @@ import type { AppContext } from "../../env";
 import { requireAuth } from "../../middleware/auth";
 import { ok } from "../../lib/response";
 import { toWib, nowIsoWib } from "../../lib/time";
+import { calendarDate } from "../../lib/calendarDate";
 import { computeTeamStatus } from "../teams/service";
 import { canAccessRequirementStage, type RequirementStage } from "../requirements/stages";
 
@@ -180,7 +181,10 @@ dashboardRoutes.get("/calendar", requireAuth, async (c) => {
     }>();
 
   const allItems = [...compItems.results, ...eventItems.results]
-    .filter((item) => Boolean(item.date))
+    .flatMap((item) => {
+      const date = calendarDate(item.date);
+      return date ? [{ ...item, date, label: date === item.date ? item.label : `${item.label} (${item.date})` }] : [];
+    })
     .map((item) => ({
       date: toWib(item.date),
       label: item.label,
