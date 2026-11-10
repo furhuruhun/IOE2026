@@ -17,6 +17,13 @@ interface CompetitionDetailHeroProps {
   slug: string;
 }
 
+// Isi URL guidebook masing-masing kompetisi di sini.
+const guidebookUrls: Record<string, string> = {
+  "business-case-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.0",
+  "paper-poster-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.ai9lpc5hl3oh",
+  "design-competition": "https://docs.google.com/document/d/1Z8AIwKPdOJ4lhwCDRdSXPoeCzfk2GC6phgHc9qvRM-k/edit?tab=t.m18tpso2mzyi",
+};
+
 // F-12 — Hero dengan CTA Register (auth-guard, lihat useRegisterGuard.ts). useCompetition(slug)
 // di sini juga yang memicu notFound() untuk slug tidak valid — dipanggil dari client component
 // (bukan page.tsx server component) supaya konsisten dengan pola "tiap section fetch sendiri"
@@ -31,6 +38,7 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
   const openModal = useTeamModalStore((s) => s.open);
   const { data: competition, isLoading, isError, error } = useCompetition(slug);
   const logoSrc = (competitionLogos as Record<string, string>)[slug];
+  const guidebookUrl = guidebookUrls[slug];
   const logoWidth = slug === "design-competition" ? 1305 : 1489;
   const logoHeight = slug === "design-competition" ? 1206 : 1056;
   const handleRegisterClick = useRegisterGuard({
@@ -118,11 +126,14 @@ export function CompetitionDetailHero({ slug }: CompetitionDetailHeroProps) {
               </button></ParticipantAction>
 
               <a
-                href="#about"
+                href={guidebookUrl || undefined}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={!guidebookUrl}
                 className="ui-action ui-action-secondary ui-action-sm"
               >
-                Explore More
-                <Icon icon="mdi:arrow-down" className="size-5 md:size-6" />
+                Guidebook
+                <Icon icon="mdi:open-in-new" className="size-5 md:size-6" />
               </a>
             </div>
           </div>

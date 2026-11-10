@@ -30,7 +30,7 @@ function HeroCardContent({ slide, active }: { slide: HeroSlide; active: boolean 
   const overview = slide.id === "slide-overview";
   const competition = slide.id === "slide-competition";
   const artwork = overview ? "/images/parent/logo-navibar.webp" : competition
-    ? "/images/competitions/ioe-oil-rig-design-aquatic.webp" : "/images/competitions/ioe-paper-poster-aquatic.webp";
+    ? "/images/parent/ombak.webp" : "/images/competitions/ioe-paper-poster-aquatic.webp";
   const background = overview ? "/images/parent/Card IOE.webp" : competition
     ? "/images/parent/Card 2.webp" : "/images/parent/Card 3.webp";
   const titleStyle = { fontWeight: 600, fontSize: "clamp(22px, 3vw, 30px)" };

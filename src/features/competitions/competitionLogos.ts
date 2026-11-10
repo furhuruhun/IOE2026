@@ -1,5 +1,5 @@
 export const competitionLogos = {
-  "business-case-competition": "/images/competitions/ioe-business-case-aquatic.webp",
-  "paper-poster-competition": "/images/competitions/ioe-paper-poster-aquatic.webp",
-  "design-competition": "/images/competitions/ioe-oil-rig-design-aquatic.webp",
+  "business-case-competition": "/images/parent/Logo-BCC.webp",
+  "paper-poster-competition": "/images/parent/Logo-Paper-Poster.webp",
+  "design-competition": "/images/parent/Logo-Wind-Turbin.webp",
 } as const;
