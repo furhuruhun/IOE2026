@@ -20,7 +20,7 @@ export const navigationCategories: NavigationCategory[] = [
     children: [
       { id: "business-case", label: "Business Case Competition", href: "/competitions/business-case-competition", imageSrc: competitionLogos["business-case-competition"] },
       { id: "paper-poster", label: "Paper & Poster Competition", href: "/competitions/paper-poster-competition", imageSrc: competitionLogos["paper-poster-competition"] },
-      { id: "design", label: "Design Competition", href: "/competitions/design-competition", imageSrc: competitionLogos["design-competition"] },
+      { id: "design", label: "Floating Offshore Wind Turbine Design Competition", href: "/competitions/design-competition", imageSrc: competitionLogos["design-competition"] },
     ],
   },
   ...(EVENTS_ENABLED ? [{

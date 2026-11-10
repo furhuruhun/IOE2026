@@ -35,9 +35,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "business-case-3", text: "Solusi bisnis yang kuat menjelaskan masalah, alasan di balik strategi, serta cara mengukur dampaknya saat diterapkan." },
     ],
     gains: [
-      { id: "case-analysis", icon: "mdi:chart-box-outline", title: "Case Analysis", caption: "Latih cara membaca persoalan bisnis dari data dan konteks industri maritim." },
-      { id: "business-strategy", icon: "mdi:lightbulb-on-outline", title: "Business Strategy", caption: "Susun rekomendasi yang mempertimbangkan kebutuhan pasar dan kelayakan penerapan." },
-      { id: "team-pitch", icon: "mdi:presentation", title: "Team Pitch", caption: "Bangun argumen bersama tim untuk menjelaskan solusi di hadapan juri." },
+      { id: "case-analysis", icon: "mdi:chart-box-outline", title: "Case Analysis", caption: "Practice analyzing business challenges using data and maritime industry contexts." },
+      { id: "business-strategy", icon: "mdi:lightbulb-on-outline", title: "Business Strategy", caption: "Formulate recommendations that take into account market needs and implementation feasibility." },
+      { id: "team-pitch", icon: "mdi:presentation", title: "Team Pitch", caption: "Build strong arguments with your team to present your solution before the judges." },
     ],
     faqs: [
       { value: "business-case-focus", question: "Apa yang dikerjakan dalam Business Case Competition?", answer: "Peserta menganalisis studi kasus tentang ekonomi dan industri maritim, lalu merumuskan strategi bisnis yang aplikatif." },
@@ -52,9 +52,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "paper-poster-3", text: "Karya tulis yang meyakinkan menghubungkan data, analisis, dan kesimpulan tanpa membuat pembaca menebak alurnya." },
     ],
     gains: [
-      { id: "research-writing", icon: "mdi:file-document-edit-outline", title: "Research Writing", caption: "Kembangkan gagasan tentang keberlanjutan ekosistem maritim menjadi tulisan yang runtut." },
-      { id: "visual-communication", icon: "mdi:palette-outline", title: "Visual Communication", caption: "Sampaikan persoalan dan temuan utama lewat poster yang mudah dipahami." },
-      { id: "work-presentation", icon: "mdi:presentation", title: "Present Your Work", caption: "Latih cara menjelaskan proses dan hasil karya di hadapan juri pada babak final." },
+      { id: "research-writing", icon: "mdi:file-document-edit-outline", title: "Research Writing", caption: "Develop ideas on maritime ecosystem sustainability into a well-structured scientific paper." },
+      { id: "visual-communication", icon: "mdi:palette-outline", title: "Visual Communication", caption: "Communicate core problems and key findings through an easily understandable poster." },
+      { id: "work-presentation", icon: "mdi:presentation", title: "Present Your Work", caption: "Practice presenting your process and final deliverables before the jury panel in the final round." },
     ],
     faqs: [
       { value: "paper-poster-format", question: "Karya seperti apa yang dibuat dalam Paper & Poster Competition?", answer: "Peserta menuangkan gagasan ilmiah dalam bentuk tulisan atau poster visual tentang ekosistem maritim Indonesia." },
@@ -69,9 +69,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "design-3", text: "Sebuah ide desain bisa berubah setelah diuji dengan pengguna dan dibandingkan dengan kebutuhan nyata di lapangan." },
     ],
     gains: [
-      { id: "design-research", icon: "mdi:magnify", title: "Design Research", caption: "Pahami tantangan energi, ekonomi, atau inovasi digital di sektor kelautan." },
-      { id: "creative-exploration", icon: "mdi:palette-outline", title: "Creative Exploration", caption: "Kembangkan gagasan visual yang orisinal dan relevan dengan masalah yang dipilih." },
-      { id: "solution-storytelling", icon: "mdi:lightbulb-on-outline", title: "Solution Storytelling", caption: "Jelaskan bagaimana rancanganmu menjawab kebutuhan dan bekerja dalam konteks maritim." },
+      { id: "design-research", icon: "mdi:magnify", title: "Design Research", caption: "Analyze key challenges across energy, economy, or digital innovation within the ocean sector." },
+      { id: "creative-exploration", icon: "mdi:palette-outline", title: "Creative Exploration", caption: "Develop original visual concepts that are directly relevant to the selected problem statement." },
+      { id: "solution-storytelling", icon: "mdi:lightbulb-on-outline", title: "Solution Storytelling", caption: "Articulate how your design addresses real-world needs and operates effectively within a maritime context." },
     ],
     faqs: [
       { value: "design-focus", question: "Apa fokus Design Competition?", answer: "Peserta merancang solusi visual atau desain kreatif untuk tantangan energi, ekonomi, dan inovasi digital di sektor kelautan." },
