@@ -144,7 +144,7 @@ export function DashboardCalendar() {
             bukan dot generik — sesuai spec "diferensiasi lewat logo, bukan warna/shape
             generik". */}
         <div className="flex flex-col gap-2">
-          <p className="font-body text-b3 text-neutral-800">Semua jadwal kompetisi dan event yang kamu ikuti, tidak hanya bulan yang ditampilkan.</p>
+          {/* <p className="font-body text-b3 text-neutral-800">Semua jadwal kompetisi dan event yang kamu ikuti, tidak hanya bulan yang ditampilkan.</p> */}
           {isError && <div role="status" className="flex min-w-0 flex-col items-start gap-3">
           <p className="wrap-anywhere text-b3 text-neutral-700">Unable to load your schedule.{message && <span className="mt-1 block">{message}</span>}</p>
           <Button size="sm" disabled={isFetching} onClick={() => { setMessage(null); void refetch(); }}>{isFetching ? 'Loading...' : 'Coba lagi'}</Button>
