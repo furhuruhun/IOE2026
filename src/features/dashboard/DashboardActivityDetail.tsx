@@ -38,6 +38,7 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
   };
 
   const data = competition.data;
+  const canViewCase = team.data?.status === 'peserta' || team.data?.status === 'finalis';
   return (
     <div className="wrap-anywhere flex min-w-0 flex-col gap-6">
       <Button variant="ghost" size="sm" onClick={close} className="self-start">
@@ -58,18 +59,18 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
             <h1 className="text-h5 md:text-h3">{data.name}</h1>
             <p className="text-b3">{data.description}</p>
             <div className="flex flex-wrap gap-3">
-              {data.guidebookUrl ? (
+              {canViewCase ? (
                 <a
-                  href={data.guidebookUrl}
+                  href={`/api/dashboard/case/${encodeURIComponent(slug)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-xl bg-primary-100 px-4 py-2 font-ui text-b3 text-secondary-1000"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary-100 px-4 py-2 font-ui text-b3 text-secondary-1000"
                 >
-                  Lihat Guidebook
+                  Lihat Case
                 </a>
               ) : (
-                <Button size="sm" disabled>
-                  Lihat Guidebook
+                <Button size="sm" disabled title="Case tersedia setelah tim berstatus peserta">
+                  Lihat Case
                 </Button>
               )}
               <a

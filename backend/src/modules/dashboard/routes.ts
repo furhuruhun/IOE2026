@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import type { AppContext } from "../../env";
 import { requireAuth } from "../../middleware/auth";
+import { AppError } from "../../lib/errors";
+import { resolveCompetition } from "../../lib/resolve";
 import { ok } from "../../lib/response";
 import { toWib, nowIsoWib } from "../../lib/time";
 import { calendarDate } from "../../lib/calendarDate";
@@ -8,6 +10,29 @@ import { computeTeamStatus } from "../teams/service";
 import { canAccessRequirementStage, type RequirementStage } from "../requirements/stages";
 
 export const dashboardRoutes = new Hono<AppContext>();
+
+// Private Case access: reuse the existing team status without changing verification.
+dashboardRoutes.get("/case/:slug", requireAuth, async (c) => {
+  c.header("Cache-Control", "private, no-store");
+  const comp = await resolveCompetition(c.env.DB, c.req.param("slug"));
+  const member = await c.env.DB.prepare(
+    "SELECT team_id FROM team_members WHERE competition_id = ?1 AND user_id = ?2 LIMIT 1"
+  ).bind(comp.id, c.get("user")!.id).first<{ team_id: string }>();
+  if (!member) throw new AppError("NOT_QUALIFIED", 403, "Kamu bukan anggota tim kompetisi ini");
+  const status = await computeTeamStatus(c.env.DB, comp.id, member.team_id);
+  if (!canAccessRequirementStage(status, "submission")) {
+    throw new AppError("NOT_QUALIFIED", 403, "Case tersedia setelah tim berstatus peserta");
+  }
+  const resource = await c.env.DB.prepare(
+    "SELECT url FROM competition_cases WHERE competition_id = ?1"
+  ).bind(comp.id).first<{ url: string }>();
+  if (!resource?.url) throw new AppError("NOT_FOUND", 404, "Case belum tersedia");
+  let url: URL;
+  try { url = new URL(resource.url); }
+  catch { throw new AppError("SERVER_ERROR", 500, "Link Case tidak valid"); }
+  if (url.protocol !== "https:") throw new AppError("SERVER_ERROR", 500, "Link Case harus HTTPS");
+  return ok(c, { url: url.href });
+});
 
 // GET /dashboard/journey
 dashboardRoutes.get("/journey", requireAuth, async (c) => {
