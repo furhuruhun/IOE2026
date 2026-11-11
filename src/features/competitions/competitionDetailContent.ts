@@ -97,6 +97,6 @@ export interface ContactChannel {
 // kategori dengan discordInviteUrl di competitionsContent.ts. Selaras dengan placeholder yang
 // kontak panitia; ganti ID_OA dengan ID resmi LINE OA (tanpa @).
 export const contactChannels: ContactChannel[] = [
-  { icon: "mdi:email", label: "kontak@ioe2027.example", href: "mailto:info@ioe2027.com" },
+  { icon: "mdi:email", label: "info@ioe2027.com", href: "mailto:info@ioe2027.com" },
   { icon: "mdi:chat", label: "OA LINE", href: "https://line.me/R/ti/p/@637iwugv" },
 ];
