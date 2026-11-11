@@ -95,8 +95,8 @@ export interface ContactChannel {
 
 // Shared lintas semua competition detail page (kontak panitia, bukan per-kompetisi) — sama
 // kategori dengan discordInviteUrl di competitionsContent.ts. Selaras dengan placeholder yang
-// sudah ada di Footer.tsx (kontak@ioe2027.example, WhatsApp placeholder).
+// kontak panitia; ganti ID_OA dengan ID resmi LINE OA (tanpa @).
 export const contactChannels: ContactChannel[] = [
-  { icon: "mdi:email", label: "kontak@ioe2027.example", href: "mailto:kontak@ioe2027.example" },
-  { icon: "mdi:whatsapp", label: "WhatsApp Panitia", href: "https://wa.me/62XXXXXXXXXX" },
+  { icon: "mdi:email", label: "kontak@ioe2027.example", href: "mailto:info@ioe2027.com" },
+  { icon: "mdi:chat", label: "OA LINE", href: "https://line.me/R/ti/p/@637iwugv" },
 ];
