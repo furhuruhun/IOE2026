@@ -12,7 +12,13 @@ interface MockTeamRecord extends Required<Team> {
   maxMember: number;
 }
 
-const MAX_MEMBER = 5;
+function getMaxMember(competitionId: string): number {
+  if (competitionId === "comp-design" || competitionId === "design-competition") {
+    return 5;
+  }
+  return 3;
+}
+
 const MOCK_LEADER: TeamMember = { id: "mock-user-1", name: "You", studentId: "10021234" };
 
 const mockTeams: MockTeamRecord[] = [
@@ -30,7 +36,7 @@ const mockTeams: MockTeamRecord[] = [
     qualificationStatus: "pending",
     leader: { id: "mock-user-0", name: "Alex" },
     members: [{ id: "mock-user-0", name: "Alex", studentId: "10019999" }],
-    maxMember: MAX_MEMBER,
+    maxMember: 3,
   },
 ];
 
@@ -70,7 +76,7 @@ export function createMockTeam(competitionId: string, teamName: string): MockTea
     qualificationStatus: "pending",
     leader: MOCK_LEADER,
     members: [MOCK_LEADER],
-    maxMember: MAX_MEMBER,
+    maxMember: getMaxMember(competitionId),
   };
   mockTeams.push(team);
   myTeamByCompetition.set(competitionId, team.teamId);
