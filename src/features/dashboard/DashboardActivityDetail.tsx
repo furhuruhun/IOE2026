@@ -14,6 +14,18 @@ import { RequirementCard } from './RequirementCard';
 import { CompetitionDetailContactSection } from '@/features/competitions/CompetitionDetailContactSection';
 import { discordInviteUrl } from '@/features/competitions/competitionsContent';
 
+const guidebookUrls: Record<string, string> = {
+  'business-case-competition': 'https://drive.google.com/file/d/12-Q3lToIjNRoYlvMqVaxMZ8wHJHMH7c0/view?usp=sharing',
+  'paper-poster-competition': 'https://drive.google.com/file/d/1Bje8DIHz9SrJ3zhL84MADvnxCc1pJ39m/view?usp=sharing',
+  'design-competition': 'https://drive.google.com/file/d/1_BEftXl2AJipiS3xytchfmIIIYMzD4es/view?usp=sharing',
+};
+
+const caseUrls: Record<string, string> = {
+  'business-case-competition': 'https://drive.google.com/drive/folders/1fdmmeIya4h9Byw2nsk4Bn-IxuKxPLwkU?usp=sharing',
+  'paper-poster-competition': 'https://drive.google.com/drive/folders/1ZEidrzYeQTaVtm3eayyooZnScV4TqWJ-?usp=sharing',
+  'design-competition': 'https://drive.google.com/drive/folders/1BifC90k8c0ov5CRvQ-8nwLeMlLHfJiUr?usp=sharing',
+};
+
 export function DashboardActivityDetail({ slug }: { slug: string }) {
   const close = useDashboardDetailStore((state) => state.close);
   const competition = useCompetition(slug);
@@ -59,9 +71,19 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
             <h1 className="text-h5 md:text-h3">{data.name}</h1>
             <p className="text-b3">{data.description}</p>
             <div className="flex flex-wrap gap-3">
+              {(data.guidebookUrl || guidebookUrls[slug]) && (
+                <a
+                  href={data.guidebookUrl || guidebookUrls[slug]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-xl bg-primary-100 px-4 py-2 font-ui text-b3 text-secondary-1000"
+                >
+                  Lihat Guidebook
+                </a>
+              )}
               {canViewCase ? (
                 <a
-                  href={`/api/dashboard/case/${encodeURIComponent(slug)}`}
+                  href={caseUrls[slug] || `/api/dashboard/case/${encodeURIComponent(slug)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center rounded-xl bg-primary-100 px-4 py-2 font-ui text-b3 text-secondary-1000"

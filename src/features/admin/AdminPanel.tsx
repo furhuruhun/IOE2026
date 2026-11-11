@@ -61,7 +61,12 @@ export function AdminPanel() {
     try { await mutation.mutateAsync({ path, body: body(new FormData(form)) }); if (path === "users/password") form.reset(); } catch { /* mutation reports mapped errors */ }
   }
   const all = submissions.data ?? [];
-  const competitions = Array.from(new Map(all.map(item => [item.competition_id, item.competition_name])).entries());
+  const knownCompetitions: [string, string][] = [
+    ["comp-business-case", "Business Case Competition"],
+    ["comp-paper-poster", "Paper & Poster Competition"],
+    ["comp-design", "Floating Offshore Wind Turbine Design Competition"],
+  ];
+  const competitions = Array.from(new Map([...knownCompetitions, ...all.map(item => [item.competition_id, item.competition_name] as [string, string])]).entries());
   const filtered = all.filter(item => (!status || item.status === status) && (!competition || item.competition_id === competition) && (!stageFilter || item.stage === stageFilter) && `${item.team_name ?? ""} ${item.participant_name ?? ""} ${item.participant_email ?? ""} ${item.requirement_name}`.toLowerCase().includes(search.toLowerCase()));
   const teamExportOptions = Array.from(new Map([
     ["business-case-competition", "Business Case Competition"],
@@ -119,7 +124,7 @@ export function AdminPanel() {
           {submissions.isPending && <p role="status">Memuat berkas peserta...</p>}
           {submissions.isError && <div className={card}><p role="status">Berkas belum dapat dimuat. Gunakan Muat ulang untuk mencoba lagi.</p></div>}
           {submissions.isSuccess && <p role="status" className="text-b3 text-neutral-800">{filtered.length} berkas ditampilkan</p>}
-          {submissions.isSuccess && filtered.length === 0 && <div className={card}><h3 className="font-ui font-bold">Belum ada berkas yang sesuai</h3><p className="mt-sm text-b3 text-neutral-800">Berkas yang dikirim peserta akan muncul di sini. Coba ubah pencarian atau filter.</p></div>}
+          {submissions.isSuccess && filtered.length === 0 && <div className={card}><h3 className="font-ui font-bold">Belum ada berkas yang sesuai</h3><p className="mt-sm text-b3 text-neutral-800">{competition === "comp-design" ? "Belum ada berkas submisi yang diunggah peserta untuk Floating Offshore Wind Turbine Design Competition." : "Berkas yang dikirim peserta akan muncul di sini. Coba ubah pencarian atau filter."}</p></div>}
           {filtered.map(item => <article key={item.id} className={card}>
             <div className="flex flex-wrap items-start justify-between gap-md"><div className="min-w-0"><div className="flex flex-wrap items-center gap-sm"><p className="text-b3 text-secondary-800">{item.competition_name}</p><span className={`rounded-full px-sm py-xs text-b4 font-bold ${item.stage === "final" ? "bg-secondary-900 text-neutral-100" : item.stage === "submission" ? "bg-primary-200 text-secondary-1000" : "bg-neutral-200 text-neutral-800"}`}>{item.stage === "final" ? "Tahap Final" : item.stage === "submission" ? "Hasil Karya" : "Pendaftaran"}</span></div><h3 className="mt-sm wrap-anywhere font-ui text-s4 font-bold">{item.requirement_name}</h3><p className="mt-sm wrap-anywhere text-b3 text-neutral-800">{item.team_name || item.participant_name || "Peserta"}{item.participant_email && ` · ${item.participant_email}`}</p></div><span className={`rounded-full px-md py-sm text-b3 font-semibold ${item.status === "accepted" ? "bg-success-100 text-success-1000" : item.status === "rejected" ? "bg-error-100 text-error-1000" : "bg-secondary-100 text-secondary-1000"}`}>{statuses[item.status]}</span></div>
             <p className="mt-md text-b3 text-neutral-800">Deadline: {date(item.due_at)} (WIB)</p>

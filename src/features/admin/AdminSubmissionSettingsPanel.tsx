@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/Button";
 import { FormBanner } from "@/components/ui/FormBanner";
-import { adminRequest, type AdminSchedules, type AdminQualification, type AdminRequirement } from "@/services/adminService";
+import { adminRequest, type AdminSchedules, type AdminQualification, type AdminRequirement, type AdminSubmission } from "@/services/adminService";
 import styles from "./AdminPanel.module.css";
 
 const card = `${styles.card} min-w-0 rounded-3xl border border-secondary-200 bg-neutral-100 p-lg md:p-xl`;
@@ -72,10 +72,17 @@ export function AdminSubmissionSettingsPanel() {
   const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
   const [teamSearch, setTeamSearch] = useState("");
   const [teamStatusFilter, setTeamStatusFilter] = useState<string>("");
+  const [expandedTeamId, setExpandedTeamId] = useState<string | null>(null);
 
   const schedules = useQuery({
     queryKey: ["admin", "schedules"],
     queryFn: () => adminRequest<AdminSchedules>("schedules"),
+    retry: false,
+  });
+
+  const submissions = useQuery({
+    queryKey: ["admin", "submissions"],
+    queryFn: () => adminRequest<AdminSubmission[]>("submissions"),
     retry: false,
   });
 
@@ -448,10 +455,16 @@ export function AdminSubmissionSettingsPanel() {
             <div className="mt-md flex flex-col gap-sm">
               {teamList.map((team) => {
                 const currentStatus = normalizeStatus(team.status);
+                const isExpanded = expandedTeamId === team.teamId;
+                const teamSubmissions = (submissions.data ?? []).filter(
+                  (s) =>
+                    (s.team_id === team.teamId || s.team_name === team.teamName || s.team_code === team.teamCode) &&
+                    (!s.competition_id || s.competition_id === competitionId)
+                );
                 return (
                   <div
                     key={team.teamId}
-                    className={`flex flex-wrap items-center justify-between gap-md rounded-2xl border p-md ${
+                    className={`flex flex-col gap-md rounded-2xl border p-md ${
                       currentStatus === "finalis"
                         ? "border-success-500 bg-success-100/30"
                         : currentStatus === "peserta"
@@ -459,44 +472,163 @@ export function AdminSubmissionSettingsPanel() {
                         : "border-neutral-300 bg-neutral-50"
                     }`}
                   >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-sm">
-                        <p className="font-ui text-b2 font-bold text-secondary-1000">{team.teamName}</p>
-                        <span
-                          className={`rounded-md px-sm py-xs text-b4 font-bold ${
-                            currentStatus === "finalis"
-                              ? "bg-success-500 text-success-1000"
-                              : currentStatus === "peserta"
-                              ? "bg-primary-200 text-secondary-1000"
-                              : "bg-warning-400 text-warning-1000"
-                          }`}
-                        >
-                          {teamStatusLabels[currentStatus]}
-                        </span>
+                    <div className="flex flex-wrap items-center justify-between gap-md">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-sm">
+                          <p className="font-ui text-b2 font-bold text-secondary-1000">{team.teamName}</p>
+                          <span
+                            className={`rounded-md px-sm py-xs text-b4 font-bold ${
+                              currentStatus === "finalis"
+                                ? "bg-success-500 text-success-1000"
+                                : currentStatus === "peserta"
+                                ? "bg-primary-200 text-secondary-1000"
+                                : "bg-warning-400 text-warning-1000"
+                            }`}
+                          >
+                            {teamStatusLabels[currentStatus]}
+                          </span>
+                        </div>
+                        <p className="mt-xs text-b4 text-neutral-700">
+                          Kode Tim: <span className="font-mono font-bold">{team.teamCode}</span> · Ketua: {team.leaderName}
+                        </p>
                       </div>
-                      <p className="mt-xs text-b4 text-neutral-700">
-                        Kode Tim: <span className="font-mono font-bold">{team.teamCode}</span> · Ketua: {team.leaderName}
-                      </p>
+
+                      <div className="flex flex-wrap items-center gap-sm">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => setExpandedTeamId(isExpanded ? null : team.teamId)}
+                        >
+                          {isExpanded ? "Tutup Berkas Tim" : "Lihat Berkas Tim"}
+                        </Button>
+
+                        <label className="flex items-center gap-sm text-b3 font-semibold text-secondary-1000">
+                          <span className="sr-only">Status tim {team.teamName}</span>
+                          <select
+                            className={`${control} w-auto min-w-44`}
+                            value={currentStatus}
+                            disabled={qualify.isPending}
+                            onChange={(event) =>
+                              qualify.mutate({
+                                teamId: team.teamId,
+                                status: event.target.value as "pendaftar" | "peserta" | "finalis",
+                              })
+                            }
+                          >
+                            <option value="pendaftar">Pendaftar</option>
+                            <option value="peserta">Peserta</option>
+                            <option value="finalis">Finalis</option>
+                          </select>
+                        </label>
+                      </div>
                     </div>
 
-                    <label className="flex items-center gap-sm text-b3 font-semibold text-secondary-1000">
-                      <span className="sr-only">Status tim {team.teamName}</span>
-                      <select
-                        className={`${control} w-auto min-w-44`}
-                        value={currentStatus}
-                        disabled={qualify.isPending}
-                        onChange={(event) =>
-                          qualify.mutate({
-                            teamId: team.teamId,
-                            status: event.target.value as "pendaftar" | "peserta" | "finalis",
-                          })
-                        }
-                      >
-                        <option value="pendaftar">Pendaftar</option>
-                        <option value="peserta">Peserta</option>
-                        <option value="finalis">Finalis</option>
-                      </select>
-                    </label>
+                    {isExpanded && (
+                      <div className="flex flex-col gap-sm border-t border-neutral-300 pt-md">
+                        <div className="flex flex-wrap items-center justify-between gap-xs">
+                          <h4 className="font-ui text-b3 font-bold text-secondary-1000">
+                            Berkas & Persyaratan Tim ({teamSubmissions.length} berkas terunggah)
+                          </h4>
+                          <span className="text-b4 text-neutral-600">
+                            Periksa kelengkapan berkas sebelum mengubah status tim
+                          </span>
+                        </div>
+
+                        {requirements.data && requirements.data.length > 0 ? (
+                          <div className="flex flex-col gap-xs">
+                            {requirements.data.map((req) => {
+                              const matchingSubs = teamSubmissions.filter((s) => s.requirement_id === req.id);
+                              return (
+                                <div
+                                  key={req.id}
+                                  className="flex flex-wrap items-center justify-between gap-sm rounded-xl border border-neutral-300 bg-neutral-100 p-sm"
+                                >
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-xs">
+                                      <p className="font-ui text-b3 font-semibold text-secondary-1000">{req.name}</p>
+                                      <span className="rounded bg-neutral-200 px-xs py-0.5 text-b4 text-neutral-700">
+                                        {req.stage === "registration" ? "Pendaftaran" : req.stage === "submission" ? "Karya" : "Final"}
+                                      </span>
+                                    </div>
+                                    <p className="text-b4 text-neutral-600">
+                                      Tipe: {req.type === "group" ? "Grup" : "Individu"} · Format: {req.acceptedFormats.join(", ").toUpperCase()}
+                                    </p>
+                                  </div>
+
+                                  <div className="flex flex-wrap items-center gap-xs">
+                                    {matchingSubs.length > 0 ? (
+                                      matchingSubs.map((sub) => (
+                                        <div key={sub.id} className="flex items-center gap-xs">
+                                          <span
+                                            className={`rounded-md px-sm py-xs text-b4 font-semibold ${
+                                              sub.status === "accepted"
+                                                ? "bg-success-100 text-success-1000"
+                                                : sub.status === "rejected"
+                                                ? "bg-error-100 text-error-1000"
+                                                : "bg-warning-100 text-warning-1000"
+                                            }`}
+                                          >
+                                            {sub.status === "accepted"
+                                              ? "Diterima"
+                                              : sub.status === "rejected"
+                                              ? "Ditolak"
+                                              : "Menunggu review"}
+                                          </span>
+                                          {sub.fileUrl ? (
+                                            <a
+                                              href={sub.fileUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="ui-action ui-action-secondary ui-action-sm inline-flex items-center"
+                                            >
+                                              Buka berkas
+                                            </a>
+                                          ) : (
+                                            <span className="text-b4 text-neutral-600">File tidak tersedia</span>
+                                          )}
+                                        </div>
+                                      ))
+                                    ) : (
+                                      <span className="rounded-md bg-neutral-200 px-sm py-xs text-b4 text-neutral-600">
+                                        Belum diunggah
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : teamSubmissions.length > 0 ? (
+                          <div className="flex flex-col gap-xs">
+                            {teamSubmissions.map((sub) => (
+                              <div
+                                key={sub.id}
+                                className="flex flex-wrap items-center justify-between gap-sm rounded-xl border border-neutral-300 bg-neutral-100 p-sm"
+                              >
+                                <p className="font-ui text-b3 font-semibold text-secondary-1000">{sub.requirement_name}</p>
+                                <div className="flex items-center gap-xs">
+                                  {sub.fileUrl && (
+                                    <a
+                                      href={sub.fileUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="ui-action ui-action-secondary ui-action-sm inline-flex items-center"
+                                    >
+                                      Buka berkas
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-b4 text-neutral-600">
+                            Belum ada berkas yang diunggah oleh tim ini.
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
