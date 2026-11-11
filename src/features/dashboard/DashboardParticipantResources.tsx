@@ -59,10 +59,7 @@ function DashboardParticipantResourcesContent({ items }: { items: JourneyItem[] 
       <div className="flex w-full flex-col gap-4 rounded-xl bg-neutral-100 p-6 shadow-sm">
         {verifiedComps.length > 0 ? (
           <>
-            <p className="text-b3 text-neutral-800">
-              Akses resmi WhatsApp Group, Case, dan Guidebook untuk kompetisi yang telah terverifikasi sebagai peserta.
-            </p>
-
+            
             <div className="flex flex-col gap-4">
               {verifiedComps.map(({ item, team }) => {
                 const caseUrl = caseUrls[item.slug];
