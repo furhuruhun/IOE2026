@@ -7,6 +7,7 @@ export interface JourneyItem {
   logoUrl: string | null;
   status: "in_progress" | "complete";
   dueDate: string; // ISO8601
+  teamStatus?: "pendaftar" | "peserta" | "finalis";
 }
 
 export interface RegisteredEventItem {

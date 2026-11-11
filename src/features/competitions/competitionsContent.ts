@@ -146,4 +146,5 @@ export const competitionFaqs: FaqItem[] = [
 
 // Placeholder — belum ada link invite Discord resmi dari panitia, mirip pola
 // NEXT_PUBLIC_GOOGLE_CLIENT_ID yang masih kosong (AUTH_IMPLEMENTATION.md A2).
-export const discordInviteUrl = "https://chat.whatsapp.com/CSOjjW5Nilf4YdwcN0YPXo";
+export const whatsappGroupUrl = "https://chat.whatsapp.com/CSOjjW5Nilf4YdwcN0YPXo";
+export const discordInviteUrl = whatsappGroupUrl;

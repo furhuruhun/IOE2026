@@ -109,6 +109,7 @@ dashboardRoutes.get("/journey", requireAuth, async (c) => {
         logoUrl: comp.logo_url,
         status: isComplete ? ("complete" as const) : ("in_progress" as const),
         dueDate: batch?.closes_at ? toWib(batch.closes_at) : currentIso,
+        teamStatus,
       };
     })
   );

@@ -101,7 +101,7 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-xl bg-primary-100 px-4 py-2 font-ui text-b3 text-secondary-1000"
               >
-                Join Group
+                Join WhatsApp Group
               </a>
             </div>
             <div className="-mx-6 flex justify-center md:mx-0">

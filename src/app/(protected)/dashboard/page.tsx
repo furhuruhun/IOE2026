@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import * as RadixTabs from "@radix-ui/react-tabs";
 import { DashboardSidebar } from "@/features/dashboard/DashboardSidebar";
 import { DashboardMyJourney } from "@/features/dashboard/DashboardMyJourney";
+import { DashboardParticipantResources } from "@/features/dashboard/DashboardParticipantResources";
 import { DashboardRegisteredEvents } from '@/features/dashboard/DashboardRegisteredEvents';
 import { DashboardAssignments } from "@/features/dashboard/DashboardAssignments";
 import { DashboardCalendar } from "@/features/dashboard/DashboardCalendar";
@@ -52,6 +53,7 @@ export default function DashboardPage() {
             <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_23rem]">
               <div className="flex min-w-0 flex-col">
                 <DashboardMyJourney />
+                <DashboardParticipantResources />
                 <DashboardAssignments />
               </div>
               <aside className="min-w-0 self-start"><DashboardCalendar /></aside>
