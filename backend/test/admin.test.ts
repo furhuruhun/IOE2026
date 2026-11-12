@@ -58,6 +58,45 @@ describe("Admin Module", () => {
     expect(body.error.code).toBe("ADMIN_ONLY");
   });
 
+  it("associates individual and group submissions with the team in the matching competition", async () => {
+    const { adminToken } = await getTokens();
+    for (const [id, competition, batch] of [
+      ["team-bc", "comp-business-case", "batch-bc-1"],
+      ["team-ds", "comp-design", "batch-ds-1"],
+    ]) {
+      await env.DB.prepare(`INSERT INTO teams (id, competition_id, batch_id, name, code, leader_user_id, created_at)
+        VALUES (?1, ?2, ?3, ?1, ?1, 'usr_adm_test', '2026-10-01')`).bind(id, competition, batch).run();
+      await env.DB.prepare(`INSERT INTO team_members (team_id, user_id, competition_id, role, joined_at)
+        VALUES (?1, 'usr_adm_test', ?2, 'leader', '2026-10-01')`).bind(id, competition).run();
+    }
+    for (const type of ["individual", "group"]) {
+      await env.DB.prepare(`INSERT INTO requirement_templates (id, competition_id, name, type, due_at)
+        VALUES (?1, 'comp-business-case', ?1, ?2, '2026-12-01')`).bind(`req-test-${type}`, type).run();
+      await env.DB.prepare(`INSERT INTO requirement_submissions (id, template_id, team_id, user_id, status, file_key, updated_at)
+        VALUES (?1, ?2, ?3, 'usr_adm_test', 'accepted', ?1, '2026-10-01')`)
+        .bind(`sub-test-${type}`, `req-test-${type}`, type === "group" ? "team-bc" : null).run();
+    }
+    const list = async (query = "") => {
+      const response = await app.fetch(new Request(`http://localhost/api/admin/submissions${query}`, {
+        headers: authHeader(adminToken),
+      }), env);
+      expect(response.status).toBe(200);
+      return (await response.json() as any).data;
+    };
+    for (const query of ["", "?competitionId=comp-business-case&status=accepted"]) {
+      const rows = await list(query);
+      expect(rows).toHaveLength(2);
+      for (const row of rows) {
+        expect(row.team_id).toBe("team-bc");
+        expect(row.team_name).toBe("team-bc");
+        expect(row.team_code).toBe("team-bc");
+        expect(row.status).toBe("accepted");
+        expect(row.fileUrl).toBeTruthy();
+      }
+    }
+    expect(await list("?competitionId=comp-design")).toEqual([]);
+  });
+
   it("grants access to panitia for registrations list", async () => {
     const { adminToken } = await getTokens();
 

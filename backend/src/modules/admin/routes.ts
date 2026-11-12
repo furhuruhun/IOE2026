@@ -118,7 +118,7 @@ adminRoutes.get("/submissions", async (c) => {
     binds.push(status);
   }
   if (competitionId) {
-    conditions.push(`t.competition_id = ?${binds.length + 1}`);
+    conditions.push(`rt.competition_id = ?${binds.length + 1}`);
     binds.push(competitionId);
   }
 
@@ -128,12 +128,15 @@ adminRoutes.get("/submissions", async (c) => {
             s.rejection_reason, s.submitted_at, s.reviewed_at,
             rt.id AS requirement_id, rt.name AS requirement_name, rt.type AS requirement_type,
             rt.stage, rt.due_at, c.id AS competition_id, c.name AS competition_name,
-            s.team_id, tm.name AS team_name, tm.code AS team_code,
+            tm.id AS team_id, tm.name AS team_name, tm.code AS team_code,
             u.id AS user_id, u.name AS participant_name, u.email AS participant_email
      FROM requirement_submissions s
      JOIN requirement_templates rt ON rt.id = s.template_id
      JOIN competitions c ON c.id = rt.competition_id
-     LEFT JOIN teams tm ON tm.id = s.team_id
+     LEFT JOIN team_members member ON s.team_id IS NULL
+       AND rt.type = 'individual' AND member.user_id = s.user_id
+       AND member.competition_id = rt.competition_id
+     LEFT JOIN teams tm ON tm.id = COALESCE(s.team_id, member.team_id)
      LEFT JOIN users u ON u.id = s.user_id
      ${where}
      ORDER BY COALESCE(s.submitted_at, s.updated_at) DESC`
