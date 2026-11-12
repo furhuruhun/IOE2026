@@ -40,9 +40,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "team-pitch", icon: "mdi:presentation", title: "Team Pitch", caption: "Build strong arguments with your team to present your solution before the judges." },
     ],
     faqs: [
-      { value: "business-case-focus", question: "Apa yang dikerjakan dalam Business Case Competition?", answer: "Peserta menganalisis studi kasus tentang ekonomi dan industri maritim, lalu merumuskan strategi bisnis yang aplikatif." },
-      { value: "business-case-team", question: "Apakah Business Case Competition dikerjakan secara tim?", answer: "Ya. Deskripsi kompetisi menyebut peserta menyusun analisis dan solusi secara tim." },
-      { value: "business-case-timeline", question: "Kapan studi kasus dan jawaban dikumpulkan?", answer: "Lihat jadwal rilis studi kasus dan batas pengumpulan jawaban pada Timeline Kompetisi di atas. Tanggal yang ditampilkan masih menunggu konfirmasi final panitia." },
+      { value: "business-case-focus", question: "What do participants work on in the Business Case Competition?", answer: "Participants analyze and solve real-world business challenges within the maritime industry, such as maritime operations, supply chain efficiency, and green port management by developing innovative, actionable, and sustainable strategic solutions." },
+      { value: "business-case-team", question: "Is the Business Case Competition worked in teams?", answer: "Yes, this is a team-based competition with a maximum of 3 members per team." },
+      { value: "business-case-timeline", question: "When are the case study and solutions submitted?", answer: "The case study will be distributed after your team completes registration through the website (ioe2027.com). Preliminary round submissions are open until 12 December 2026." },
     ],
   },
   "paper-poster-competition": {
@@ -57,9 +57,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "work-presentation", icon: "mdi:presentation", title: "Present Your Work", caption: "Practice presenting your process and final deliverables before the jury panel in the final round." },
     ],
     faqs: [
-      { value: "paper-poster-format", question: "Karya seperti apa yang dibuat dalam Paper & Poster Competition?", answer: "Peserta menuangkan gagasan ilmiah dalam bentuk tulisan atau poster visual tentang ekosistem maritim Indonesia." },
-      { value: "paper-poster-theme", question: "Apa fokus tema kompetisinya?", answer: "Deskripsi kompetisi berfokus pada keberlanjutan ekosistem maritim Indonesia." },
-      { value: "paper-poster-final", question: "Apakah karya dipresentasikan pada babak final?", answer: "Ya. Deskripsi kompetisi menyebut karya terbaik akan dipresentasikan di hadapan juri pada babak final." },
+      { value: "paper-poster-format", question: "What kind of works are created in the Paper & Poster Competition?", answer: "Participants submit an original scientific research paper along with a visual infographic poster that summarizes their findings, methodology, and innovative solutions for the maritime sector." },
+      { value: "paper-poster-theme", question: "What is the theme focus of the competition?", answer: "The competition centers on the main theme 'Towards a Smart and Sustainable Maritime Ecosystem: Energy, Economy, and Digital Innovation', with specific sub-themes focusing on dredging, reclamation, and coastal protection." },
+      { value: "paper-poster-final", question: "Will the works be presented in the final round?", answer: "Yes, shortlisted finalists will present their research papers and showcase their posters in front of a panel of academic and industry judges during the final round at Institut Teknologi Bandung." },
     ],
   },
   "design-competition": {
@@ -74,9 +74,9 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
       { id: "solution-storytelling", icon: "mdi:lightbulb-on-outline", title: "Solution Storytelling", caption: "Articulate how your design addresses real-world needs and operates effectively within a maritime context." },
     ],
     faqs: [
-      { value: "design-focus", question: "Apa fokus Design Competition?", answer: "Peserta merancang solusi visual atau desain kreatif untuk tantangan energi, ekonomi, dan inovasi digital di sektor kelautan." },
-      { value: "design-idea", question: "Apa yang perlu dijelaskan dalam karya desain?", answer: "Tunjukkan masalah yang dipilih, alasan di balik keputusan desain, dan hubungan rancangan dengan solusi yang ditawarkan." },
-      { value: "design-theme", question: "Apakah desain harus berkaitan dengan isu maritim?", answer: "Ya. Deskripsi kompetisi menempatkan isu maritim sebagai konteks dari solusi desain yang dibuat." },
+      { value: "design-focus", question: "What is the focus of the FOWT Design Competition?", answer: "The competition focuses on engineering innovative, structurally safe, and feasible Floating Offshore Wind Turbine (FOWT) concepts tailored to harness Indonesia’s offshore renewable energy potential." },
+      { value: "design-idea", question: "What needs to be explained in the design submission?", answer: "Participants must cover rotor turbine calculations, platform sizing based on DNV standards, 3D modeling, and prototype development. More detailed requirements and formatting guidelines can be found in the official guidebook." },
+      { value: "design-theme", question: "Must the design be related to maritime issues?", answer: "More information regarding the design scope and parameters is available in the official guidebook." },
     ],
   },
 };

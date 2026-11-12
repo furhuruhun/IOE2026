@@ -20,7 +20,7 @@ export function CompetitionDetailFAQSection({ slug }: CompetitionDetailFAQSectio
           <div className="lg:pr-xl">
             <h2 className="text-h4 text-secondary-1000 md:text-h2">Frequently Asked Questions</h2>
             <p className="font-ui text-s6 font-bold text-neutral-700 md:text-s4">
-              Temukan berbagai pertanyaan yang sering ditanyakan serta jawabannya di sini!
+              Find frequently asked questions and their answers right here!   
             </p>
           </div>
           <Image
