@@ -539,6 +539,46 @@ export function AdminSubmissionSettingsPanel() {
                           <div className="flex flex-col gap-xs">
                             {requirements.data.map((req) => {
                               const matchingSubs = teamSubmissions.filter((s) => s.requirement_id === req.id);
+                              if (req.type === "individual") {
+                                const members = team.members ?? [];
+                                const uploaded = members.filter((member) => matchingSubs.some((sub) => sub.user_id === member.id && sub.fileUrl)).length;
+                                return (
+                                  <details key={req.id} className="rounded-xl border border-neutral-300 bg-neutral-100 p-sm">
+                                    <summary className="min-h-11 cursor-pointer rounded-lg text-secondary-1000 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800">
+                                      <span className="font-ui text-b3 font-semibold">{req.name}</span>{" "}
+                                      <span className="rounded bg-neutral-200 px-xs py-0.5 text-b4 text-neutral-700">
+                                        {req.stage === "registration" ? "Pendaftaran" : req.stage === "submission" ? "Karya" : "Final"}
+                                      </span>
+                                      <span className="mt-xs block text-b4 text-neutral-700">
+                                        Individu · {uploaded}/{members.length} anggota sudah upload · Format: {req.acceptedFormats.join(", ").toUpperCase()}
+                                      </span>
+                                    </summary>
+                                    <ul className="mt-sm flex flex-col gap-sm border-t border-neutral-300 pt-sm">
+                                      {members.map((member) => {
+                                        const sub = matchingSubs.find((item) => item.user_id === member.id);
+                                        return (
+                                          <li key={member.id} className="flex flex-wrap items-center justify-between gap-sm rounded-lg bg-neutral-50 p-sm">
+                                            <span className="min-w-0 break-words text-b3 font-semibold text-secondary-1000">
+                                              {member.name}{member.role === "leader" && <span className="ml-xs text-b4 font-normal text-neutral-700">(Ketua)</span>}
+                                            </span>
+                                            <div className="flex flex-wrap items-center gap-xs">
+                                              {submissions.isPending ? <span role="status" className="text-b4">Memuat berkas...</span> : submissions.isError ? (
+                                                <span role="alert" className="text-b4 text-error-1000">Gagal memuat berkas</span>
+                                              ) : <>
+                                                <span className={`rounded-md px-sm py-xs text-b4 font-semibold ${!sub ? "bg-neutral-200 text-neutral-600" : sub.status === "accepted" ? "bg-success-100 text-success-1000" : sub.status === "rejected" ? "bg-error-100 text-error-1000" : "bg-warning-100 text-warning-1000"}`}>
+                                                  {!sub ? "Belum diunggah" : sub.status === "accepted" ? "Diterima" : sub.status === "rejected" ? "Ditolak" : "Menunggu review"}
+                                                </span>
+                                                {sub?.fileUrl && <a href={sub.fileUrl} target="_blank" rel="noopener noreferrer" aria-label={`Buka ${req.name} milik ${member.name}`} className="ui-action ui-action-secondary ui-action-sm inline-flex items-center">Buka berkas</a>}
+                                              </>}
+                                            </div>
+                                          </li>
+                                        );
+                                      })}
+                                    </ul>
+                                    {members.length === 0 && <p className="mt-sm text-b4 text-neutral-700">Data anggota belum tersedia. Muat ulang halaman.</p>}
+                                  </details>
+                                );
+                              }
                               return (
                                 <div
                                   key={req.id}

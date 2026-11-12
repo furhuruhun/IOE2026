@@ -241,7 +241,16 @@ adminRoutes.get("/competitions/:competitionId/qualifications", async (c) => {
      LEFT JOIN competition_qualifications q ON q.team_id = t.id AND q.competition_id = t.competition_id
      WHERE t.competition_id = ?1 ORDER BY t.created_at ASC`
   ).bind(competitionId).all();
-  return ok(c, rows.results);
+  const members = await c.env.DB.prepare(
+    `SELECT m.team_id AS teamId, u.id, u.name, m.role
+     FROM team_members m JOIN users u ON u.id = m.user_id
+     WHERE m.competition_id = ?1
+     ORDER BY CASE WHEN m.role = 'leader' THEN 0 ELSE 1 END, m.joined_at, u.name`
+  ).bind(competitionId).all<{ teamId: string; id: string; name: string; role: string }>();
+  return ok(c, rows.results.map((team) => ({
+    ...team,
+    members: members.results.filter((member) => member.teamId === team.teamId),
+  })));
 });
 
 // PATCH /admin/competitions/:competitionId/qualifications/:teamId

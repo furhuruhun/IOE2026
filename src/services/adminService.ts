@@ -18,7 +18,7 @@ export interface AdminSubmission {
   id: string; status: "pending" | "accepted" | "rejected";
   requirement_id: string; requirement_name: string; requirement_type: "group" | "individual"; stage: "registration" | "submission" | "final"; due_at: string;
   competition_id: string; competition_name: string;
-  team_id?: string | null; team_name: string | null; team_code?: string | null; participant_name: string | null; participant_email: string | null;
+  team_id?: string | null; team_name: string | null; team_code?: string | null; user_id: string | null; participant_name: string | null; participant_email: string | null;
   fileUrl: string | null; file_name: string | null; rejection_reason: string | null;
 }
 export interface AdminRequirement {
@@ -28,6 +28,7 @@ export interface AdminRequirement {
 }
 export interface AdminQualification {
   teamId: string; teamName: string; teamCode: string; leaderName: string;
+  members: { id: string; name: string; role: string }[];
   status: "pendaftar" | "peserta" | "finalis" | "pending" | "passed" | "not_passed"; updatedAt: string | null;
 }
 export interface AdminRegistrations {

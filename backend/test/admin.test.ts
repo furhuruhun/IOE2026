@@ -59,7 +59,10 @@ describe("Admin Module", () => {
   });
 
   it("associates individual and group submissions with the team in the matching competition", async () => {
-    const { adminToken } = await getTokens();
+    await env.DB.prepare(`INSERT INTO users (id, email, name, role, created_at, updated_at)
+      VALUES ('usr_adm_test', 'admin-submissions@test.com', 'Admin Test', 'panitia', '2026-10-01', '2026-10-01'),
+             ('usr_member_test', 'member-submissions@test.com', 'Member Test', 'peserta', '2026-10-01', '2026-10-01')`).run();
+    const adminToken = await signJwt({ id: "usr_adm_test", role: "panitia" }, env.JWT_SECRET);
     for (const [id, competition, batch] of [
       ["team-bc", "comp-business-case", "batch-bc-1"],
       ["team-ds", "comp-design", "batch-ds-1"],
@@ -69,6 +72,8 @@ describe("Admin Module", () => {
       await env.DB.prepare(`INSERT INTO team_members (team_id, user_id, competition_id, role, joined_at)
         VALUES (?1, 'usr_adm_test', ?2, 'leader', '2026-10-01')`).bind(id, competition).run();
     }
+    await env.DB.prepare(`INSERT INTO team_members (team_id, user_id, competition_id, role, joined_at)
+      VALUES ('team-bc', 'usr_member_test', 'comp-business-case', 'member', '2026-10-01')`).run();
     for (const type of ["individual", "group"]) {
       await env.DB.prepare(`INSERT INTO requirement_templates (id, competition_id, name, type, due_at)
         VALUES (?1, 'comp-business-case', ?1, ?2, '2026-12-01')`).bind(`req-test-${type}`, type).run();
@@ -95,6 +100,16 @@ describe("Admin Module", () => {
       }
     }
     expect(await list("?competitionId=comp-design")).toEqual([]);
+    const response = await app.fetch(new Request("http://localhost/api/admin/competitions/comp-business-case/qualifications", {
+      headers: authHeader(adminToken),
+    }), env);
+    expect(response.status).toBe(200);
+    const { data: teams } = await response.json() as any;
+    expect(teams).toHaveLength(1);
+    expect(teams[0].members).toEqual([
+      { teamId: "team-bc", id: "usr_adm_test", name: "Admin Test", role: "leader" },
+      { teamId: "team-bc", id: "usr_member_test", name: "Member Test", role: "member" },
+    ]);
   });
 
   it("grants access to panitia for registrations list", async () => {
