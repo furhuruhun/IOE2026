@@ -392,6 +392,7 @@ adminRoutes.post("/users/password", async (c) => {
 adminRoutes.get("/registrations", async (c) => {
   const compTeams = await c.env.DB.prepare(
     `SELECT t.id as team_id, t.name as team_name, t.code as team_code,
+            c.id as competition_id, c.slug as competition_slug,
             c.name as competition_name, b.name as batch_name,
             u.name as leader_name, u.email as leader_email, t.created_at
      FROM teams t
@@ -492,6 +493,7 @@ adminRoutes.get("/registrations/export", async (c) => {
     const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
     const compTeams = await c.env.DB.prepare(
       `SELECT t.id, t.name as team_name, t.code as team_code,
+              c.id as competition_id, c.slug as competition_slug,
               c.name as competition_name, b.name as batch_name,
               u.name as leader_name, u.email as leader_email, t.created_at
        FROM teams t

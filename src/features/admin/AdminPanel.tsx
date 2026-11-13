@@ -68,18 +68,31 @@ export function AdminPanel() {
   ];
   const competitions = Array.from(new Map([...knownCompetitions, ...all.map(item => [item.competition_id, item.competition_name] as [string, string])]).entries());
   const filtered = all.filter(item => (!status || item.status === status) && (!competition || item.competition_id === competition) && (!stageFilter || item.stage === stageFilter) && `${item.team_name ?? ""} ${item.participant_name ?? ""} ${item.participant_email ?? ""} ${item.requirement_name}`.toLowerCase().includes(search.toLowerCase()));
+  const competitionNameToSlug: Record<string, string> = {
+    "Business Case Competition": "business-case-competition",
+    "Paper & Poster Competition": "paper-poster-competition",
+    "Floating Offshore Wind Turbine Design Competition": "design-competition",
+    "Design Competition": "design-competition",
+  };
   const teamExportOptions = Array.from(new Map([
     ["business-case-competition", "Business Case Competition"],
     ["paper-poster-competition", "Paper & Poster Competition"],
-    ["design-competition", "Design Competition"],
-    ...(registrations.data?.teams ?? []).map(item => [item.competition_name, item.competition_name] as [string, string]),
+    ["design-competition", "Floating Offshore Wind Turbine Design Competition"],
+    ...(registrations.data?.teams ?? []).map(item => {
+      const slug = item.competition_slug || competitionNameToSlug[item.competition_name] || item.competition_name;
+      const label = item.competition_name === "Design Competition"
+        ? "Floating Offshore Wind Turbine Design Competition"
+        : item.competition_name;
+      return [slug, label] as [string, string];
+    }),
   ]).entries());
   const eventExportOptions = Array.from(new Map([
     ["talkshow", "Talkshow Maritim Nasional"],
+    ["workshop", "Workshop Inovasi Maritim"],
     ["short-course", "Short Course: Marine Tech 101"],
     ...(registrations.data?.eventRegistrations ?? []).map(item => [item.event_slug, item.event_name] as [string, string]),
   ]).entries());
-  const sessionOptions = exportEvent === "short-course" ? [["day1", "Day 1"], ["day2", "Day 2"]] : exportEvent === "talkshow" ? [["seminar", "Talkshow"]] : [];
+  const sessionOptions = exportEvent === "short-course" ? [["day1", "Day 1"], ["day2", "Day 2"]] : exportEvent === "talkshow" ? [["seminar", "Talkshow"]] : exportEvent === "workshop" ? [["workshop", "Workshop"]] : [];
   async function exportCsv(kind: "teams" | "events") {
     try {
       const params = new URLSearchParams({ kind });

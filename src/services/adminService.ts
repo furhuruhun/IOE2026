@@ -32,7 +32,7 @@ export interface AdminQualification {
   status: "pendaftar" | "peserta" | "finalis" | "pending" | "passed" | "not_passed"; updatedAt: string | null;
 }
 export interface AdminRegistrations {
-  teams: { team_id: string; team_name: string; competition_name: string; batch_name: string; leader_name: string; leader_email: string; created_at: string }[];
+  teams: { team_id: string; team_name: string; competition_id?: string; competition_slug?: string; competition_name: string; batch_name: string; leader_name: string; leader_email: string; created_at: string }[];
   eventRegistrations: { registration_id: string; event_slug: string; event_name: string; session_type: string; participant_name: string; email: string; phone: string; institution: string; domicile: string; discovery_source: string | null; created_at: string; cv_url: string | null; payment_proof_url: string | null }[];
 }
 export async function adminRequest<T>(path: string, method = "GET", body?: unknown): Promise<T> {
