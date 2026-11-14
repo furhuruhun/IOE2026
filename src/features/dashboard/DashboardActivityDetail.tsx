@@ -50,7 +50,11 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
   };
 
   const data = competition.data;
-  const canViewCase = team.data?.status === 'peserta' || team.data?.status === 'finalis';
+  const canViewCase =
+    team.data?.status === 'peserta' ||
+    team.data?.status === 'finalis' ||
+    team.data?.status === 'verified' ||
+    team.data?.qualificationStatus === 'passed';
   return (
     <div className="wrap-anywhere flex min-w-0 flex-col gap-6">
       <Button variant="ghost" size="sm" onClick={close} className="self-start">
@@ -91,8 +95,8 @@ export function DashboardActivityDetail({ slug }: { slug: string }) {
                   Lihat Case
                 </a>
               ) : (
-                <Button size="sm" disabled title="Case tersedia setelah tim berstatus peserta">
-                  Lihat Case
+                <Button size="sm" disabled title="Case tersedia setelah tim diverifikasi menjadi Peserta">
+                  Lihat Case (Khusus Peserta)
                 </Button>
               )}
               <a

@@ -17,9 +17,12 @@ export async function GET(_request: Request, { params }: { params: Promise<{ slu
   if (!token) return new NextResponse("Silakan login untuk mengakses Case.", { status: 401, headers });
   const { slug } = await params;
   try {
-    const { body } = await fetchWorkers<ApiResponse<{ url: string }>>(
+    const { status, body } = await fetchWorkers<ApiResponse<{ url: string }>>(
       `/dashboard/case/${encodeURIComponent(slug)}`, { token, cache: "no-store" }
     );
+    if (status === 403) {
+      return new NextResponse("Case hanya dapat diakses oleh tim yang telah berstatus Peserta.", { status: 403, headers });
+    }
     if (body?.success && body.data?.url) {
       const url = new URL(body.data.url);
       if (url.protocol === "https:") {
