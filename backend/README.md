@@ -26,7 +26,7 @@ Backend resmi untuk platform **Indonesia Ocean Expo 2027 (IOE 2027)**. Dibangun 
    - `DELETE /team/members/:memberId`: Menghapus anggota tim atau keluar tim.
 5. **Persyaratan Dokumen & Berkas (`/api/competitions/:id/requirements`)**:
    - `GET /requirements`: Daftar status persyaratan (grup & individu) beserta signed download URL.
-   - `POST /requirements/:id/upload`: Unggah berkas dokumen (verifikasi magic bytes PDF/JPG/PNG, batas ukuran 500 KB, upload ke R2).
+   - `POST /requirements/:id/upload`: Unggah berkas dokumen (verifikasi magic bytes PDF/JPG/PNG, batas ukuran 5 MB, upload ke R2).
    - `DELETE /requirements/:id`: Hapus berkas persyaratan.
 6. **Akses Berkas Aman (`/api/files/:key`)**:
    - Verifikasi URL bertanda tangan (HMAC-SHA256 signature + expiry timestamp) untuk akses berkas privat dari R2.

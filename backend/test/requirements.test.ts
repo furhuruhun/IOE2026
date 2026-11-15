@@ -170,10 +170,10 @@ describe("Requirements Module", () => {
     expect(body.error.code).toBe("INVALID_FILE_FORMAT");
   });
 
-  it("rejects files exceeding 500 KB limit", async () => {
+  it("rejects files exceeding 5 MB limit", async () => {
     const { token } = await createTeamLeader("large");
 
-    const largePng = makePngFile("huge.png", 512 * 1024); // 512 KB
+    const largePng = makePngFile("huge.png", 6 * 1024 * 1024); // 6 MB
     const formData = new FormData();
     formData.append("file", largePng);
 

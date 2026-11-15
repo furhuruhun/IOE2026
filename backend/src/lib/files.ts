@@ -1,6 +1,6 @@
 import { AppError } from "./errors";
 
-export const MAX_FILE_BYTES = 500 * 1024;
+export const MAX_FILE_BYTES = 5 * 1024 * 1024;
 
 const MIME_MAP: Record<string, string[]> = {
   jpg: ["image/jpeg"],

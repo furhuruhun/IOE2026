@@ -39,7 +39,7 @@ export const ERROR_MESSAGES: Record<string, ErrorMessageEntry> = {
   REGISTRATION_CLOSED: { message: "Pendaftaran untuk batch ini sudah ditutup", treatment: "inline-banner" },
   REGISTRATION_NOT_OPEN: { message: "Pendaftaran belum dibuka", treatment: "inline-banner" },
   QUOTA_FULL: { message: "Kuota sudah penuh", treatment: "inline-banner" },
-  FILE_TOO_LARGE: { message: "Ukuran file melebihi 500 KB", treatment: "inline-field" },
+  FILE_TOO_LARGE: { message: "Ukuran file melebihi 5 MB", treatment: "inline-field" },
   NOT_QUALIFIED: { message: "Tim kamu belum lolos ke tahap final", treatment: "toast" },
   INVALID_FILE_FORMAT: { message: "Format file tidak sesuai", treatment: "inline-field" },
   REQUIREMENT_LOCKED: { message: "Dokumen ini sudah disetujui dan tidak bisa diubah lagi", treatment: "toast" },

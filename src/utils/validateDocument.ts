@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const MAX_DOCUMENT_BYTES = 500 * 1024; // 500KB
+export const MAX_DOCUMENT_BYTES = 5 * 1024 * 1024; // 5MB
 
 const ACCEPTED_MIMES: Record<string, string[]> = {
   jpg: ['image/jpeg'],

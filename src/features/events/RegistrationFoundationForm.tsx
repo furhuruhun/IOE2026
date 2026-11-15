@@ -209,7 +209,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
 
       {!isSimpleEvent && <div className="flex min-w-0 flex-col gap-sm">
         <label htmlFor={`${id}-cv`} className="font-body text-b3 font-bold text-secondary-1000">CV (Optional)</label>
-        <p id={`${id}-cv-help`} className="font-body text-b3 text-neutral-800">PDF only, maks 500 KB. File dikirim saat formulir disubmit.</p>
+        <p id={`${id}-cv-help`} className="font-body text-b3 text-neutral-800">PDF only, maks 5 MB. File dikirim saat formulir disubmit.</p>
         <input id={`${id}-cv`} name="cvFile" type="file" accept=".pdf,application/pdf" aria-invalid={Boolean(errors.cvFile)}
           aria-describedby={`${id}-cv-help${errors.cvFile ? ` ${id}-cv-error` : ""}`}
           className="block w-full min-w-0 rounded-xl border border-neutral-500 p-sm font-body text-b3 text-secondary-1000 file:mr-sm file:rounded-lg file:border-0 file:bg-secondary-100 file:px-md file:py-sm file:text-secondary-1000 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary-800"
@@ -228,7 +228,7 @@ export function RegistrationFoundationForm({ profile, event, slug, isDemo, block
 
       {!isSimpleEvent && <div className="flex min-w-0 flex-col gap-sm">
         <label htmlFor={`${id}-payment`} className="font-body text-b3 font-bold text-secondary-1000">Payment proof (if required)</label>
-        <p id={`${id}-payment-help`} className="font-body text-b3 text-neutral-800">JPG/PNG, maks 500 KB. Sertakan hanya jika diwajibkan oleh informasi resmi panitia. Informasi biaya belum tersedia di formulir ini.</p>
+        <p id={`${id}-payment-help`} className="font-body text-b3 text-neutral-800">JPG/PNG, maks 5 MB. Sertakan hanya jika diwajibkan oleh informasi resmi panitia. Informasi biaya belum tersedia di formulir ini.</p>
         <input id={`${id}-payment`} name="paymentProof" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png"
           aria-invalid={Boolean(errors.paymentProof)} aria-describedby={`${id}-payment-help${errors.paymentProof ? ` ${id}-payment-error` : ""}`}
           className="block w-full min-w-0 rounded-xl border border-neutral-500 p-sm font-body text-b3 text-secondary-1000"

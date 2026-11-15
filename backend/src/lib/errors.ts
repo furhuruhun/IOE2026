@@ -77,7 +77,7 @@ export const ERROR_CATALOG: Record<ErrorCode, ErrorMeta> = {
   },
   FILE_TOO_LARGE: {
     status: 400,
-    message: "Ukuran file melebihi 500 KB",
+    message: "Ukuran file melebihi 5 MB",
   },
   INVALID_FILE_FORMAT: {
     status: 400,
