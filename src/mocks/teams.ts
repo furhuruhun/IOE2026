@@ -16,6 +16,9 @@ function getMaxMember(competitionId: string): number {
   if (competitionId === "comp-design" || competitionId === "design-competition") {
     return 5;
   }
+  if (competitionId === "comp-business-case" || competitionId === "business-case-competition") {
+    return 4;
+  }
   return 3;
 }
 
@@ -36,7 +39,7 @@ const mockTeams: MockTeamRecord[] = [
     qualificationStatus: "pending",
     leader: { id: "mock-user-0", name: "Alex" },
     members: [{ id: "mock-user-0", name: "Alex", studentId: "10019999" }],
-    maxMember: 3,
+    maxMember: 4,
   },
 ];
 

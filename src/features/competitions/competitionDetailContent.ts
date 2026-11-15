@@ -41,7 +41,7 @@ export const competitionDetailContent: Record<string, CompetitionDetailContentEn
     ],
     faqs: [
       { value: "business-case-focus", question: "What do participants work on in the Business Case Competition?", answer: "Participants analyze and solve real-world business challenges within the maritime industry, such as maritime operations, supply chain efficiency, and green port management by developing innovative, actionable, and sustainable strategic solutions." },
-      { value: "business-case-team", question: "Is the Business Case Competition worked in teams?", answer: "Yes, this is a team-based competition with a maximum of 3 members per team." },
+      { value: "business-case-team", question: "Is the Business Case Competition worked in teams?", answer: "Yes, this is a team-based competition with a maximum of 4 members per team." },
       { value: "business-case-timeline", question: "When are the case study and solutions submitted?", answer: "The case study will be distributed after your team completes registration through the website (ioe2027.com). Preliminary round submissions are open until 12 December 2026." },
     ],
   },
