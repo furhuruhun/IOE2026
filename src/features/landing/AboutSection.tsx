@@ -32,15 +32,15 @@ export function AboutSection() {
               </h3>
               <p className="text-b3 text-neutral-700 md:text-b2">{aboutDescription}</p>
 
-              {process.env.NODE_ENV === "development" && <div className="mt-sm">
+              {sponsors.length > 0 && <div className="mt-sm">
                 <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
                 <div className="mt-sm flex flex-wrap gap-sm">
                   {sponsors.map((sponsor) => (
                     <div
-                      key={sponsor}
-                      className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-800"
+                      key={sponsor.id}
+                      className="relative h-[50px] w-[100px] shrink-0"
                     >
-                      {sponsor}
+                      <Image src={sponsor.logoSrc} alt={sponsor.name} fill sizes="100px" className="object-contain" />
                     </div>
                   ))}
                 </div>

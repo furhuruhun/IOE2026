@@ -1,17 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties, type Ref } from "react";
 import { sponsors } from "@/features/landing/landingContent";
 import styles from "./CompetitionSponsorMarquee.module.css";
 
-const sponsorClassName = "flex h-12 shrink-0 items-center whitespace-nowrap rounded-md border border-neutral-300 bg-neutral-200 px-md text-b3 font-semibold text-neutral-700";
+const sponsorClassName = "relative h-[50px] w-[100px] shrink-0";
 
 function SponsorGroup({ accessible, groupRef }: { accessible: boolean; groupRef?: Ref<HTMLDivElement> }) {
   return (
     <div ref={groupRef} className={styles.group} role={accessible ? "list" : undefined} aria-hidden={accessible ? undefined : true}>
       {sponsors.map((sponsor) => (
-        <div key={sponsor} role={accessible ? "listitem" : undefined} className={sponsorClassName}>
-          {sponsor}
+        <div key={sponsor.id} role={accessible ? "listitem" : undefined} className={sponsorClassName}>
+          <Image src={sponsor.logoSrc} alt={accessible ? sponsor.name : ""} fill sizes="100px" className="object-contain" />
         </div>
       ))}
     </div>

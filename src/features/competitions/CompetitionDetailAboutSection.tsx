@@ -12,7 +12,7 @@ interface CompetitionDetailAboutSectionProps {
 const descriptionArtwork = "/images/competitions/ioe-bcc-description-spotlight.svg";
 
 // F-13: description and registration deadline for this competition.
-// F-16: development sponsor placeholders remain below the information layout.
+// F-16: confirmed sponsors appear below the information layout.
 export function CompetitionDetailAboutSection({ slug }: CompetitionDetailAboutSectionProps) {
   const { data: competition, isLoading, isError } = useCompetition(slug);
 
@@ -71,16 +71,16 @@ export function CompetitionDetailAboutSection({ slug }: CompetitionDetailAboutSe
         )}
       </div>
 
-      {process.env.NODE_ENV === "development" && (
+      {sponsors.length > 0 && (
         <div className="flex flex-col items-center gap-4 lg:col-span-5">
           <h4 className="text-b3 font-semibold text-neutral-700">Didukung oleh</h4>
           <div className="flex flex-wrap justify-center gap-4">
             {sponsors.map((sponsor) => (
               <div
-                key={sponsor}
-                className="flex h-12 items-center rounded-md border border-neutral-300 bg-neutral-200 px-4 text-b3 font-semibold text-neutral-700"
+                key={sponsor.id}
+                className="relative h-[50px] w-[100px] shrink-0"
               >
-                {sponsor}
+                <Image src={sponsor.logoSrc} alt={sponsor.name} fill sizes="100px" className="object-contain" />
               </div>
             ))}
           </div>

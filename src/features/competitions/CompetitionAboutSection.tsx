@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { aboutDescription, totalPrizePool } from "./competitionsContent";
-import { CompetitionSponsorMarquee } from "./CompetitionSponsorMarquee";
 
 const GRADIENT_TEXT = "linear-gradient(90deg, var(--color-primary-600), var(--color-secondary-600), var(--color-tertiary-600))";
 
@@ -50,12 +49,9 @@ export function CompetitionAboutSection() {
               {totalPrizePool}
             </p>
           </div>
-
-          <div className="mt-16 flex w-full min-w-0 flex-col items-center gap-4 md:gap-6 md:max-lg:mt-10">
-            <h4 className="text-b3 font-semibold text-secondary-1000">Didukung oleh</h4>
-            <CompetitionSponsorMarquee />
-          </div>
         </>}
+
+        {/* Sponsor row temporarily hidden; CompetitionSponsorMarquee is retained for later. */}
       </div>
     </section>
   );

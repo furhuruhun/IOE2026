@@ -6,5 +6,6 @@ export type EventSponsor = {
   tier?: string;
 };
 
-// Add confirmed sponsors here after their official logo assets are available.
-export const eventSponsors: EventSponsor[] = [];
+export const eventSponsors: EventSponsor[] = [
+  { id: "antam", name: "ANTAM", logoSrc: "/images/parent/antam-logo.webp", tier: "silver" },
+];

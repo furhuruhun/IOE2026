@@ -51,9 +51,7 @@ export const heroSlides: HeroSlide[] = [
 export const aboutDescription =
   'Indonesia Ocean Expo (IOE) 2027 is the premier maritime gathering hosted by KMKL ITB, connecting the next generation of engineers with industry practitioners. Focusing on Energy, Economy, and Innovation, IOE 2027 empowers participants to shape the future of offshore energy, smart logistics, and coastal resilience through rigorous international challenges and collaborative summits.';
 
-// F-09 — daftar sponsor: PLACEHOLDER, klien belum kirim daftar sponsor final
-// (PRD §8 Assumptions & Dependencies).
-export const sponsors: string[] = ["Sponsor A", "Sponsor B", "Sponsor C", "Sponsor D", "Sponsor E", "Sponsor F"];
+export { eventSponsors as sponsors } from "@/features/events/eventSponsors";
 
 export interface AboutStat {
   value: string;

@@ -58,19 +58,10 @@ export function EventOverviewContact() {
 }
 
 export function EventOverviewSponsors() {
-  if (eventSponsors.length === 0 && process.env.NODE_ENV !== "development") return null;
-  const hasSponsors = eventSponsors.length > 0;
-  const items = hasSponsors ? eventSponsors : Array.from({ length: 5 }, (_, index) => ({
-    id: `pending-${index}`,
-    name: "Logo sponsor menyusul",
-    logoSrc: "/sponsors/placeholder.svg",
-  }));
-
-  const logos = (duplicate: boolean) => items.map((sponsor) => (
+  if (eventSponsors.length === 0) return null;
+  const logos = (duplicate: boolean) => eventSponsors.map((sponsor) => (
     <div key={sponsor.id} className={`${styles.logo} flex items-center justify-center`}>
-      {/* SVG files retain their proportions in a fixed, responsive logo slot. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={sponsor.logoSrc} alt={duplicate ? "" : sponsor.name} width={192} height={96} className="h-full w-full object-contain" />
+      <Image src={sponsor.logoSrc} alt={duplicate ? "" : sponsor.name} fill sizes="100px" className="object-contain" />
     </div>
   ));
 
@@ -79,8 +70,7 @@ export function EventOverviewSponsors() {
       <div className="site-container flex flex-col items-center gap-lg text-center">
         <p className="font-ui text-b4 font-bold uppercase tracking-widest text-secondary-800">Bersama mitra</p>
         <h2 className="font-heading text-h4 text-secondary-1000 md:text-h2">Sponsor IOE 2027</h2>
-        {!hasSponsors && <p className="font-body text-b3 text-neutral-700">Logo sponsor resmi akan ditampilkan setelah dikonfirmasi panitia.</p>}
-        <div className={`${styles.viewport} w-full rounded-[22px] bg-neutral-100 py-6 md:py-10`} aria-label={hasSponsors ? "Daftar sponsor IOE 2027" : "Logo sponsor menyusul"}>
+        <div className={`${styles.viewport} w-full rounded-[22px] bg-neutral-100 py-6 md:py-10`} aria-label="Daftar sponsor IOE 2027">
           <div className={styles.track}>
             <div className={styles.group}>{logos(false)}</div>
             <div className={styles.group} aria-hidden="true">{logos(true)}</div>
