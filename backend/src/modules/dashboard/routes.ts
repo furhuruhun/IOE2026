@@ -237,17 +237,16 @@ dashboardRoutes.get("/assignments", requireAuth, async (c) => {
             t.name,
             t.type,
             t.stage,
-            COALESCE(s.status, 'pending') as status,
+            COALESCE(s_grp.status, s_ind.status, 'pending') as status,
             t.due_at as due_date,
             t.accepted_formats
      FROM team_members m
      JOIN competitions c ON c.id = m.competition_id
      JOIN requirement_templates t ON t.competition_id = c.id
-     LEFT JOIN requirement_submissions s
-       ON s.template_id = t.id AND (
-         (t.type = 'group' AND s.team_id = m.team_id) OR
-         (t.type = 'individual' AND s.user_id = m.user_id)
-       )
+     LEFT JOIN requirement_submissions s_grp
+       ON t.type = 'group' AND s_grp.template_id = t.id AND s_grp.team_id = m.team_id
+     LEFT JOIN requirement_submissions s_ind
+       ON t.type = 'individual' AND s_ind.template_id = t.id AND s_ind.user_id = m.user_id
      WHERE m.user_id = ?1
      ORDER BY t.due_at ASC, t.sort_order ASC`
   )
